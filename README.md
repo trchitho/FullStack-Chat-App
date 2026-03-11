@@ -107,6 +107,20 @@ npm run dev
 3) Click a user to start chatting in real-time.
 4) Access settings to personalize the theme and profile to manage your details.
 
+## Demo
+
+### Home
+![Home Page](demo/Screenshot%202026-03-11%20095129.png)
+
+### Profile
+![Profile Page](demo/Screenshot%202026-03-11%20095531.png)
+
+### Settings
+![Settings Page](demo/Screenshot%202026-03-11%20095554.png)
+
+### Signup Page
+![Signup Page](demo/Screenshot%202026-03-11%20095602.png)
+
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request.
 
