@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production"
-      ? ["https://your-app-name.vercel.app", "https://fullstack-chat-app-trchitho.vercel.app"]
+      ? [/\.vercel\.app$/]
       : "http://localhost:5173",
     credentials: true,
   })
