@@ -19,7 +19,9 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.NODE_ENV === "production"
+      ? ["https://your-app-name.vercel.app", "https://fullstack-chat-app-trchitho.vercel.app"]
+      : "http://localhost:5173",
     credentials: true,
   })
 );
@@ -38,13 +40,13 @@ const __dirname = dirname(__filename);
 
 // Serve production build
 if (process.env.NODE_ENV === 'production') {
-    const distPath = join(__dirname, '../../frontend/dist');
-    app.use(express.static(distPath));
-  
-    app.get('*', (req, res) => {
-      res.sendFile(join(distPath, 'index.html'));
-    });
-  }
+  const distPath = join(__dirname, '../../frontend/dist');
+  app.use(express.static(distPath));
+
+  app.get('*', (req, res) => {
+    res.sendFile(join(distPath, 'index.html'));
+  });
+}
 
 httpServer.listen(PORT, () => {
   console.log("Server is running on port:" + PORT);
