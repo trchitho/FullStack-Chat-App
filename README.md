@@ -109,16 +109,16 @@ npm run dev
 
 ## Demo
 
-### Home
+### Login
 ![Home Page](demo/Screenshot%202026-03-11%20095129.png)
 
-### Profile
+### Home  
 ![Profile Page](demo/Screenshot%202026-03-11%20095531.png)
 
 ### Settings
 ![Settings Page](demo/Screenshot%202026-03-11%20095554.png)
 
-### Signup Page
+### Profile
 ![Signup Page](demo/Screenshot%202026-03-11%20095602.png)
 
 ## Contributing
