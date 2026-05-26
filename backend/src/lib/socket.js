@@ -6,9 +6,14 @@ const app = express();
 
 const httpServer = createServer(app);
 
+const allowedOrigins = process.env.NODE_ENV === "production"
+    ? [/\.vercel\.app$/, /\.onrender\.com$/, process.env.CLIENT_URL].filter(Boolean)
+    : ["http://localhost:5173"];
+
 const io = new Server(httpServer, {
     cors: {
-        origin: ["http://localhost:5173"]
+        origin: allowedOrigins,
+        credentials: true
     }
 });
 
