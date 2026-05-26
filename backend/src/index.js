@@ -30,12 +30,21 @@ app.use(
   })
 );
 
+app.get("/api/health", async (req, res) => {
+  try {
+    await connectDB();
+    res.status(200).json({ status: "ok", database: "connected" });
+  } catch (error) {
+    res.status(503).json({ status: "degraded", database: "disconnected" });
+  }
+});
+
 app.use("/api", async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    res.status(500).json({ message: "Database connection failed" });
+    res.status(503).json({ message: "Database connection failed" });
   }
 });
 
@@ -64,7 +73,11 @@ if (isProduction && !isVercel) {
 if (!isVercel) {
   httpServer.listen(PORT, async () => {
     console.log("Server is running on port:" + PORT);
-    await connectDB();
+    try {
+      await connectDB();
+    } catch (error) {
+      console.error("Initial database connection failed:", error.message);
+    }
   });
 }
 
