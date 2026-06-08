@@ -56,7 +56,7 @@ const ToggleRow = ({ icon: Icon, title, description, checked, onChange }) => (
 
 const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const { authUser } = useAuthStore();
-  const [activeStatus, setActiveStatus] = useStateFromStorage("messenger-active-status", true);
+  const { activeStatus, setActiveStatus } = useAuthStore();
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);

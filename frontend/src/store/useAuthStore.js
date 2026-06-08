@@ -15,6 +15,7 @@ export const useAuthStore = create((set, get) => ({
   isUpdatingProfile: false,
   onlineUsers: [],
   socket: null,
+  activeStatus: localStorage.getItem("active-status") !== "false",
 
   isCheckingAuth: true,
 
@@ -97,8 +98,8 @@ export const useAuthStore = create((set, get) => ({
   },
 
   connectSocket: () => {
-    const { authUser } = get();
-    if (!ENABLE_SOCKET || !authUser || get().socket?.connected) return;
+    const { authUser, activeStatus } = get();
+    if (!ENABLE_SOCKET || !activeStatus || !authUser || get().socket?.connected) return;
 
     const socket = io(BASE_URL, {
       query: { userId: authUser._id },
@@ -113,5 +114,12 @@ export const useAuthStore = create((set, get) => ({
 
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
+  },
+
+  setActiveStatus: (activeStatus) => {
+    localStorage.setItem("active-status", String(activeStatus));
+    set({ activeStatus, onlineUsers: activeStatus ? get().onlineUsers : [] });
+    if (activeStatus) get().connectSocket();
+    else get().disconnectSocket();
   },
 }));
