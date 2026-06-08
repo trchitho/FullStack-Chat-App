@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Laugh, Send, ThumbsUp, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 const MessageInput = () => {
@@ -48,7 +48,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="p-4 w-full">
+    <div className="border-t border-base-300 bg-base-100 px-6 py-4">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -70,11 +70,19 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <div className="flex-1 flex gap-2">
+        <button
+          type="button"
+          className={`btn btn-circle btn-ghost btn-sm text-primary ${imagePreview ? "bg-primary/10" : ""}`}
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Gửi ảnh"
+        >
+          <Image size={20} />
+        </button>
+        <div className="flex-1 flex items-center gap-2 rounded-full bg-base-300 px-4">
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder="Type a message..."
+            className="input input-sm h-11 flex-1 border-none bg-transparent focus:outline-none"
+            placeholder="Aa"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
@@ -86,21 +94,15 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
-          <button
-            type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Image size={20} />
+          <button type="button" className="btn btn-circle btn-ghost btn-sm text-primary" aria-label="Biểu cảm">
+            <Laugh size={20} />
           </button>
         </div>
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
-          disabled={!text.trim() && !imagePreview}
+          className="btn btn-sm btn-circle btn-ghost text-primary"
         >
-          <Send size={22} />
+          {text.trim() || imagePreview ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
       </form>
     </div>
