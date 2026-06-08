@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import { useThemeStore } from "../store/useThemeStore";
 
 const samplePeople = ["Nguyễn Thắng", "Trần Đình Huy Hoàng", "Son Ngoc Pham", "Bách Ngô"];
 const archivedChats = ["Huy Nguyễn", "Ngô Thảo", "Nguyễn Tiến Thịnh", "Nguyễn Bá Khoa"];
@@ -58,8 +59,10 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const [activeStatus, setActiveStatus] = useStateFromStorage("messenger-active-status", true);
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
-  const [darkMode, setDarkMode] = useStateFromStorage("messenger-dark-mode", "Bật");
   const [showSnooze, setShowSnooze] = useState(false);
+  const { theme, setTheme } = useThemeStore();
+  const darkMode = theme === "light" ? "Tắt" : theme === "coffee" ? "Bật" : "Tự động";
+  const setDarkMode = (mode) => setTheme(mode === "Tắt" ? "light" : mode === "Bật" ? "coffee" : "dark");
 
   return (
     <PanelShell title="Tùy chọn" onClose={onClose}>
