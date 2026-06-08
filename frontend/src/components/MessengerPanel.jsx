@@ -60,6 +60,7 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);
+  const [detailSection, setDetailSection] = useState(null);
   const { theme, setTheme } = useThemeStore();
   const darkMode = theme === "light" ? "Tắt" : theme === "coffee" ? "Bật" : "Tự động";
   const setDarkMode = (mode) => setTheme(mode === "Tắt" ? "light" : mode === "Bật" ? "coffee" : "dark");
@@ -121,12 +122,16 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
         </section>
 
         {["Quản lý hoạt động gửi tin nhắn", "Quản lý phần Chặn"].map((label) => (
-          <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300">
+          <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300" onClick={() => setDetailSection(label)}>
             <span className="flex items-center gap-3"><Shield className="size-5" />{label}</span>
             <ChevronRight className="size-5" />
           </button>
         ))}
       </div>
+
+      {detailSection && (
+        <SettingsDetail title={detailSection} onBack={() => setDetailSection(null)} />
+      )}
 
       {showSnooze && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
@@ -183,6 +188,51 @@ const ListPanel = ({ title, people, description, onClose }) => (
     </div>
   </PanelShell>
 );
+
+const SettingsDetail = ({ title, onBack }) => {
+  const isMessaging = title.includes("gửi tin nhắn");
+  const rows = isMessaging
+    ? [
+        ["Bạn bè của bạn", "Ai có thể gửi cho bạn lời mời kết bạn?"],
+        ["Bạn của bạn bè", "Ai có thể xem danh sách bạn bè của bạn?"],
+        ["Chỉ mình tôi", "Những người có địa chỉ email của bạn"],
+        ["Có thể có mối liên hệ", "Những người có số điện thoại của bạn"],
+        ["Tin nhắn đang chờ", "Với những người khác trên Messenger hoặc Facebook"],
+      ]
+    : [
+        ["Danh sách hạn chế", "Giới hạn hoạt động tương tác mà không cần chặn."],
+        ["Chặn trang cá nhân và Trang", "Hai bên không thể tương tác với bài viết, bình luận hoặc tin nhắn."],
+        ["Biệt danh bị chặn", "Họ không thể gắn thẻ bạn hay tương tác với nội dung của bạn."],
+        ["Chặn tin nhắn", "Chặn liên hệ trong Messenger và các trang cá nhân liên quan."],
+      ];
+
+  return (
+    <div className="absolute inset-0 z-40 bg-base-200 p-4">
+      <div className="mb-4 flex items-center gap-3">
+        <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={onBack}>
+          <ArrowLeft className="size-5" />
+        </button>
+        <h3 className="text-xl font-bold">{title}</h3>
+      </div>
+      <p className="mb-4 text-sm text-base-content/70">
+        {isMessaging
+          ? "Cách tìm và liên hệ với bạn, cũng như cách bạn nhận tin nhắn đang chờ."
+          : "Quản lý những trang cá nhân và Trang đang bị hạn chế hoặc bị chặn."}
+      </p>
+      <div className="space-y-2">
+        {rows.map(([value, label]) => (
+          <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-base-300">
+            <span>
+              <span className="block font-bold">{label}</span>
+              <span className="text-sm text-base-content/60">{value}</span>
+            </span>
+            <ChevronRight className="size-5 shrink-0" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const HelpPanel = ({ onClose }) => (
   <PanelShell title="Trợ giúp" onClose={onClose}>
