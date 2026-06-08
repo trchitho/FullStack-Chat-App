@@ -131,7 +131,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
               <button
                 type="button"
-                className="absolute right-3 top-5 hidden rounded-full bg-base-300 p-2 shadow group-hover:block max-lg:hidden"
+                className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100 max-lg:hidden"
                 onClick={() => setOpenUserMenu(openUserMenu === user._id ? null : user._id)}
                 aria-label={`Mở tùy chọn ${user.fullName}`}
               >
