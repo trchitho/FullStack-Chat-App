@@ -46,6 +46,15 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  uploadAttachment: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axiosInstance.post("/messages/attachments", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data.attachment;
+  },
+
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
