@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Laugh, Mic, Paperclip, Send, ThumbsUp, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useLanguageStore } from "../store/useLanguageStore";
 
 const MessageInput = ({ replyTo, onCancelReply }) => {
   const [text, setText] = useState("");
@@ -15,6 +16,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const { sendMessage, uploadAttachment } = useChatStore();
+  const { language } = useLanguageStore();
+  const isVi = language === "vi";
   const composerEmojis = ["😀", "😆", "😍", "😂", "😢", "😡", "👍", "❤️", "🎉", "🙏"];
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file.type.startsWith("image/")) {
-      toast.error("Vui lòng chọn file ảnh");
+      toast.error(isVi ? "Vui lòng chọn file ảnh" : "Please select an image file");
       return;
     }
 
@@ -58,7 +61,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     const file = event.target.files[0];
     if (!file) return;
     if (file.size > 100 * 1024 * 1024) {
-      toast.error("File tối đa 100MB");
+      toast.error(isVi ? "File tối đa 100MB" : "Maximum file size is 100MB");
       event.target.value = "";
       return;
     }
@@ -89,7 +92,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       recorder.start();
       setIsRecording(true);
     } catch (error) {
-      toast.error("Không thể bật micro");
+      toast.error(isVi ? "Không thể bật micro" : "Could not start microphone");
     }
   };
 
@@ -158,7 +161,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             <div className="text-sm font-bold">{replyTo.senderName}</div>
             <div className="truncate text-sm text-base-content/60">{replyTo.preview}</div>
           </div>
-          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={onCancelReply} aria-label="Hủy trả lời">
+          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={onCancelReply} aria-label={isVi ? "Hủy trả lời" : "Cancel reply"}>
             <X className="size-4" />
           </button>
         </div>
@@ -170,7 +173,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             <div className="truncate font-semibold">{attachmentFile.name}</div>
             <div className="text-base-content/60">{Math.ceil(attachmentFile.size / 1024)} KB</div>
           </div>
-          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={() => setAttachmentFile(null)} aria-label="Gỡ file đính kèm">
+          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={() => setAttachmentFile(null)} aria-label={isVi ? "Gỡ file đính kèm" : "Remove attachment"}>
             <X className="size-4" />
           </button>
         </div>
@@ -181,8 +184,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${imagePreview ? "bg-primary/10" : ""}`}
           onClick={() => fileInputRef.current?.click()}
-          title="Gửi ảnh"
-          aria-label="Gửi ảnh"
+          title={isVi ? "Gửi ảnh" : "Send image"}
+          aria-label={isVi ? "Gửi ảnh" : "Send image"}
         >
           <Image size={20} />
         </button>
@@ -190,8 +193,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type="button"
           className="btn btn-circle btn-ghost btn-sm text-primary"
           onClick={() => attachmentInputRef.current?.click()}
-          title="Đính kèm file"
-          aria-label="Đính kèm file"
+          title={isVi ? "Đính kèm file" : "Attach file"}
+          aria-label={isVi ? "Đính kèm file" : "Attach file"}
         >
           <Paperclip size={20} />
         </button>
@@ -199,8 +202,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${isRecording ? "bg-error/15 text-error" : ""}`}
           onClick={toggleRecording}
-          title={isRecording ? "Dừng ghi âm" : "Gửi tin nhắn thoại"}
-          aria-label={isRecording ? "Dừng ghi âm" : "Gửi tin nhắn thoại"}
+          title={isRecording ? (isVi ? "Dừng ghi âm" : "Stop recording") : (isVi ? "Gửi tin nhắn thoại" : "Send voice message")}
+          aria-label={isRecording ? (isVi ? "Dừng ghi âm" : "Stop recording") : (isVi ? "Gửi tin nhắn thoại" : "Send voice message")}
         >
           <Mic size={20} />
         </button>
@@ -230,8 +233,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             type="button"
             className="btn btn-circle btn-ghost btn-sm text-primary"
             onClick={() => setShowEmojiPicker((value) => !value)}
-            title="Mở biểu tượng cảm xúc"
-            aria-label="Mở biểu tượng cảm xúc"
+            title={isVi ? "Mở biểu tượng cảm xúc" : "Open emoji picker"}
+            aria-label={isVi ? "Mở biểu tượng cảm xúc" : "Open emoji picker"}
           >
             <Laugh size={20} />
           </button>
@@ -240,8 +243,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type={text.trim() || imagePreview || attachmentFile ? "submit" : "button"}
           className="btn btn-sm btn-circle btn-ghost text-primary"
           onClick={text.trim() || imagePreview || attachmentFile ? undefined : handleQuickLike}
-          title={text.trim() || imagePreview || attachmentFile ? "Gửi tin nhắn" : "Gửi thích"}
-          aria-label={text.trim() || imagePreview || attachmentFile ? "Gửi tin nhắn" : "Gửi thích"}
+          title={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
+          aria-label={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
         >
           {text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
