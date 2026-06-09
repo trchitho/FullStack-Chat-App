@@ -9,7 +9,7 @@ import {
   Volume2,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { useLanguageStore } from "../store/useLanguageStore";
@@ -79,11 +79,30 @@ const panelCopy = {
 
 const pc = (language, key) => panelCopy[language]?.[key] || panelCopy.vi[key] || key;
 
-const PanelShell = ({ title, children, onClose, onBack }) => (
+const PanelShell = ({ title, children, onClose, onBack }) => {
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    panelRef.current?.focus();
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") (onBack || onClose)();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onBack, onClose]);
+
+  return (
   <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 p-3 backdrop-blur-sm sm:p-4">
-    <section className="max-h-[calc(100dvh-24px)] w-[calc(100vw-24px)] max-w-2xl overflow-y-auto rounded-2xl border border-base-300 bg-base-200 p-4 shadow-2xl">
+    <section
+      ref={panelRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      tabIndex={-1}
+      className="max-h-[calc(100dvh-24px)] w-[calc(100vw-24px)] max-w-2xl overflow-y-auto rounded-2xl border border-base-300 bg-base-200 p-4 shadow-2xl"
+    >
       <div className="mb-4 flex items-center gap-3">
-        <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={onBack || onClose}>
+        <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={onBack || onClose} aria-label={onBack ? "Quay lại" : "Đóng"}>
           {onBack ? <ArrowLeft className="size-5" /> : <X className="size-5" />}
         </button>
         <h2 className="text-2xl font-bold">{title}</h2>
@@ -91,7 +110,8 @@ const PanelShell = ({ title, children, onClose, onBack }) => (
       {children}
     </section>
   </div>
-);
+  );
+};
 
 const AccountPreview = ({ authUser, onOpenProfile, language }) => (
   <button type="button" className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-300" onClick={onOpenProfile}>
