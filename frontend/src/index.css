@@ -14,3 +14,13 @@ body,
 * {
   min-width: 0;
 }
+
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid hsl(var(--p));
+  outline-offset: 3px;
+}
+
+:where(.btn, .input, .textarea, .select):focus-visible {
+  outline: 3px solid hsl(var(--p));
+  outline-offset: 3px;
+}
