@@ -294,9 +294,10 @@ const ListPanel = ({ title, people, description, actionLabel, onAction, onClose,
   </PanelShell>
 );
 
-const SettingsDetail = ({ section, onBack, language }) => {
+const SettingsDetail = ({ section, onBack, language, users = [], actions = {}, removeUserAction = () => {} }) => {
   const isMessaging = section === "messagingActivity";
   const title = pc(language, section);
+  const blockedUsers = users.filter((user) => (actions.blocked || []).includes(user._id));
   const rows = isMessaging
     ? (language === "vi" ? [
         ["Bạn bè của bạn", "Cách tìm và liên hệ với bạn"],
