@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import Navbar from './components/Navbar'
-import {Routes ,Route, Navigate} from 'react-router-dom'
+import {Routes ,Route, Navigate, useLocation} from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
@@ -16,6 +16,8 @@ import { useThemeStore } from './store/useThemeStore'
 const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
   const {theme} = useThemeStore();
+  const location = useLocation();
+  const standalonePage = location.pathname.startsWith("/help") || location.pathname.startsWith("/policies_center");
   
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const App = () => {
   return (
     <div data-theme = {theme}>
 
-      <Navbar />
+      {!standalonePage && <Navbar />}
 
       <Routes>
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to='/login' />} />
