@@ -2,14 +2,19 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import {
   Bell,
+  LogOut,
   MessageCircle,
   Search,
+  Settings,
+  User,
 } from "lucide-react";
 import { useLanguageStore } from "../store/useLanguageStore";
+import { useState } from "react";
 
 const Navbar = () => {
-  const { authUser } = useAuthStore();
+  const { logout, authUser } = useAuthStore();
   const { language } = useLanguageStore();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
