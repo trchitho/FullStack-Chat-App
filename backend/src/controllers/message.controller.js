@@ -12,6 +12,13 @@ const normalizeAttachment = (attachment) => {
     return { url, key, name, type, size, storage };
 };
 
+const normalizeCall = (call) => {
+    if (!call || typeof call !== "object") return undefined;
+    const { type, status, duration } = call;
+    if (!type || !status) return undefined;
+    return { type, status, duration };
+};
+
 export const getUsersForSidebar = async (req, res) => {
     try {
         const loggedInUserId = req.user._id;
@@ -59,8 +66,9 @@ export const sendMessage = async (req, res) => {
     try {
         const { id:receiverId } = req.params;
         const senderId = req.user._id;
-        const { text, image, replyTo, attachment } = req.body;
+        const { text, image, replyTo, attachment, call } = req.body;
         const normalizedAttachment = normalizeAttachment(attachment);
+        const normalizedCall = normalizeCall(call);
 
         let imageUrl;
 
@@ -76,7 +84,8 @@ export const sendMessage = async (req, res) => {
             text,
             image: imageUrl,
             attachment: normalizedAttachment,
-            replyTo
+            replyTo,
+            call: normalizedCall
         });
 
         await newMessage.save();
