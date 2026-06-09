@@ -30,3 +30,22 @@ export const adminLogout = (_req, res) => {
 };
 
 export const adminCheck = (req, res) => res.status(200).json({ username: req.admin.username, role: "admin" });
+
+export const getAdminOverview = async (_req, res) => {
+  const [totalUsers, totalMessages, attachmentMessages, callMessages] = await Promise.all([
+    User.countDocuments(),
+    Message.countDocuments(),
+    Message.countDocuments({ attachment: { $exists: true, $ne: null } }),
+    Message.countDocuments({ call: { $exists: true, $ne: null } }),
+  ]);
+  res.status(200).json({ totalUsers, totalMessages, attachmentMessages, callMessages });
+};
+
+export const getAdminUsers = async (_req, res) => {
+  const users = await User.find().select("fullName email profilePic createdAt updatedAt").sort({ createdAt: -1 }).lean();
+  const counts = await Message.aggregate([
+    { $group: { _id: "$senderId", sentMessages: { $sum: 1 }, lastActivityAt: { $max: "$createdAt" } } },
+  ]);
+  const byUser = new Map(counts.map((item) => [String(item._id), item]));
+  res.status(200).json(users.map((user) => ({ ...user, ...(byUser.get(String(user._id)) || { sentMessages: 0 }) })));
+};
