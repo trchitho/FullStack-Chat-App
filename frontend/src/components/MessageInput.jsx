@@ -17,6 +17,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const emojiPickerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const cancelRecordingRef = useRef(false);
   const { sendMessage, uploadAttachment } = useChatStore();
   const { language } = useLanguageStore();
   const isVi = language === "vi";
@@ -99,6 +100,13 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         if (event.data.size > 0) audioChunksRef.current.push(event.data);
       };
       recorder.onstop = () => {
+        if (cancelRecordingRef.current) {
+          cancelRecordingRef.current = false;
+          audioChunksRef.current = [];
+          setIsRecording(false);
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         const audioFile = new File([audioBlob], `voice-${Date.now()}.webm`, { type: "audio/webm" });
         setAttachmentFile(audioFile);
@@ -106,6 +114,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         stream.getTracks().forEach((track) => track.stop());
       };
       mediaRecorderRef.current = recorder;
+      cancelRecordingRef.current = false;
       recorder.start();
       setIsRecording(true);
     } catch (error) {
@@ -114,9 +123,9 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   };
 
   const cancelRecording = () => {
+    cancelRecordingRef.current = true;
     audioChunksRef.current = [];
-    mediaRecorderRef.current?.stream?.getTracks().forEach((track) => track.stop());
-    mediaRecorderRef.current = null;
+    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
     setIsRecording(false);
   };
 
@@ -210,6 +219,21 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        {isRecording ? (
+          <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full bg-blue-600 px-3 py-2 text-white">
+            <button type="button" className="btn btn-circle btn-xs border-none bg-blue-700 text-white" onClick={cancelRecording} aria-label={isVi ? "Hủy ghi âm" : "Cancel recording"}>
+              <X className="size-4" />
+            </button>
+            <button type="button" className="btn btn-circle btn-sm border-none bg-white text-blue-600" onClick={toggleRecording} aria-label={isVi ? "Dừng ghi âm" : "Stop recording"}>
+              <span className="size-3 rounded-sm bg-blue-600" />
+            </button>
+            <div className="h-1 flex-1 rounded-full bg-white/40">
+              <div className="h-full w-1/2 rounded-full bg-white" />
+            </div>
+            <span className="rounded-full bg-white px-2 py-0.5 text-sm font-bold text-blue-600">{formattedRecordingTime}</span>
+          </div>
+        ) : (
+          <>
         <button
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${imagePreview ? "bg-primary/10" : ""}`}
@@ -240,6 +264,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         >
           <Mic size={20} />
         </button>
+          </>
+        )}
+        {!isRecording && (
+          <>
         <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-base-300 px-4">
           <input
             type="text"
@@ -283,6 +311,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         >
           {isSending ? <span className="loading loading-spinner loading-xs" /> : text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
+          </>
+        )}
       </form>
       {showEmojiPicker && (
         <div ref={emojiPickerRef} className="absolute bottom-20 right-16 z-50 grid grid-cols-5 gap-2 rounded-2xl border border-base-300 bg-base-100 p-3 shadow-2xl">
