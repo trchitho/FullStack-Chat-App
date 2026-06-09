@@ -61,11 +61,16 @@ const ChatContainer = () => {
     const closeOnEscape = (event) => {
       if (event.key === "Escape") closeMenus();
     };
+    const closeOnOutsideClick = (event) => {
+      if (!event.target.closest("[data-pingme-floating-menu], [data-pingme-menu-trigger]")) closeMenus();
+    };
     window.addEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
     document.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("mousedown", closeOnOutsideClick);
     return () => {
       window.removeEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
       document.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("mousedown", closeOnOutsideClick);
     };
   }, []);
 
@@ -184,6 +189,7 @@ const ChatContainer = () => {
               <div className="flex opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
                 <button
                   type="button"
+                  data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc"
                   onClick={() => {
@@ -196,18 +202,23 @@ const ChatContainer = () => {
                 </button>
                 <button
                   type="button"
+                  data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title="Trả lời tin nhắn này"
-                  onClick={() => setReplyTo({
-                    id: message._id,
-                    senderName: isOwnMessage ? authUser.fullName : selectedUser.fullName,
-                    preview: getMessagePreview(message),
-                  })}
+                  onClick={() => {
+                    closeFloatingMenus();
+                    setReplyTo({
+                      id: message._id,
+                      senderName: isOwnMessage ? authUser.fullName : selectedUser.fullName,
+                      preview: getMessagePreview(message),
+                    });
+                  }}
                 >
                   <Reply className="size-4" />
                 </button>
                 <button
                   type="button"
+                  data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title="Hành động khác"
                   onClick={() => {
@@ -220,7 +231,7 @@ const ChatContainer = () => {
                 </button>
               </div>
               {reactionPickerFor === message._id && (
-                <div className="absolute z-40 mt-[-44px] flex rounded-full bg-base-100 p-1 shadow-2xl">
+                <div data-pingme-floating-menu className="absolute z-40 mt-[-44px] flex rounded-full bg-base-100 p-1 shadow-2xl">
                   {reactionEmojis.map((emoji) => (
                     <button
                       key={emoji}
@@ -237,7 +248,7 @@ const ChatContainer = () => {
                 </div>
               )}
               {actionMenuFor === message._id && (
-                <div className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
+                <div data-pingme-floating-menu className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
                   <button
                     type="button"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"

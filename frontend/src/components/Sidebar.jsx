@@ -33,11 +33,16 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     const closeOnEscape = (event) => {
       if (event.key === "Escape") closeMenus();
     };
+    const closeOnOutsideClick = (event) => {
+      if (!event.target.closest("[data-pingme-floating-menu], [data-pingme-menu-trigger]")) closeMenus();
+    };
     window.addEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
     document.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("mousedown", closeOnOutsideClick);
     return () => {
       window.removeEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
       document.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("mousedown", closeOnOutsideClick);
     };
   }, []);
 
@@ -63,6 +68,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           <div className="flex gap-2">
             <button
               type="button"
+              data-pingme-menu-trigger
               className="btn btn-circle btn-sm border-none bg-base-300"
               onClick={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
@@ -146,6 +152,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
               <button
                 type="button"
+                data-pingme-menu-trigger
                 className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100 max-lg:hidden"
                 onClick={(event) => {
                   const rect = event.currentTarget.getBoundingClientRect();
@@ -182,6 +189,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
 const MainSidebarMenu = ({ position, onOpenPanel }) => (
   <div
+    data-pingme-floating-menu
     className="fixed z-[110] w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
@@ -206,6 +214,7 @@ const MainSidebarMenu = ({ position, onOpenPanel }) => (
 
 const UserActionMenu = ({ position }) => (
   <div
+    data-pingme-floating-menu
     className="fixed z-[110] max-h-[calc(100dvh-16px)] w-80 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
