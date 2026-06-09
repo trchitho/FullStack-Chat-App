@@ -83,6 +83,15 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     if (labelKey === "report") setReportUser(user);
   };
 
+  const confirmSelectedAction = () => {
+    if (!confirmAction) return;
+    const actionKey = confirmAction.type === "archive" ? "archived" : confirmAction.type === "block" ? "blocked" : "deleted";
+    setUserActions((actions) => addStoredId(actions, actionKey, confirmAction.user._id));
+    if (selectedUser?._id === confirmAction.user._id) setSelectedUser(null);
+    toast.success(language === "vi" ? "Đã cập nhật đoạn chat" : "Chat updated");
+    setConfirmAction(null);
+  };
+
   useEffect(() => {
     const closeMenus = () => {
       setShowMainMenu(false);
