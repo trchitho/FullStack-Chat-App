@@ -230,20 +230,20 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   </div>
                   {isOnline && <span className="absolute bottom-1 right-0 size-3.5 rounded-full border-2 border-base-200 bg-success" />}
                 </div>
-                <div className="min-w-0 flex-1 max-lg:hidden">
+                <div className="min-w-0 flex-1">
                   <div className={`truncate font-semibold ${isMarkedUnread ? "text-primary" : ""}`}>{user.fullName}</div>
                   <div className={`truncate text-sm ${isMarkedUnread ? "font-bold text-base-content" : "text-base-content/60"}`}>
                     {isMuted ? (language === "vi" ? "Đã tắt thông báo" : "Muted") : user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
                 </div>
-                {isMuted && <BellOff className="size-4 shrink-0 text-base-content/50 max-lg:hidden" />}
-                {isMarkedUnread && <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-content max-lg:hidden">Mới</span>}
+                {isMuted && <BellOff className="size-4 shrink-0 text-base-content/50" />}
+                {isMarkedUnread && <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-content">Mới</span>}
               </button>
 
               <button
                 type="button"
                 data-pingme-menu-trigger
-                className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100 max-lg:hidden"
+                className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100"
                 onClick={(event) => {
                   const rect = event.currentTarget.getBoundingClientRect();
                   const shouldOpen = openUserMenu !== user._id;
@@ -268,7 +268,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         })}
 
         {filteredUsers.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-base-content/60 max-lg:hidden">
+          <div className="px-4 py-8 text-center text-sm text-base-content/60">
             Không tìm thấy đoạn chat phù hợp.
           </div>
         )}
