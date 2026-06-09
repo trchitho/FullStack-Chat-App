@@ -31,11 +31,11 @@ const AdminPage = () => {
     setAdmin(res.data);
   };
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center">Đang tải...</div>;
+  if (loading) return <div className="flex min-h-dvh items-center justify-center">Đang tải...</div>;
 
   if (!admin) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-base-200 p-4">
+      <main className="flex min-h-dvh max-w-full items-center justify-center overflow-x-hidden bg-base-200 p-4">
         <form onSubmit={submitLogin} className="w-full max-w-sm rounded-2xl bg-base-100 p-6 shadow-2xl">
           <h1 className="mb-1 text-2xl font-bold">Admin PingMe</h1>
           <p className="mb-5 text-sm text-base-content/60">Khu vực quản trị chỉ hiển thị metadata, không xem nội dung riêng tư.</p>
@@ -48,7 +48,7 @@ const AdminPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-base-200 p-6 pt-24">
+    <main className="min-h-dvh max-w-full overflow-x-hidden bg-base-200 p-4 pt-20 sm:p-6 sm:pt-24">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
