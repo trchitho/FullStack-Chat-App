@@ -364,6 +364,34 @@ const ConfirmChatAction = ({ action, language, onCancel, onConfirm }) => {
   );
 };
 
+const MuteDialog = ({ language, onClose, onConfirm }) => {
+  const [minutes, setMinutes] = useState(60);
+  const options = [
+    [15, language === "vi" ? "Trong 15 phút" : "For 15 minutes"],
+    [60, language === "vi" ? "Trong 1 giờ" : "For 1 hour"],
+    [480, language === "vi" ? "Trong 8 giờ" : "For 8 hours"],
+    [1440, language === "vi" ? "Trong 24 giờ" : "For 24 hours"],
+    [null, language === "vi" ? "Đến khi tắt" : "Until turned off"],
+  ];
+  return (
+    <SimpleModal title={language === "vi" ? "Tắt thông báo" : "Mute notifications"} onClose={onClose}>
+      <p className="mb-4 text-sm text-base-content/70">{language === "vi" ? "Cửa sổ chat vẫn đóng và bạn sẽ không nhận được thông báo đẩy trên thiết bị." : "Chat windows stay closed and you will not receive push notifications on this device."}</p>
+      <div className="space-y-2">
+        {options.map(([value, label]) => (
+          <label key={label} className="flex cursor-pointer items-center justify-between rounded-xl p-3 font-semibold hover:bg-base-200">
+            {label}
+            <input type="radio" className="radio radio-primary" checked={minutes === value} onChange={() => setMinutes(value)} />
+          </label>
+        ))}
+      </div>
+      <div className="mt-5 flex justify-end gap-2">
+        <button type="button" className="btn btn-ghost" onClick={onClose}>{language === "vi" ? "Hủy" : "Cancel"}</button>
+        <button type="button" className="btn btn-primary" onClick={() => onConfirm(minutes)}>{language === "vi" ? "Tiếp" : "Next"}</button>
+      </div>
+    </SimpleModal>
+  );
+};
+
 const CallDialog = ({ callState, language, onClose }) => {
   const videoRef = useRef(null);
   const [status, setStatus] = useState(language === "vi" ? "Đang xin quyền thiết bị..." : "Requesting device access...");
