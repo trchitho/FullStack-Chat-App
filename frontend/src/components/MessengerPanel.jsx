@@ -14,8 +14,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 
 const samplePeople = ["Nguyễn Thắng", "Trần Đình Huy Hoàng", "Son Ngoc Pham", "Bách Ngô"];
-const archivedChats = ["Huy Nguyễn", "Ngô Thảo", "Nguyễn Tiến Thịnh", "Nguyễn Bá Khoa"];
-const restrictedAccounts = ["Bo Nè", "Lieu Le", "天 雪"];
+const archivedChats = [];
+const restrictedAccounts = [];
 const snoozeOptions = ["Trong 15 phút", "Trong 1 giờ", "Trong 8 giờ", "Trong 24 giờ", "Đến khi tắt"];
 const snoozeDurations = {
   "Trong 15 phút": 15 * 60 * 1000,
@@ -200,8 +200,15 @@ const ListPanel = ({ title, people, description, onClose }) => (
       <Search className="size-4" />
       <input className="grow" placeholder="Tìm kiếm" />
     </label>
+    {title === "Tin nhắn đang chờ" && (
+      <div className="mb-4 flex gap-2">
+        {["Bạn có thể biết", "Spam"].map((tab, index) => (
+          <button key={tab} type="button" className={`rounded-full px-4 py-2 text-sm font-bold ${index === 0 ? "bg-primary/15 text-primary" : "hover:bg-base-300"}`}>{tab}</button>
+        ))}
+      </div>
+    )}
     <div className="space-y-1">
-      {people.map((person) => (
+      {people.length > 0 ? people.map((person) => (
         <button key={person} type="button" className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-300">
           <img src="/avatar.png" alt="" className="size-12 rounded-full" />
           <div>
@@ -209,7 +216,11 @@ const ListPanel = ({ title, people, description, onClose }) => (
             <div className="text-sm text-base-content/60">Tin nhắn không hiển thị · 3 năm</div>
           </div>
         </button>
-      ))}
+      )) : (
+        <div className="rounded-2xl bg-base-100 p-6 text-center text-sm text-base-content/60">
+          Chưa có dữ liệu trong mục này.
+        </div>
+      )}
     </div>
   </PanelShell>
 );
