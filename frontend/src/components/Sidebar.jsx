@@ -37,6 +37,22 @@ const addStoredId = (actions, key, id) => ({
   [key]: [...new Set([...(actions[key] || []), id])],
 });
 
+const handleMenuArrowKeys = (event) => {
+  if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+  const items = Array.from(event.currentTarget.querySelectorAll('[role="menuitem"]'));
+  if (!items.length) return;
+  event.preventDefault();
+  const currentIndex = items.indexOf(document.activeElement);
+  const nextIndex = event.key === "Home"
+    ? 0
+    : event.key === "End"
+      ? items.length - 1
+      : event.key === "ArrowDown"
+        ? (currentIndex + 1) % items.length
+        : (currentIndex - 1 + items.length) % items.length;
+  items[nextIndex].focus();
+};
+
 const setMutedUntil = (actions, userId, minutes) => ({
   ...actions,
   muted: [...new Set([...(actions.muted || []), userId])],
