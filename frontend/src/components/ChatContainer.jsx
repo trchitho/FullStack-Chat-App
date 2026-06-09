@@ -6,6 +6,7 @@ import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
 import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const ChatContainer = () => {
   const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
@@ -181,7 +182,14 @@ const ChatContainer = () => {
                     <Trash2 className="size-4" />
                     {isOwnMessage ? "Thu hồi" : "Gỡ"}
                   </button>
-                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
+                    onClick={() => {
+                      toast("Tính năng chuyển tiếp sẽ được bổ sung");
+                      setActionMenuFor(null);
+                    }}
+                  >
                     <Forward className="size-4" />
                     Chuyển tiếp
                   </button>
