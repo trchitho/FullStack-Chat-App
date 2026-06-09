@@ -17,6 +17,12 @@ const samplePeople = ["Nguyễn Thắng", "Trần Đình Huy Hoàng", "Son Ngoc 
 const archivedChats = ["Huy Nguyễn", "Ngô Thảo", "Nguyễn Tiến Thịnh", "Nguyễn Bá Khoa"];
 const restrictedAccounts = ["Bo Nè", "Lieu Le", "天 雪"];
 const snoozeOptions = ["Trong 15 phút", "Trong 1 giờ", "Trong 8 giờ", "Trong 24 giờ", "Đến khi tắt"];
+const snoozeDurations = {
+  "Trong 15 phút": 15 * 60 * 1000,
+  "Trong 1 giờ": 60 * 60 * 1000,
+  "Trong 8 giờ": 8 * 60 * 60 * 1000,
+  "Trong 24 giờ": 24 * 60 * 60 * 1000,
+};
 
 const PanelShell = ({ title, children, onClose, onBack }) => (
   <div className="absolute inset-0 z-40 flex bg-base-100/70 backdrop-blur-sm">
@@ -60,6 +66,7 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);
+  const [snoozeChoice, setSnoozeChoice] = useState("Trong 1 giờ");
   const [detailSection, setDetailSection] = useState(null);
   const { theme, setTheme } = useThemeStore();
   const darkMode = theme === "light" ? "Tắt" : theme === "coffee" ? "Bật" : "Tự động";
@@ -142,11 +149,24 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
             </div>
             <p className="mb-4 text-sm text-base-content/70">Cửa sổ chat vẫn đóng và bạn sẽ không nhận được thông báo đẩy trên thiết bị.</p>
             <div className="space-y-2">
-              {snoozeOptions.map((option) => <button key={option} className="block w-full rounded-lg p-3 text-left font-semibold hover:bg-base-300">{option}</button>)}
+              {snoozeOptions.map((option) => (
+                <label key={option} className="flex cursor-pointer items-center justify-between rounded-lg p-3 font-semibold hover:bg-base-300">
+                  <span>{option}</span>
+                  <input type="radio" className="radio radio-primary radio-sm" checked={snoozeChoice === option} onChange={() => setSnoozeChoice(option)} />
+                </label>
+              ))}
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <button className="btn btn-ghost" onClick={() => setShowSnooze(false)}>Hủy</button>
-              <button className="btn btn-primary" onClick={() => setShowSnooze(false)}>Tiếp</button>
+              <button className="btn btn-ghost" onClick={() => {
+                setDoNotDisturb(false);
+                setShowSnooze(false);
+              }}>Hủy</button>
+              <button className="btn btn-primary" onClick={() => {
+                const duration = snoozeDurations[snoozeChoice];
+                localStorage.setItem("messenger-dnd-until", duration ? String(Date.now() + duration) : "manual");
+                setDoNotDisturb(true);
+                setShowSnooze(false);
+              }}>Tiếp</button>
             </div>
           </div>
         </div>
