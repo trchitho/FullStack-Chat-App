@@ -118,6 +118,8 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const { authUser } = useAuthStore();
   const { activeStatus, setActiveStatus } = useAuthStore();
   const { language } = useLanguageStore();
+  const { users } = useChatStore();
+  const { actions, removeUserAction } = useSidebarActions();
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("pingme-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("pingme-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);
@@ -197,7 +199,7 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
       </div>
 
       {detailSection && (
-        <SettingsDetail section={detailSection} onBack={() => setDetailSection(null)} language={language} />
+        <SettingsDetail section={detailSection} onBack={() => setDetailSection(null)} language={language} users={users} actions={actions} removeUserAction={removeUserAction} />
       )}
 
       {showSnooze && (
