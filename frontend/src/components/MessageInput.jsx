@@ -171,7 +171,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   };
 
   return (
-    <div className="relative shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+    <div className="relative shrink-0 border-t border-base-300 bg-base-100 px-2 py-2 sm:px-4 lg:px-6 lg:py-4">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -218,7 +218,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 sm:gap-2">
         {isRecording ? (
           <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full bg-blue-600 px-3 py-2 text-white">
             <button type="button" className="btn btn-circle btn-xs border-none bg-blue-700 text-white" onClick={cancelRecording} aria-label={isVi ? "Hủy ghi âm" : "Cancel recording"}>
@@ -268,10 +268,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         )}
         {!isRecording && (
           <>
-        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-base-300 px-4">
+        <div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-base-300 px-3 sm:gap-2 sm:px-4">
           <input
             type="text"
-          className="input input-sm h-11 min-h-11 flex-1 border-none bg-transparent focus:outline-none"
+          className="input input-sm h-10 min-h-10 flex-1 border-none bg-transparent focus:outline-none sm:h-11 sm:min-h-11"
             disabled={isSending}
             placeholder="Aa"
             value={text}
@@ -315,7 +315,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         )}
       </form>
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-20 right-16 z-50 grid grid-cols-5 gap-2 rounded-2xl border border-base-300 bg-base-100 p-3 shadow-2xl">
+        <div ref={emojiPickerRef} className="absolute bottom-14 right-2 z-50 grid grid-cols-5 gap-2 rounded-2xl border border-base-300 bg-base-100 p-3 shadow-2xl sm:bottom-20 sm:right-16">
           {composerEmojis.map((emoji) => (
             <button
               key={emoji}
