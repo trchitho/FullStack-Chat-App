@@ -222,6 +222,7 @@ const ChatContainer = () => {
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title={isVi ? "Bày tỏ cảm xúc bằng biểu tượng cảm xúc" : "React with an emoji"}
+                  aria-label={isVi ? "Bày tỏ cảm xúc bằng biểu tượng cảm xúc" : "React with an emoji"}
                   onClick={() => {
                     const shouldOpen = reactionPickerFor !== message._id;
                     closeFloatingMenus();
@@ -235,6 +236,7 @@ const ChatContainer = () => {
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title={isVi ? "Trả lời tin nhắn này" : "Reply to this message"}
+                  aria-label={isVi ? "Trả lời tin nhắn này" : "Reply to this message"}
                   onClick={() => {
                     closeFloatingMenus();
                     setReplyTo({
@@ -251,6 +253,7 @@ const ChatContainer = () => {
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
                   title={isVi ? "Hành động khác" : "More actions"}
+                  aria-label={isVi ? "Hành động khác" : "More actions"}
                   onClick={() => {
                     const shouldOpen = actionMenuFor !== message._id;
                     closeFloatingMenus();
@@ -261,12 +264,14 @@ const ChatContainer = () => {
                 </button>
               </div>
               {reactionPickerFor === message._id && (
-                <div data-pingme-floating-menu className="absolute z-40 mt-[-44px] flex rounded-full bg-base-100 p-1 shadow-2xl">
+                <div data-pingme-floating-menu role="menu" className="absolute z-40 mt-[-44px] flex rounded-full bg-base-100 p-1 shadow-2xl">
                   {reactionEmojis.map((emoji) => (
                     <button
                       key={emoji}
                       type="button"
+                      role="menuitem"
                       className="rounded-full p-1.5 text-xl hover:bg-base-300"
+                      aria-label={`${isVi ? "Thả cảm xúc" : "React"} ${emoji}`}
                       onClick={() => {
                         setMessageReactions((current) => ({ ...current, [message._id]: emoji }));
                         setReactionPickerFor(null);
@@ -278,9 +283,10 @@ const ChatContainer = () => {
                 </div>
               )}
               {actionMenuFor === message._id && (
-                <div data-pingme-floating-menu className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
+                <div data-pingme-floating-menu role="menu" className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
                   <button
                     type="button"
+                    role="menuitem"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
                     onClick={() => {
                       setConfirmAction({ messageId: message._id, isOwnMessage });
@@ -292,6 +298,7 @@ const ChatContainer = () => {
                   </button>
                   <button
                     type="button"
+                    role="menuitem"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
                     onClick={() => {
                       toast(isVi ? "Tính năng chuyển tiếp sẽ được bổ sung" : "Forwarding will be added soon");
@@ -303,6 +310,7 @@ const ChatContainer = () => {
                   </button>
                   <button
                     type="button"
+                    role="menuitem"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
                   onClick={() => {
                       setPinnedMessage({ id: message._id, preview: getMessagePreview(message) });
