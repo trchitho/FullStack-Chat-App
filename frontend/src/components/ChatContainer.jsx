@@ -183,6 +183,20 @@ const ChatContainer = () => {
                   </a>
                 )
               )}
+              {!isRevoked && message.call && (
+                <div className="flex min-w-48 items-start gap-3 rounded-2xl bg-black/10 p-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-base-100/25">
+                    <PhoneCall className="size-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold">{message.call.type === "video" ? (isVi ? "Cuộc gọi video" : "Video call") : (isVi ? "Cuộc gọi thoại" : "Voice call")}</div>
+                    <div className="text-sm opacity-80">{Math.max(1, Math.round((message.call.duration || 1) / 60))} {isVi ? "phút" : "min"}</div>
+                    <button type="button" className="mt-2 w-full rounded-lg bg-base-100/25 px-3 py-1.5 font-semibold hover:bg-base-100/35">
+                      {isVi ? "Gọi lại" : "Call back"}
+                    </button>
+                  </div>
+                </div>
+              )}
               {!isRevoked && message.text && <p>{message.text}</p>}
               {messageReactions[message._id] && (
                 <span className="absolute -bottom-4 right-3 rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
