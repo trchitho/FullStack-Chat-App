@@ -151,21 +151,33 @@ const ChatContainer = () => {
                 </div>
               )}
               {!isRevoked && message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="mb-2 max-h-[360px] w-full max-w-[78vw] cursor-zoom-in rounded-2xl object-contain md:max-w-[420px]"
+                <button
+                  type="button"
+                  className="mb-2 block max-w-[78vw] rounded-2xl text-left md:max-w-[420px]"
                   onClick={() => setLightboxImage(message.image)}
-                />
+                  aria-label={isVi ? "Mở ảnh toàn màn hình" : "Open image full screen"}
+                >
+                  <img
+                    src={message.image}
+                    alt={isVi ? "Ảnh đính kèm" : "Attachment"}
+                    className="max-h-[360px] w-full cursor-zoom-in rounded-2xl object-contain"
+                  />
+                </button>
               )}
               {!isRevoked && message.attachment?.url && (
                 message.attachment.type?.startsWith("image/") ? (
-                  <img
-                    src={message.attachment.url}
-                    alt={message.attachment.name || (isVi ? "Tệp ảnh" : "Image file")}
-                    className="mb-2 max-h-[360px] w-full max-w-[78vw] cursor-zoom-in rounded-2xl object-contain md:max-w-[420px]"
+                  <button
+                    type="button"
+                    className="mb-2 block max-w-[78vw] rounded-2xl text-left md:max-w-[420px]"
                     onClick={() => setLightboxImage(message.attachment.url)}
-                  />
+                    aria-label={isVi ? "Mở ảnh toàn màn hình" : "Open image full screen"}
+                  >
+                    <img
+                      src={message.attachment.url}
+                      alt={message.attachment.name || (isVi ? "Tệp ảnh" : "Image file")}
+                      className="max-h-[360px] w-full cursor-zoom-in rounded-2xl object-contain"
+                    />
+                  </button>
                 ) : message.attachment.type?.startsWith("audio/") ? (
                   <audio controls className="w-full max-w-[78vw] md:max-w-xs">
                     <source src={message.attachment.url} type={message.attachment.type} />
