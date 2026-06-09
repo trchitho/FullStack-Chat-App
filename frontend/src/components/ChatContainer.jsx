@@ -5,7 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { FileText, Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
+import { FileText, Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 import { useLanguageStore } from '../store/useLanguageStore';
@@ -29,6 +29,7 @@ const ChatContainer = () => {
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
   const getMessagePreview = (message) => {
     if (message.text) return message.text;
+    if (message.call) return isVi ? "[Cuộc gọi]" : "[Call]";
     if (message.image || message.attachment?.type?.startsWith("image/")) return isVi ? "[Hình ảnh]" : "[Image]";
     if (message.attachment?.type?.startsWith("audio/")) return isVi ? "[Tin nhắn thoại]" : "[Voice message]";
     if (message.attachment) return isVi ? "[Tệp đính kèm]" : "[Attachment]";
