@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId } from "../lib/socket.js";
 import {io} from "../lib/socket.js";
+import { uploadFileToR2 } from "../lib/r2.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 
@@ -51,7 +52,7 @@ export const sendMessage = async (req, res) => {
     try {
         const { id:receiverId } = req.params;
         const senderId = req.user._id;
-        const { text, image, replyTo } = req.body;
+        const { text, image, replyTo, attachment } = req.body;
 
         let imageUrl;
 
@@ -66,6 +67,7 @@ export const sendMessage = async (req, res) => {
             receiverId,
             text,
             image: imageUrl,
+            attachment,
             replyTo
         });
 
@@ -81,6 +83,20 @@ export const sendMessage = async (req, res) => {
     } catch (error) {
         console.log("Error in sendMessage: ", error.message);
         res.status(500).json({error: "Internal Server Error"});
+    }
+}
+
+export const uploadMessageAttachment = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const attachment = await uploadFileToR2(req.file);
+        res.status(201).json({ attachment });
+    } catch (error) {
+        console.log("Error in uploadMessageAttachment: ", error.message);
+        res.status(503).json({ message: "File storage is unavailable" });
     }
 }
 
