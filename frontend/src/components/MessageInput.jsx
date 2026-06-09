@@ -48,7 +48,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="border-t border-base-300 bg-base-100 px-6 py-4">
+    <div className="shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -78,10 +78,10 @@ const MessageInput = () => {
         >
           <Image size={20} />
         </button>
-        <div className="flex-1 flex items-center gap-2 rounded-full bg-base-300 px-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-base-300 px-4">
           <input
             type="text"
-            className="input input-sm h-11 flex-1 border-none bg-transparent focus:outline-none"
+            className="input input-sm h-11 min-h-11 flex-1 border-none bg-transparent focus:outline-none"
             placeholder="Aa"
             value={text}
             onChange={(e) => setText(e.target.value)}

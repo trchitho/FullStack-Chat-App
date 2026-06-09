@@ -26,7 +26,7 @@ const ChatContainer = () => {
 
   if(isMessagesLoading) { 
     return (
-      <div className='flex-1 flex flex-col overflow-auto'>
+      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         <ChatHeader />
         <MessageSkeleton /> 
         <MessageInput />
@@ -37,11 +37,17 @@ const ChatContainer = () => {
 
   
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-base-100">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
       <ChatHeader />
 
-      <div className="flex-1 overflow-y-auto px-8 py-5 space-y-3">
-        {messages.map((message) => (
+      <div className="min-h-0 flex-1 overflow-y-auto px-8 py-5">
+        {messages.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center text-base-content/70">
+            <img src={selectedUser.profilePic || "/avatar.png"} alt="" className="mb-4 size-20 rounded-full object-cover" />
+            <h2 className="text-xl font-bold text-base-content">{selectedUser.fullName}</h2>
+            <p className="mt-2 max-w-md text-sm">Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây.</p>
+          </div>
+        ) : messages.map((message) => (
           <div
             key={message._id}
             className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
