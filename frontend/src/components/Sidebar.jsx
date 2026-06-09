@@ -13,6 +13,16 @@ import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents
 import { useLanguageStore } from "../store/useLanguageStore";
 import { t } from "../lib/i18n";
 
+const sidebarActionStorageKey = "pingme-sidebar-user-actions";
+
+const readStoredActions = () => {
+  try {
+    return JSON.parse(localStorage.getItem(sidebarActionStorageKey)) || {};
+  } catch {
+    return {};
+  }
+};
+
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
   const { onlineUsers } = useAuthStore();
@@ -23,10 +33,15 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const [showMainMenu, setShowMainMenu] = useState(false);
   const [mainMenuPosition, setMainMenuPosition] = useState(null);
   const [query, setQuery] = useState("");
+  const [userActions, setUserActions] = useState(() => readStoredActions());
 
   useEffect(() => {
     getUsers();
   }, [getUsers]);
+
+  useEffect(() => {
+    localStorage.setItem(sidebarActionStorageKey, JSON.stringify(userActions));
+  }, [userActions]);
 
   useEffect(() => {
     const closeMenus = () => {
@@ -51,15 +66,22 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
   const filteredUsers = useMemo(() => {
     const search = query.trim().toLowerCase();
+    const hiddenIds = new Set([
+      ...(userActions.archived || []),
+      ...(userActions.blocked || []),
+      ...(userActions.deleted || []),
+    ]);
+    const unreadIds = new Set(userActions.unread || []);
 
     return users.filter((user) => {
+      if (hiddenIds.has(user._id)) return false;
       const matchesSearch = user.fullName.toLowerCase().includes(search);
       if (!matchesSearch) return false;
-      if (activeFilter === "unread") return user.unread;
+      if (activeFilter === "unread") return user.unread || unreadIds.has(user._id);
       if (activeFilter === "groups") return user.isGroup;
       return true;
     });
-  }, [activeFilter, query, users]);
+  }, [activeFilter, query, userActions, users]);
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
