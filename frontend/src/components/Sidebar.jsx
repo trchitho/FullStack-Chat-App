@@ -15,6 +15,7 @@ import { t } from "../lib/i18n";
 import toast from "react-hot-toast";
 
 const sidebarActionStorageKey = "pingme-sidebar-user-actions";
+const reportStorageKey = "pingme-sidebar-user-reports";
 
 const readStoredActions = () => {
   try {
@@ -277,6 +278,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         <ConfirmChatAction action={confirmAction} language={language} onCancel={() => setConfirmAction(null)} onConfirm={confirmSelectedAction} />
       )}
       {callState && <CallDialog callState={callState} language={language} onClose={() => setCallState(null)} />}
+      {reportUser && <ReportDialog user={reportUser} language={language} onClose={() => setReportUser(null)} />}
     </>
   );
 };
