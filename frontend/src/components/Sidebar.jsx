@@ -191,6 +191,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         {filteredUsers.map((user) => {
           const isOnline = onlineUsers.includes(user._id);
           const isSelected = selectedUser?._id === user._id;
+          const isMarkedUnread = (userActions.unread || []).includes(user._id);
+          const isMuted = (userActions.muted || []).includes(user._id);
 
           return (
             <div key={user._id} className="group relative min-w-0">
@@ -208,11 +210,12 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   {isOnline && <span className="absolute bottom-1 right-0 size-3.5 rounded-full border-2 border-base-200 bg-success" />}
                 </div>
                 <div className="min-w-0 flex-1 max-lg:hidden">
-                  <div className="truncate font-semibold">{user.fullName}</div>
+                  <div className={`truncate font-semibold ${isMarkedUnread ? "text-primary" : ""}`}>{user.fullName}</div>
                   <div className="truncate text-sm text-base-content/60">
-                    {user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
+                    {isMuted ? (language === "vi" ? "Đã tắt thông báo" : "Muted") : user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
                 </div>
+                {isMarkedUnread && <span className="size-2.5 shrink-0 rounded-full bg-primary max-lg:hidden" />}
               </button>
 
               <button
@@ -224,8 +227,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   const shouldOpen = openUserMenu !== user._id;
                   closeFloatingMenus();
                   setUserMenuPosition({
-                    top: Math.min(rect.bottom + 6, window.innerHeight - 346),
-                    left: Math.min(rect.left - 170, window.innerWidth - 280),
+                    top: Math.min(rect.bottom + 6, window.innerHeight - 306),
+                    left: Math.min(rect.left - 150, window.innerWidth - 242),
                   });
                   setOpenUserMenu(shouldOpen ? user._id : null);
                 }}
@@ -235,7 +238,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               </button>
 
               {openUserMenu === user._id && userMenuPosition && createPortal(
-                <UserActionMenu position={userMenuPosition} language={language} />,
+                <UserActionMenu position={userMenuPosition} language={language} user={user} onAction={handleUserAction} />,
                 document.body
               )}
             </div>
@@ -281,14 +284,14 @@ const MainSidebarMenu = ({ position, onOpenPanel, language }) => (
   </div>
 );
 
-const UserActionMenu = ({ position, language }) => (
+const UserActionMenu = ({ position, language, user, onAction }) => (
   <div
     data-pingme-floating-menu
-    className="fixed z-[110] max-h-[calc(100dvh-16px)] w-64 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
+    className="fixed z-[110] max-h-[calc(100dvh-16px)] w-56 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
     {userCardActions.map(({ labelKey, icon: Icon }) => (
-      <button key={labelKey} type="button" className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-semibold hover:bg-base-300">
+      <button key={labelKey} type="button" className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-semibold hover:bg-base-300" onClick={() => onAction(labelKey, user)}>
         <Icon className="size-4 shrink-0" />
         {t(language, labelKey)}
       </button>
