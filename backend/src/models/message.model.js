@@ -1,5 +1,17 @@
 import mongoose from 'mongoose';
 
+const attachmentSchema = new mongoose.Schema(
+    {
+        url: String,
+        key: String,
+        name: String,
+        type: String,
+        size: Number,
+        storage: String,
+    },
+    { _id: false }
+);
+
 const messageSchema = new mongoose.Schema(
     {
         senderId: {
@@ -18,14 +30,7 @@ const messageSchema = new mongoose.Schema(
         image: {
             type: String,
         },
-        attachment: {
-            url: String,
-            key: String,
-            name: String,
-            type: String,
-            size: Number,
-            storage: String,
-        },
+        attachment: attachmentSchema,
         replyTo: {
             messageId: String,
             senderName: String,
