@@ -21,6 +21,12 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const { language } = useLanguageStore();
   const isVi = language === "vi";
   const composerEmojis = ["😀", "😆", "😍", "😂", "😢", "😡", "👍", "❤️", "🎉", "🙏"];
+  const formattedRecordingTime = `${Math.floor(recordingSeconds / 60)}:${String(recordingSeconds % 60).padStart(2, "0")}`;
+
+  const removeAttachment = () => {
+    setAttachmentFile(null);
+    if (attachmentInputRef.current) attachmentInputRef.current.value = "";
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
