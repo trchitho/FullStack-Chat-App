@@ -183,6 +183,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 setShowMainMenu(shouldOpen);
               }}
               aria-label="Mở tùy chọn đoạn chat"
+              aria-haspopup="menu"
+              aria-expanded={showMainMenu}
             >
               <MoreHorizontal className="size-5" />
             </button>
@@ -271,6 +273,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   setOpenUserMenu(shouldOpen ? user._id : null);
                 }}
                 aria-label={`Mở tùy chọn ${user.fullName}`}
+                aria-haspopup="menu"
+                aria-expanded={openUserMenu === user._id}
               >
                 <MoreHorizontal className="size-4" />
               </button>
@@ -324,14 +328,18 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 const MainSidebarMenu = ({ position, onOpenPanel, language }) => (
   <div
     data-pingme-floating-menu
+    role="menu"
     className="fixed z-[110] w-64 rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
+    onKeyDown={handleMenuArrowKeys}
   >
     {sidebarMenuItems.map(({ id, labelKey, icon: Icon }, index) => (
       <div key={id}>
         {(index === 1 || index === 4 || index === 5) && <div className="my-1 h-px bg-base-300" />}
         <button
           type="button"
+          role="menuitem"
+          autoFocus={index === 0}
           className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left font-semibold hover:bg-base-300"
           onClick={() => {
             closeFloatingMenus();
@@ -496,11 +504,13 @@ const ReportDialog = ({ user, language, onClose }) => {
 const UserActionMenu = ({ position, language, user, onAction }) => (
   <div
     data-pingme-floating-menu
+    role="menu"
     className="fixed z-[110] max-h-[calc(100dvh-16px)] w-56 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-1 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
+    onKeyDown={handleMenuArrowKeys}
   >
-    {userCardActions.map(({ labelKey, icon: Icon }) => (
-      <button key={labelKey} type="button" className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-semibold hover:bg-base-300" onClick={() => onAction(labelKey, user)}>
+    {userCardActions.map(({ labelKey, icon: Icon }, index) => (
+      <button key={labelKey} type="button" role="menuitem" autoFocus={index === 0} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-semibold hover:bg-base-300" onClick={() => onAction(labelKey, user)}>
         <Icon className="size-4 shrink-0" />
         {t(language, labelKey)}
       </button>
