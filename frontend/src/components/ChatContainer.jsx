@@ -5,7 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { MoreHorizontal, Reply, SmilePlus } from 'lucide-react';
+import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2 } from 'lucide-react';
 
 const ChatContainer = () => {
   const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
@@ -15,6 +15,7 @@ const ChatContainer = () => {
   const [reactionPickerFor, setReactionPickerFor] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
   const [replyTo, setReplyTo] = useState(null);
+  const [actionMenuFor, setActionMenuFor] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -123,7 +124,12 @@ const ChatContainer = () => {
                 >
                   <Reply className="size-4" />
                 </button>
-                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Hành động khác">
+                <button
+                  type="button"
+                  className="btn btn-circle btn-ghost btn-xs"
+                  title="Hành động khác"
+                  onClick={() => setActionMenuFor(actionMenuFor === message._id ? null : message._id)}
+                >
                   <MoreHorizontal className="size-4" />
                 </button>
               </div>
@@ -142,6 +148,22 @@ const ChatContainer = () => {
                       {emoji}
                     </button>
                   ))}
+                </div>
+              )}
+              {actionMenuFor === message._id && (
+                <div className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
+                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                    <Trash2 className="size-4" />
+                    {isOwnMessage ? "Thu hồi" : "Gỡ"}
+                  </button>
+                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                    <Forward className="size-4" />
+                    Chuyển tiếp
+                  </button>
+                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                    <Pin className="size-4" />
+                    Ghim
+                  </button>
                 </div>
               )}
             </div>
