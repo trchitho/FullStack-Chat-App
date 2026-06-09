@@ -159,8 +159,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   const shouldOpen = openUserMenu !== user._id;
                   closeFloatingMenus();
                   setUserMenuPosition({
-                    top: Math.min(rect.bottom + 8, window.innerHeight - 430),
-                    left: Math.min(rect.left - 190, window.innerWidth - 336),
+                    top: Math.min(rect.bottom + 6, window.innerHeight - 346),
+                    left: Math.min(rect.left - 170, window.innerWidth - 280),
                   });
                   setOpenUserMenu(shouldOpen ? user._id : null);
                 }}
@@ -190,7 +190,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 const MainSidebarMenu = ({ position, onOpenPanel }) => (
   <div
     data-pingme-floating-menu
-    className="fixed z-[110] w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
+    className="fixed z-[110] w-64 rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
     {sidebarMenuItems.map(({ id, label, icon: Icon }, index) => (
@@ -198,13 +198,13 @@ const MainSidebarMenu = ({ position, onOpenPanel }) => (
         {(index === 1 || index === 4 || index === 5) && <div className="my-1 h-px bg-base-300" />}
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left font-semibold hover:bg-base-300"
+          className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left font-semibold hover:bg-base-300"
           onClick={() => {
             closeFloatingMenus();
             onOpenPanel(id);
           }}
         >
-          <Icon className="size-5" />
+          <Icon className="size-4 shrink-0" />
           {label}
         </button>
       </div>
@@ -215,12 +215,12 @@ const MainSidebarMenu = ({ position, onOpenPanel }) => (
 const UserActionMenu = ({ position }) => (
   <div
     data-pingme-floating-menu
-    className="fixed z-[110] max-h-[calc(100dvh-16px)] w-80 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
+    className="fixed z-[110] max-h-[calc(100dvh-16px)] w-64 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
     {userCardActions.map(({ label, icon: Icon }) => (
-      <button key={label} type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left font-semibold hover:bg-base-300">
-        <Icon className="size-5" />
+      <button key={label} type="button" className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-semibold hover:bg-base-300">
+        <Icon className="size-4 shrink-0" />
         {label}
       </button>
     ))}
