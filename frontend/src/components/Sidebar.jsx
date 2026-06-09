@@ -10,11 +10,14 @@ import { useAuthStore } from "../store/useAuthStore";
 import { chatFilters, sidebarMenuItems, userCardActions } from "../constants/messengerUi";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents";
+import { useLanguageStore } from "../store/useLanguageStore";
+import { t } from "../lib/i18n";
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
   const { onlineUsers } = useAuthStore();
-  const [activeFilter, setActiveFilter] = useState("Tất cả");
+  const { language } = useLanguageStore();
+  const [activeFilter, setActiveFilter] = useState("all");
   const [openUserMenu, setOpenUserMenu] = useState(null);
   const [userMenuPosition, setUserMenuPosition] = useState(null);
   const [showMainMenu, setShowMainMenu] = useState(false);
@@ -52,8 +55,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     return users.filter((user) => {
       const matchesSearch = user.fullName.toLowerCase().includes(search);
       if (!matchesSearch) return false;
-      if (activeFilter === "Chưa đọc") return user.unread;
-      if (activeFilter === "Nhóm") return user.isGroup;
+      if (activeFilter === "unread") return user.unread;
+      if (activeFilter === "groups") return user.isGroup;
       return true;
     });
   }, [activeFilter, query, users]);
@@ -64,7 +67,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     <aside className="relative flex h-full w-[360px] max-w-full shrink-0 flex-col overflow-x-hidden border-r border-base-300 bg-base-200 max-lg:w-[92px]">
       <div className="min-w-0 space-y-4 border-b border-base-300 p-4 max-lg:px-3">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold tracking-tight max-lg:hidden">Đoạn chat</h1>
+          <h1 className="text-3xl font-bold tracking-tight max-lg:hidden">{t(language, "chats")}</h1>
           <div className="flex gap-2">
             <button
               type="button"
@@ -95,7 +98,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           <input
             type="search"
             className="grow"
-            placeholder="Tìm kiếm người dùng"
+            placeholder={t(language, "searchUsers")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -104,21 +107,21 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         <div className="flex items-center gap-2 max-lg:hidden">
           {chatFilters.map((filter) => (
             <button
-              key={filter}
+              key={filter.id}
               type="button"
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                activeFilter === filter ? "bg-primary/20 text-primary" : "hover:bg-base-300"
+                activeFilter === filter.id ? "bg-primary/20 text-primary" : "hover:bg-base-300"
               }`}
-              onClick={() => setActiveFilter(filter)}
+              onClick={() => setActiveFilter(filter.id)}
             >
-              {filter}
+              {t(language, filter.labelKey)}
             </button>
           ))}
         </div>
       </div>
 
       {showMainMenu && mainMenuPosition && createPortal(
-        <MainSidebarMenu position={mainMenuPosition} onOpenPanel={onOpenPanel} />,
+        <MainSidebarMenu position={mainMenuPosition} onOpenPanel={onOpenPanel} language={language} />,
         document.body
       )}
 
@@ -145,7 +148,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 <div className="min-w-0 flex-1 max-lg:hidden">
                   <div className="truncate font-semibold">{user.fullName}</div>
                   <div className="truncate text-sm text-base-content/60">
-                    {user.lastMessageText || (isOnline ? "Đang hoạt động" : "Chưa có tin nhắn")}
+                    {user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
                 </div>
               </button>
@@ -170,7 +173,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               </button>
 
               {openUserMenu === user._id && userMenuPosition && createPortal(
-                <UserActionMenu position={userMenuPosition} />,
+                <UserActionMenu position={userMenuPosition} language={language} />,
                 document.body
               )}
             </div>
@@ -187,13 +190,13 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   );
 };
 
-const MainSidebarMenu = ({ position, onOpenPanel }) => (
+const MainSidebarMenu = ({ position, onOpenPanel, language }) => (
   <div
     data-pingme-floating-menu
     className="fixed z-[110] w-64 rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
-    {sidebarMenuItems.map(({ id, label, icon: Icon }, index) => (
+    {sidebarMenuItems.map(({ id, labelKey, icon: Icon }, index) => (
       <div key={id}>
         {(index === 1 || index === 4 || index === 5) && <div className="my-1 h-px bg-base-300" />}
         <button
@@ -201,27 +204,31 @@ const MainSidebarMenu = ({ position, onOpenPanel }) => (
           className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left font-semibold hover:bg-base-300"
           onClick={() => {
             closeFloatingMenus();
+            if (id === "help") {
+              window.open("/help/messages-app/", "_blank", "noopener,noreferrer");
+              return;
+            }
             onOpenPanel(id);
           }}
         >
           <Icon className="size-4 shrink-0" />
-          {label}
+          {t(language, labelKey)}
         </button>
       </div>
     ))}
   </div>
 );
 
-const UserActionMenu = ({ position }) => (
+const UserActionMenu = ({ position, language }) => (
   <div
     data-pingme-floating-menu
     className="fixed z-[110] max-h-[calc(100dvh-16px)] w-64 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-1.5 text-sm shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
-    {userCardActions.map(({ label, icon: Icon }) => (
-      <button key={label} type="button" className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-semibold hover:bg-base-300">
+    {userCardActions.map(({ labelKey, icon: Icon }) => (
+      <button key={labelKey} type="button" className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-semibold hover:bg-base-300">
         <Icon className="size-4 shrink-0" />
-        {label}
+        {t(language, labelKey)}
       </button>
     ))}
   </div>

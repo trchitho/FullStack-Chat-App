@@ -23,6 +23,7 @@ export const copy = {
     welcome: "Chào mừng đến với PingMe!",
     selectConversation: "Chọn một cuộc trò chuyện ở thanh bên để bắt đầu nhắn tin",
     noMessages: "Chưa có tin nhắn",
+    activeNow: "Đang hoạt động",
   },
   en: {
     chats: "Chats",
@@ -48,6 +49,7 @@ export const copy = {
     welcome: "Welcome to PingMe!",
     selectConversation: "Select a conversation from the sidebar to start chatting",
     noMessages: "No messages yet",
+    activeNow: "Active now",
   },
 };
 
