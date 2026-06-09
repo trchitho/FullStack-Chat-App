@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   MoreHorizontal,
   Pencil,
@@ -14,6 +15,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { onlineUsers } = useAuthStore();
   const [activeFilter, setActiveFilter] = useState("Tất cả");
   const [openUserMenu, setOpenUserMenu] = useState(null);
+  const [userMenuPosition, setUserMenuPosition] = useState(null);
   const [showMainMenu, setShowMainMenu] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -132,21 +134,22 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               <button
                 type="button"
                 className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100 max-lg:hidden"
-                onClick={() => setOpenUserMenu(openUserMenu === user._id ? null : user._id)}
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  setUserMenuPosition({
+                    top: Math.min(rect.bottom + 8, window.innerHeight - 372),
+                    left: Math.min(rect.left - 190, window.innerWidth - 336),
+                  });
+                  setOpenUserMenu(openUserMenu === user._id ? null : user._id);
+                }}
                 aria-label={`Mở tùy chọn ${user.fullName}`}
               >
                 <MoreHorizontal className="size-4" />
               </button>
 
-              {openUserMenu === user._id && (
-                <div className="absolute left-32 top-12 z-20 w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
-                  {userCardActions.map(({ label, icon: Icon }) => (
-                    <button key={label} type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left font-semibold hover:bg-base-300">
-                      <Icon className="size-5" />
-                      {label}
-                    </button>
-                  ))}
-                </div>
+              {openUserMenu === user._id && userMenuPosition && createPortal(
+                <UserActionMenu position={userMenuPosition} />,
+                document.body
               )}
             </div>
           );
@@ -161,5 +164,19 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     </aside>
   );
 };
+
+const UserActionMenu = ({ position }) => (
+  <div
+    className="fixed z-[100] w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
+    style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
+  >
+    {userCardActions.map(({ label, icon: Icon }) => (
+      <button key={label} type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left font-semibold hover:bg-base-300">
+        <Icon className="size-5" />
+        {label}
+      </button>
+    ))}
+  </div>
+);
 
 export default Sidebar;
