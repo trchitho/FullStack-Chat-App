@@ -37,6 +37,15 @@ const addStoredId = (actions, key, id) => ({
   [key]: [...new Set([...(actions[key] || []), id])],
 });
 
+const setMutedUntil = (actions, userId, minutes) => ({
+  ...actions,
+  muted: [...new Set([...(actions.muted || []), userId])],
+  mutedUntil: {
+    ...(actions.mutedUntil || {}),
+    [userId]: minutes ? Date.now() + minutes * 60 * 1000 : null,
+  },
+});
+
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
   const { onlineUsers } = useAuthStore();
