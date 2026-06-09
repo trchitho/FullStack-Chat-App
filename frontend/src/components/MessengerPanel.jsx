@@ -248,16 +248,16 @@ function useStateFromStorage(key, initialValue) {
   return [value, setValue];
 }
 
-const ListPanel = ({ title, people, description, onClose }) => (
+const ListPanel = ({ title, people, description, onClose, language }) => (
   <PanelShell title={title} onClose={onClose}>
     {description && <p className="mb-5 text-sm text-base-content/70">{description}</p>}
     <label className="input input-sm mb-4 flex h-10 items-center gap-2 rounded-full border-none bg-base-300 px-4">
       <Search className="size-4" />
-      <input className="grow" placeholder="Tìm kiếm" />
+      <input className="grow" placeholder={language === "vi" ? "Tìm kiếm" : "Search"} />
     </label>
-    {title === "Tin nhắn đang chờ" && (
+    {title === t(language, "requests") && (
       <div className="mb-4 flex gap-2">
-        {["Bạn có thể biết", "Spam"].map((tab, index) => (
+        {[(language === "vi" ? "Bạn có thể biết" : "You may know"), "Spam"].map((tab, index) => (
           <button key={tab} type="button" className={`rounded-full px-4 py-2 text-sm font-bold ${index === 0 ? "bg-primary/15 text-primary" : "hover:bg-base-300"}`}>{tab}</button>
         ))}
       </div>
@@ -268,12 +268,12 @@ const ListPanel = ({ title, people, description, onClose }) => (
           <img src="/avatar.png" alt="" className="size-12 rounded-full" />
           <div>
             <div className="font-bold">{person}</div>
-            <div className="text-sm text-base-content/60">Tin nhắn không hiển thị · 3 năm</div>
+            <div className="text-sm text-base-content/60">{language === "vi" ? "Tin nhắn không hiển thị" : "Hidden message"} · 3 năm</div>
           </div>
         </button>
       )) : (
         <div className="rounded-2xl bg-base-100 p-6 text-center text-sm text-base-content/60">
-          Chưa có dữ liệu trong mục này.
+          {language === "vi" ? "Chưa có dữ liệu trong mục này." : "No data in this section yet."}
         </div>
       )}
     </div>
@@ -368,15 +368,21 @@ const HelpPanel = ({ onClose }) => (
   </PanelShell>
 );
 
-const PrivacyPanel = ({ onClose }) => (
-  <PanelShell title="Quyền riêng tư và an toàn" onClose={onClose}>
-    {[
+const PrivacyPanel = ({ onClose, language }) => (
+  <PanelShell title={t(language, "privacy")} onClose={onClose}>
+    {(language === "vi" ? [
       ["Trạng thái hoạt động", "Kiểm soát ai có thể thấy khi bạn đang hoạt động."],
-      ["Tin nhắn đang chờ", "Quản lý cách người lạ gửi tin nhắn cho bạn."],
-      ["Tài khoản đã hạn chế", "Xem và quản lý danh sách tài khoản bị hạn chế."],
-      ["Chặn", "Chặn tài khoản, tin nhắn hoặc biệt danh không mong muốn."],
+      [t(language, "requests"), "Quản lý cách người lạ gửi tin nhắn cho bạn."],
+      [t(language, "restricted"), "Xem và quản lý danh sách tài khoản bị hạn chế."],
+      [t(language, "block"), "Chặn tài khoản, tin nhắn hoặc biệt danh không mong muốn."],
       ["Báo cáo sự cố", "Gửi báo cáo khi bạn gặp nội dung hoặc hành vi không phù hợp."],
-    ].map(([title, desc]) => (
+    ] : [
+      ["Active status", "Control who can see when you are active."],
+      [t(language, "requests"), "Manage how unknown people can message you."],
+      [t(language, "restricted"), "View and manage restricted accounts."],
+      [t(language, "block"), "Block unwanted accounts, messages, or nicknames."],
+      ["Report a problem", "Report inappropriate content or behavior."],
+    ]).map(([title, desc]) => (
       <button key={title} type="button" className="flex w-full items-center justify-between border-b border-base-300 p-3 text-left hover:bg-base-300">
         <span>
           <span className="block font-bold">{title}</span>
@@ -389,12 +395,13 @@ const PrivacyPanel = ({ onClose }) => (
 );
 
 const MessengerPanel = ({ panel, onClose, onOpenProfile }) => {
+  const { language } = useLanguageStore();
   if (!panel) return null;
   if (panel === "settings") return <SettingsPanel onClose={onClose} onOpenProfile={onOpenProfile} />;
-  if (panel === "requests") return <ListPanel title="Tin nhắn đang chờ" people={samplePeople} description="Bạn có thể mở tin nhắn đang chờ để biết thêm thông tin về người gửi." onClose={onClose} />;
-  if (panel === "archived") return <ListPanel title="Đoạn chat đã lưu trữ" people={archivedChats} onClose={onClose} />;
-  if (panel === "restricted") return <ListPanel title="Tài khoản đã hạn chế" people={restrictedAccounts} description="Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." onClose={onClose} />;
-  if (panel === "privacy") return <PrivacyPanel onClose={onClose} />;
+  if (panel === "requests") return <ListPanel title={t(language, "requests")} people={samplePeople} description={language === "vi" ? "Bạn có thể mở tin nhắn đang chờ để biết thêm thông tin về người gửi." : "Open message requests to learn more about senders."} onClose={onClose} language={language} />;
+  if (panel === "archived") return <ListPanel title={t(language, "archived")} people={archivedChats} onClose={onClose} language={language} />;
+  if (panel === "restricted") return <ListPanel title={t(language, "restricted")} people={restrictedAccounts} description={language === "vi" ? "Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." : "Limit interactions with someone without blocking them."} onClose={onClose} language={language} />;
+  if (panel === "privacy") return <PrivacyPanel onClose={onClose} language={language} />;
   if (panel === "help") return <HelpPanel onClose={onClose} />;
   return null;
 };
