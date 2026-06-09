@@ -14,6 +14,7 @@ const ChatContainer = () => {
   const messagesContainerRef = useRef(null);
   const [reactionPickerFor, setReactionPickerFor] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
+  const [replyTo, setReplyTo] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -104,7 +105,16 @@ const ChatContainer = () => {
                 >
                   <SmilePlus className="size-4" />
                 </button>
-                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Trả lời tin nhắn này">
+                <button
+                  type="button"
+                  className="btn btn-circle btn-ghost btn-xs"
+                  title="Trả lời tin nhắn này"
+                  onClick={() => setReplyTo({
+                    id: message._id,
+                    senderName: isOwnMessage ? authUser.fullName : selectedUser.fullName,
+                    preview: message.text || "[Hình ảnh]",
+                  })}
+                >
                   <Reply className="size-4" />
                 </button>
                 <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Hành động khác">
@@ -134,7 +144,7 @@ const ChatContainer = () => {
         })}
       </div>
 
-      <MessageInput />
+      <MessageInput replyTo={replyTo} onCancelReply={() => setReplyTo(null)} />
     </div>
   )
 }

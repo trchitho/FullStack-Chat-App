@@ -3,7 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { Image, Laugh, Send, ThumbsUp, X } from "lucide-react";
 import toast from "react-hot-toast";
 
-const MessageInput = () => {
+const MessageInput = ({ replyTo, onCancelReply }) => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -95,6 +95,18 @@ const MessageInput = () => {
               <X className="size-3" />
             </button>
           </div>
+        </div>
+      )}
+
+      {replyTo && (
+        <div className="mb-3 flex items-center justify-between rounded-xl border-l-4 border-primary bg-base-200 px-4 py-2">
+          <div className="min-w-0">
+            <div className="text-sm font-bold">{replyTo.senderName}</div>
+            <div className="truncate text-sm text-base-content/60">{replyTo.preview}</div>
+          </div>
+          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={onCancelReply} aria-label="Hủy trả lời">
+            <X className="size-4" />
+          </button>
         </div>
       )}
 
