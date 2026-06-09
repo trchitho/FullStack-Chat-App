@@ -5,6 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
+import { MoreHorizontal, Reply, SmilePlus } from 'lucide-react';
 
 const ChatContainer = () => {
   const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
@@ -48,10 +49,13 @@ const ChatContainer = () => {
             <h2 className="text-xl font-bold text-base-content">{selectedUser.fullName}</h2>
             <p className="mt-2 max-w-md text-sm">Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây.</p>
           </div>
-        ) : messages.map((message) => (
+        ) : messages.map((message) => {
+          const isOwnMessage = message.senderId === authUser._id;
+
+          return (
           <div
             key={message._id}
-            className={`chat min-w-0 ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
+            className={`chat group min-w-0 ${isOwnMessage ? "chat-end" : "chat-start"}`}
           >
             <div className=" chat-image avatar">
               <div className="size-10 rounded-full border">
@@ -70,9 +74,10 @@ const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className={`chat-bubble flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
-              message.senderId === authUser._id ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
-            }`}>
+            <div className={`flex items-center gap-2 ${isOwnMessage ? "flex-row-reverse" : ""}`}>
+              <div className={`chat-bubble flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
+                isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
+              }`}>
               {message.image && (
                 <img
                   src={message.image}
@@ -81,9 +86,22 @@ const ChatContainer = () => {
                 />
               )}
               {message.text && <p>{message.text}</p>}
+              </div>
+              <div className="flex opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc">
+                  <SmilePlus className="size-4" />
+                </button>
+                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Trả lời tin nhắn này">
+                  <Reply className="size-4" />
+                </button>
+                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Hành động khác">
+                  <MoreHorizontal className="size-4" />
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <MessageInput />
