@@ -1,5 +1,6 @@
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
+import { languages, useLanguageStore } from "../store/useLanguageStore";
 import { Send } from "lucide-react";
 
 const PREVIEW_MESSAGES = [
@@ -9,14 +10,38 @@ const PREVIEW_MESSAGES = [
 
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
+  const { language, setLanguage } = useLanguageStore();
+  const isVi = language === "vi";
+  const copy = {
+    theme: isVi ? "Giao diện" : "Theme",
+    chooseTheme: isVi ? "Chọn giao diện cho khung chat" : "Choose a theme for your chat interface",
+    language: isVi ? "Ngôn ngữ" : "Language",
+    preview: isVi ? "Xem trước" : "Preview",
+    name: isVi ? "Nguyễn Văn A" : "John Doe",
+    online: isVi ? "Đang hoạt động" : "Online",
+    first: isVi ? "Chào bạn, hôm nay thế nào?" : "Hey! How's it going?",
+    second: isVi ? "Mình ổn, đang hoàn thiện vài tính năng mới." : "I'm doing great! Just working on some new features.",
+    input: isVi ? "Đây là bản xem trước" : "This is a preview",
+  };
 
   return (
     <div className="container mx-auto px-4 pt-20 pb-10 max-w-5xl">
       <div className="space-y-6">
         {/* Theme Section */}
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">Theme</h2>
-          <p className="text-sm text-base-content/70">Choose a theme for your chat interface</p>
+          <h2 className="text-lg font-semibold">{copy.theme}</h2>
+          <p className="text-sm text-base-content/70">{copy.chooseTheme}</p>
+        </div>
+
+        <div className="rounded-xl bg-base-200 p-4">
+          <h2 className="mb-3 text-lg font-semibold">{copy.language}</h2>
+          <div className="flex gap-2">
+            {Object.entries(languages).map(([code, label]) => (
+              <button key={code} type="button" className={`btn btn-sm ${language === code ? "btn-primary" : "btn-ghost"}`} onClick={() => setLanguage(code)}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
   
         {/* Theme Options */}
@@ -48,7 +73,7 @@ const SettingsPage = () => {
         </div>
   
         {/* Preview Section */}
-        <h3 className="text-lg font-semibold mb-3">Preview</h3>
+        <h3 className="text-lg font-semibold mb-3">{copy.preview}</h3>
         <div className="rounded-xl border border-base-300 overflow-hidden bg-base-100 shadow-lg">
           <div className="p-4 bg-base-200">
             <div className="max-w-lg mx-auto">
@@ -61,8 +86,8 @@ const SettingsPage = () => {
                       J
                     </div>
                     <div>
-                      <h3 className="font-medium text-sm">John Doe</h3>
-                      <p className="text-xs text-base-content/70">Online</p>
+                      <h3 className="font-medium text-sm">{copy.name}</h3>
+                      <p className="text-xs text-base-content/70">{copy.online}</p>
                     </div>
                   </div>
                 </div>
@@ -83,7 +108,7 @@ const SettingsPage = () => {
                             : "bg-base-200"
                         }`}
                       >
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm">{message.id === 1 ? copy.first : copy.second}</p>
                         <p
                           className={`text-[10px] mt-1.5 ${
                             message.isSent
@@ -105,7 +130,7 @@ const SettingsPage = () => {
                       type="text"
                       className="input input-bordered flex-1 text-sm h-10"
                       placeholder="Type a message..."
-                      value="This is a preview"
+                      value={copy.input}
                       readOnly
                     />
                     <button className="btn btn-primary h-10 min-h-0">
