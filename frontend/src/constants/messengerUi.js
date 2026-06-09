@@ -6,6 +6,7 @@ import {
   MailOpen,
   MessageCircleMore,
   Phone,
+  ShieldCheck,
   Shield,
   UserCircle,
   Video,
@@ -19,6 +20,7 @@ export const sidebarMenuItems = [
   { id: "requests", label: "Tin nhắn đang chờ", icon: MessageCircleMore },
   { id: "archived", label: "Đoạn chat đã lưu trữ", icon: Archive },
   { id: "restricted", label: "Tài khoản đã hạn chế", icon: VolumeX },
+  { id: "privacy", label: "Quyền riêng tư và an toàn", icon: ShieldCheck },
   { id: "help", label: "Trợ giúp", icon: CircleHelp },
 ];
 

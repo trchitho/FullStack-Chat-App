@@ -9,6 +9,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { chatFilters, sidebarMenuItems, userCardActions } from "../constants/messengerUi";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
+import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents";
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
@@ -17,11 +18,28 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const [openUserMenu, setOpenUserMenu] = useState(null);
   const [userMenuPosition, setUserMenuPosition] = useState(null);
   const [showMainMenu, setShowMainMenu] = useState(false);
+  const [mainMenuPosition, setMainMenuPosition] = useState(null);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     getUsers();
   }, [getUsers]);
+
+  useEffect(() => {
+    const closeMenus = () => {
+      setShowMainMenu(false);
+      setOpenUserMenu(null);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+    window.addEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   const filteredUsers = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -46,7 +64,16 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
             <button
               type="button"
               className="btn btn-circle btn-sm border-none bg-base-300"
-              onClick={() => setShowMainMenu((value) => !value)}
+              onClick={(event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const shouldOpen = !showMainMenu;
+                closeFloatingMenus();
+                setMainMenuPosition({
+                  top: rect.bottom + 10,
+                  left: Math.min(rect.left, window.innerWidth - 360),
+                });
+                setShowMainMenu(shouldOpen);
+              }}
               aria-label="Mở tùy chọn đoạn chat"
             >
               <MoreHorizontal className="size-5" />
@@ -84,23 +111,9 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         </div>
       </div>
 
-      {showMainMenu && (
-        <div className="absolute left-72 top-16 z-30 w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl max-lg:left-4">
-          {sidebarMenuItems.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left font-semibold hover:bg-base-300"
-              onClick={() => {
-                setShowMainMenu(false);
-                onOpenPanel(id);
-              }}
-            >
-              <Icon className="size-5" />
-              {label}
-            </button>
-          ))}
-        </div>
+      {showMainMenu && mainMenuPosition && createPortal(
+        <MainSidebarMenu position={mainMenuPosition} onOpenPanel={onOpenPanel} />,
+        document.body
       )}
 
       <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-2">
@@ -136,11 +149,13 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100 max-lg:hidden"
                 onClick={(event) => {
                   const rect = event.currentTarget.getBoundingClientRect();
+                  const shouldOpen = openUserMenu !== user._id;
+                  closeFloatingMenus();
                   setUserMenuPosition({
-                    top: Math.min(rect.bottom + 8, window.innerHeight - 372),
+                    top: Math.min(rect.bottom + 8, window.innerHeight - 430),
                     left: Math.min(rect.left - 190, window.innerWidth - 336),
                   });
-                  setOpenUserMenu(openUserMenu === user._id ? null : user._id);
+                  setOpenUserMenu(shouldOpen ? user._id : null);
                 }}
                 aria-label={`Mở tùy chọn ${user.fullName}`}
               >
@@ -165,9 +180,33 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   );
 };
 
+const MainSidebarMenu = ({ position, onOpenPanel }) => (
+  <div
+    className="fixed z-[110] w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
+    style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
+  >
+    {sidebarMenuItems.map(({ id, label, icon: Icon }, index) => (
+      <div key={id}>
+        {(index === 1 || index === 4 || index === 5) && <div className="my-1 h-px bg-base-300" />}
+        <button
+          type="button"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left font-semibold hover:bg-base-300"
+          onClick={() => {
+            closeFloatingMenus();
+            onOpenPanel(id);
+          }}
+        >
+          <Icon className="size-5" />
+          {label}
+        </button>
+      </div>
+    ))}
+  </div>
+);
+
 const UserActionMenu = ({ position }) => (
   <div
-    className="fixed z-[100] w-80 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
+    className="fixed z-[110] max-h-[calc(100dvh-16px)] w-80 overflow-y-auto rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl"
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
   >
     {userCardActions.map(({ label, icon: Icon }) => (
