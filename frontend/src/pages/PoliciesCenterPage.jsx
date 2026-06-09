@@ -79,7 +79,7 @@ const PoliciesCenterPage = () => {
           </div>
           <label className="flex h-14 items-center gap-3 self-end rounded-2xl border border-slate-200 bg-slate-50 px-4">
             <Search className="size-5 text-slate-500" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Tìm kiếm chính sách..." />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent" placeholder="Tìm kiếm chính sách..." />
           </label>
         </div>
       </section>

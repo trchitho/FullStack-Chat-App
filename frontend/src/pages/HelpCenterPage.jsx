@@ -109,7 +109,7 @@ const HelpCenterPage = () => {
           <h2 className="mx-auto max-w-full text-[clamp(2rem,9vw,3.5rem)] font-bold leading-[1.05] tracking-tight">Chúng tôi có thể giúp gì cho bạn?</h2>
           <label className="mx-auto mt-6 flex h-14 max-w-3xl items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 sm:h-16 sm:gap-4 sm:px-5">
             <Search className="size-5 shrink-0 text-slate-500 sm:size-6" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-lg" placeholder="Tìm kiếm bài viết trợ giúp..." />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-base sm:text-lg" placeholder="Tìm kiếm bài viết trợ giúp..." />
           </label>
         </div>
       </section>
