@@ -371,6 +371,34 @@ const CallDialog = ({ callState, language, onClose }) => {
   );
 };
 
+const ReportDialog = ({ user, language, onClose }) => {
+  const [reason, setReason] = useState("spam");
+  const reasons = language === "vi"
+    ? { spam: "Spam", abuse: "Quấy rối", scam: "Lừa đảo" }
+    : { spam: "Spam", abuse: "Harassment", scam: "Scam" };
+  const submitReport = () => {
+    const reports = JSON.parse(localStorage.getItem(reportStorageKey) || "[]");
+    localStorage.setItem(reportStorageKey, JSON.stringify([...reports, { userId: user._id, reason, at: new Date().toISOString() }]));
+    toast.success(language === "vi" ? "Đã gửi báo cáo" : "Report submitted");
+    onClose();
+  };
+
+  return (
+    <SimpleModal title={t(language, "report")} onClose={onClose}>
+      <div className="space-y-3">
+        <p className="text-sm text-base-content/70">{language === "vi" ? `Báo cáo đoạn chat với ${user.fullName}` : `Report chat with ${user.fullName}`}</p>
+        {Object.entries(reasons).map(([id, label]) => (
+          <label key={id} className="flex cursor-pointer items-center gap-3 rounded-xl bg-base-200 p-3">
+            <input type="radio" className="radio radio-primary radio-sm" checked={reason === id} onChange={() => setReason(id)} />
+            <span className="font-semibold">{label}</span>
+          </label>
+        ))}
+        <button type="button" className="btn btn-primary w-full" onClick={submitReport}>{language === "vi" ? "Gửi báo cáo" : "Submit report"}</button>
+      </div>
+    </SimpleModal>
+  );
+};
+
 const UserActionMenu = ({ position, language, user, onAction }) => (
   <div
     data-pingme-floating-menu
