@@ -68,6 +68,17 @@ export const useChatStore = create((set, get) => ({
     return res.data.attachment;
   },
 
+  sendCallEvent: async (userId, call) => {
+    const res = await axiosInstance.post(`/messages/send/${userId}`, { call });
+    const { selectedUser } = get();
+    set({
+      messages: selectedUser?._id === userId ? [...get().messages, res.data] : get().messages,
+      users: sortUsersByLatestMessage(get().users.map((user) =>
+        user._id === userId ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data) } : user
+      )),
+    });
+  },
+
   subscribeToMessages: () => {
     const { selectedUser } = get();
     if (!selectedUser) return;
