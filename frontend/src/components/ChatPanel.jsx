@@ -248,6 +248,17 @@ function useStateFromStorage(key, initialValue) {
   return [value, setValue];
 }
 
+function useSidebarActions() {
+  const [actions, setActions] = useStateFromStorage(sidebarActionStorageKey, {});
+  const removeUserAction = (key, userId) => {
+    setActions((current) => ({
+      ...current,
+      [key]: (current[key] || []).filter((id) => id !== userId),
+    }));
+  };
+  return { actions, removeUserAction };
+}
+
 const ListPanel = ({ title, people, description, onClose, language }) => (
   <PanelShell title={title} onClose={onClose}>
     {description && <p className="mb-5 text-sm text-base-content/70">{description}</p>}
