@@ -17,6 +17,8 @@ const ChatContainer = () => {
   const [replyTo, setReplyTo] = useState(null);
   const [actionMenuFor, setActionMenuFor] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [hiddenMessageIds, setHiddenMessageIds] = useState([]);
+  const [revokedMessageIds, setRevokedMessageIds] = useState([]);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -55,8 +57,9 @@ const ChatContainer = () => {
             <h2 className="text-xl font-bold text-base-content">{selectedUser.fullName}</h2>
             <p className="mt-2 max-w-md text-sm">Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây.</p>
           </div>
-        ) : messages.map((message) => {
+        ) : messages.filter((message) => !hiddenMessageIds.includes(message._id)).map((message) => {
           const isOwnMessage = message.senderId === authUser._id;
+          const isRevoked = revokedMessageIds.includes(message._id);
 
           return (
           <div
@@ -84,20 +87,22 @@ const ChatContainer = () => {
               <div className={`chat-bubble relative flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
                 isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
               }`}>
-              {message.replyTo?.preview && (
+              {isRevoked ? (
+                <p className="italic opacity-70">{isOwnMessage ? "Bạn đã thu hồi một tin nhắn" : "Tin nhắn đã được thu hồi"}</p>
+              ) : message.replyTo?.preview && (
                 <div className="mb-2 rounded-2xl bg-black/10 px-3 py-2 text-sm">
                   <div className="font-bold">{message.replyTo.senderName}</div>
                   <div className="line-clamp-1 opacity-80">{message.replyTo.preview}</div>
                 </div>
               )}
-              {message.image && (
+              {!isRevoked && message.image && (
                 <img
                   src={message.image}
                   alt="Attachment"
                   className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] rounded-2xl object-contain"
                 />
               )}
-              {message.text && <p>{message.text}</p>}
+              {!isRevoked && message.text && <p>{message.text}</p>}
               {messageReactions[message._id] && (
                 <span className="absolute -bottom-4 right-3 rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
                   {messageReactions[message._id]}
@@ -194,7 +199,17 @@ const ChatContainer = () => {
             </p>
             <div className="mt-6 flex justify-end gap-2">
               <button type="button" className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Hủy</button>
-              <button type="button" className="btn btn-primary">{confirmAction.isOwnMessage ? "Thu hồi" : "Gỡ"}</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  if (confirmAction.isOwnMessage) setRevokedMessageIds((ids) => [...ids, confirmAction.messageId]);
+                  else setHiddenMessageIds((ids) => [...ids, confirmAction.messageId]);
+                  setConfirmAction(null);
+                }}
+              >
+                {confirmAction.isOwnMessage ? "Thu hồi" : "Gỡ"}
+              </button>
             </div>
           </div>
         </div>
