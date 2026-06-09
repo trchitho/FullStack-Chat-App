@@ -46,6 +46,10 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const [mainMenuPosition, setMainMenuPosition] = useState(null);
   const [query, setQuery] = useState("");
   const [userActions, setUserActions] = useState(() => readStoredActions());
+  const [profileUser, setProfileUser] = useState(null);
+  const [callState, setCallState] = useState(null);
+  const [reportUser, setReportUser] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
     getUsers();
@@ -54,6 +58,10 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   useEffect(() => {
     localStorage.setItem(sidebarActionStorageKey, JSON.stringify(userActions));
   }, [userActions]);
+
+  const openConfirmAction = (type, user) => {
+    setConfirmAction({ type, user });
+  };
 
   useEffect(() => {
     const closeMenus = () => {
