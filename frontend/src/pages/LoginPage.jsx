@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
+import { useLanguageStore } from "../store/useLanguageStore";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,6 +12,7 @@ const LoginPage = () => {
     password: "",
   });
   const { login, isLoggingIn } = useAuthStore();
+  const isVi = useLanguageStore((state) => state.language === "vi");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,8 +33,8 @@ const LoginPage = () => {
               >
                 <MessageSquare className="w-6 h-6 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-base-content/60">Sign in to your account</p>
+              <h1 className="text-2xl font-bold mt-2">{isVi ? "Chào mừng trở lại" : "Welcome Back"}</h1>
+              <p className="text-base-content/60">{isVi ? "Đăng nhập vào tài khoản của bạn" : "Sign in to your account"}</p>
             </div>
           </div>
 
@@ -58,7 +60,7 @@ const LoginPage = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Password</span>
+                <span className="label-text font-medium">{isVi ? "Mật khẩu" : "Password"}</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -89,19 +91,19 @@ const LoginPage = () => {
               {isLoggingIn ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
+                  {isVi ? "Đang đăng nhập..." : "Loading..."}
                 </>
               ) : (
-                "Sign in"
+                isVi ? "Đăng nhập" : "Sign in"
               )}
             </button>
           </form>
 
           <div className="text-center">
             <p className="text-base-content/60">
-              Don&apos;t have an account?{" "}
+              {isVi ? "Chưa có tài khoản?" : "Don't have an account?"}{" "}
               <Link to="/signup" className="link link-primary">
-                Create account
+                {isVi ? "Tạo tài khoản" : "Create account"}
               </Link>
             </p>
           </div>
@@ -110,8 +112,8 @@ const LoginPage = () => {
 
       {/* Right Side - Image/Pattern */}
       <AuthImagePattern
-        title={"Welcome back!"}
-        subtitle={"Sign in to continue your conversations and catch up with your messages."}
+        title={isVi ? "Chào mừng trở lại!" : "Welcome back!"}
+        subtitle={isVi ? "Đăng nhập để tiếp tục trò chuyện và xem tin nhắn mới." : "Sign in to continue your conversations and catch up with your messages."}
       />
     </div>
   );
