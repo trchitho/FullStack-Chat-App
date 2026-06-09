@@ -114,16 +114,16 @@ const HelpCenterPage = () => {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-8 lg:grid-cols-[340px_1fr]">
-        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-6 sm:px-5 md:gap-8 md:py-8 lg:grid-cols-[320px_1fr] xl:grid-cols-[340px_1fr]">
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-24 lg:self-start">
           {categoryContent.map(([category, items]) => {
             const Icon = categoryIcons[category] || MessageCircle;
             return (
               <details key={category} open className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
                   <button type="button" onClick={() => setActiveArticleId(categoryDocs[category]?.id || articles[0].id)} className="flex min-w-0 items-center gap-3 text-left">
-                    <span className="flex size-10 items-center justify-center rounded-full bg-slate-100"><Icon className="size-5" /></span>
-                    {category}
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100"><Icon className="size-5" /></span>
+                    <span className="min-w-0 text-base leading-snug sm:text-lg">{category}</span>
                   </button>
                   <ChevronDown className="size-5 text-slate-500" />
                 </summary>
