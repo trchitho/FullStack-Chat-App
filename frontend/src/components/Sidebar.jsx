@@ -63,6 +63,26 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     setConfirmAction({ type, user });
   };
 
+  const handleUserAction = (labelKey, user) => {
+    closeFloatingMenus();
+    setOpenUserMenu(null);
+    if (labelKey === "markUnread") {
+      setUserActions((actions) => toggleStoredId(actions, "unread", user._id));
+      toast.success(language === "vi" ? "Đã cập nhật trạng thái chưa đọc" : "Unread state updated");
+    }
+    if (labelKey === "mute") {
+      setUserActions((actions) => toggleStoredId(actions, "muted", user._id));
+      toast.success(language === "vi" ? "Đã cập nhật thông báo đoạn chat" : "Notification setting updated");
+    }
+    if (labelKey === "viewProfile") setProfileUser(user);
+    if (labelKey === "voiceCall") setCallState({ user, type: "voice" });
+    if (labelKey === "videoChat") setCallState({ user, type: "video" });
+    if (labelKey === "block") openConfirmAction("block", user);
+    if (labelKey === "archiveChat") openConfirmAction("archive", user);
+    if (labelKey === "deleteChat") openConfirmAction("delete", user);
+    if (labelKey === "report") setReportUser(user);
+  };
+
   useEffect(() => {
     const closeMenus = () => {
       setShowMainMenu(false);
