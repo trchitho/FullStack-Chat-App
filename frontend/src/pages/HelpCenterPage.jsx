@@ -25,6 +25,27 @@ const categoryIcons = {
   "Quyền riêng tư và an toàn": Shield,
 };
 
+const categoryDocs = {
+  "Tính năng trên PingMe": {
+    id: "category_features",
+    title: "Tính năng trên PingMe",
+    category: "Tổng quan",
+    path: "/content/help/category_features.md",
+  },
+  "Quản lý tài khoản": {
+    id: "category_account",
+    title: "Quản lý tài khoản PingMe",
+    category: "Tổng quan",
+    path: "/content/help/category_account.md",
+  },
+  "Quyền riêng tư và an toàn": {
+    id: "category_privacy",
+    title: "Quyền riêng tư và an toàn trên PingMe",
+    category: "Tổng quan",
+    path: "/content/help/category_privacy.md",
+  },
+};
+
 const fallbackCategories = [
   ["Tính năng trên PingMe", articles.filter((article) => article.category === "Tính năng trên PingMe").map((article) => article.title)],
   ["Quản lý tài khoản", articles.filter((article) => article.category === "Quản lý tài khoản").map((article) => article.title)],
@@ -52,14 +73,16 @@ const HelpCenterPage = () => {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    Promise.all(articles.map((article) => fetch(article.path).then((res) => res.text())))
-      .then((texts) => setArticleContent(Object.fromEntries(articles.map((article, index) => [article.id, texts[index]]))));
+    const documents = [...articles, ...Object.values(categoryDocs)];
+    Promise.all(documents.map((article) => fetch(article.path).then((res) => res.text())))
+      .then((texts) => setArticleContent(Object.fromEntries(documents.map((article, index) => [article.id, texts[index]]))));
     fetch("/content/help/muc_con_trung_tam_tro_giup_pingme.md")
       .then((res) => res.text())
       .then((text) => setCategoryContent(parseCategoryMarkdown(text)));
   }, []);
 
-  const activeArticle = articles.find((article) => article.id === activeArticleId) || articles[0];
+  const allDocuments = [...articles, ...Object.values(categoryDocs)];
+  const activeArticle = allDocuments.find((article) => article.id === activeArticleId) || articles[0];
   const activeContent = articleContent[activeArticle.id] || "";
   const filteredArticles = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -98,10 +121,10 @@ const HelpCenterPage = () => {
             return (
               <details key={category} open className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
-                  <span className="flex items-center gap-3">
+                  <button type="button" onClick={() => setActiveArticleId(categoryDocs[category]?.id || articles[0].id)} className="flex min-w-0 items-center gap-3 text-left">
                     <span className="flex size-10 items-center justify-center rounded-full bg-slate-100"><Icon className="size-5" /></span>
                     {category}
-                  </span>
+                  </button>
                   <ChevronDown className="size-5 text-slate-500" />
                 </summary>
                 <div className="mt-4 space-y-1">
