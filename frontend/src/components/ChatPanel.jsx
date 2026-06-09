@@ -224,10 +224,15 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
 
       {showSnooze && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
-          <div className="w-[min(24rem,calc(100vw-24px))] rounded-xl bg-base-100 p-5 shadow-2xl">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={pc(language, "snoozeTitle")}
+            className="w-[min(24rem,calc(100vw-24px))] rounded-xl bg-base-100 p-5 shadow-2xl"
+          >
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-bold">{pc(language, "snoozeTitle")}</h3>
-              <button type="button" onClick={() => setShowSnooze(false)}><X className="size-5" /></button>
+              <button type="button" onClick={() => setShowSnooze(false)} aria-label={language === "vi" ? "Đóng" : "Close"}><X className="size-5" /></button>
             </div>
             <p className="mb-4 text-sm text-base-content/70">{pc(language, "snoozeBody")}</p>
             <div className="space-y-2">
@@ -239,11 +244,11 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
               ))}
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <button className="btn btn-ghost" onClick={() => {
+              <button type="button" className="btn btn-ghost" onClick={() => {
                 setDoNotDisturb(false);
                 setShowSnooze(false);
               }}>{pc(language, "cancel")}</button>
-              <button className="btn btn-primary" onClick={() => {
+              <button type="button" className="btn btn-primary" onClick={() => {
                 const duration = snoozeDurations[snoozeChoice];
                 localStorage.setItem("pingme-dnd-until", duration ? String(Date.now() + duration) : "manual");
                 setDoNotDisturb(true);
