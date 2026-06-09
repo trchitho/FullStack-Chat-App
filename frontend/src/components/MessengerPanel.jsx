@@ -218,17 +218,22 @@ const SettingsDetail = ({ title, onBack }) => {
   const isMessaging = title.includes("gửi tin nhắn");
   const rows = isMessaging
     ? [
-        ["Bạn bè của bạn", "Ai có thể gửi cho bạn lời mời kết bạn?"],
-        ["Bạn của bạn bè", "Ai có thể xem danh sách bạn bè của bạn?"],
-        ["Chỉ mình tôi", "Những người có địa chỉ email của bạn"],
-        ["Có thể có mối liên hệ", "Những người có số điện thoại của bạn"],
-        ["Tin nhắn đang chờ", "Với những người khác trên Messenger hoặc Facebook"],
+        ["Bạn bè của bạn", "Cách tìm và liên hệ với bạn"],
+        ["Bạn của bạn bè", "Ai có thể gửi cho bạn lời mời kết bạn?"],
+        ["Chỉ mình tôi", "Ai có thể xem danh sách bạn bè của bạn?"],
+        ["Có thể có mối liên hệ", "PingMe có thể gợi ý trang cá nhân của bạn cho ai dựa trên email?"],
+        ["Bạn của bạn bè", "Những người có số điện thoại của bạn"],
+        ["Tắt", "Công cụ tìm kiếm ngoài hệ thống liên kết đến trang cá nhân của bạn"],
+        ["Tin nhắn đang chờ", "Với những người có số điện thoại của bạn"],
+        ["Đoạn chat", "Với bạn của bạn bè trên PingMe"],
+        ["Đoạn chat", "Gửi tin nhắn đang chờ từ những người trong nhóm của bạn đến"],
+        ["Tin nhắn đang chờ", "Với những người khác trên PingMe"],
       ]
     : [
-        ["Danh sách hạn chế", "Giới hạn hoạt động tương tác mà không cần chặn."],
-        ["Chặn trang cá nhân và Trang", "Hai bên không thể tương tác với bài viết, bình luận hoặc tin nhắn."],
-        ["Biệt danh bị chặn", "Họ không thể gắn thẻ bạn hay tương tác với nội dung của bạn."],
-        ["Chặn tin nhắn", "Chặn liên hệ trong Messenger và các trang cá nhân liên quan."],
+        ["Chỉnh sửa", "Danh sách hạn chế"],
+        ["Chỉnh sửa", "Chặn trang cá nhân và Trang"],
+        ["Chỉnh sửa", "Biệt danh bị chặn"],
+        ["Chỉnh sửa", "Chặn tin nhắn"],
       ];
 
   return (
@@ -242,16 +247,18 @@ const SettingsDetail = ({ title, onBack }) => {
       <p className="mb-4 text-sm text-base-content/70">
         {isMessaging
           ? "Cách tìm và liên hệ với bạn, cũng như cách bạn nhận tin nhắn đang chờ."
-          : "Quản lý những trang cá nhân và Trang đang bị hạn chế hoặc bị chặn."}
+          : "Đang chặn. Quản lý những tài khoản, biệt danh và tin nhắn bị hạn chế hoặc bị chặn."}
       </p>
       <div className="space-y-2">
         {rows.map(([value, label]) => (
           <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-base-300">
             <span>
               <span className="block font-bold">{label}</span>
-              <span className="text-sm text-base-content/60">{value}</span>
+              <span className="text-sm text-base-content/60">
+                {isMessaging ? value : "Khi chỉnh sửa, bạn có thể cập nhật danh sách này trong giao diện quản lý chặn."}
+              </span>
             </span>
-            <ChevronRight className="size-5 shrink-0" />
+            {isMessaging ? <ChevronRight className="size-5 shrink-0" /> : <span className="btn btn-sm">Chỉnh sửa</span>}
           </button>
         ))}
       </div>
