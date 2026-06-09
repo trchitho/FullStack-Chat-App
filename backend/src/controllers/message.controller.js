@@ -92,7 +92,24 @@ export const uploadMessageAttachment = async (req, res) => {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
-        const attachment = await uploadFileToR2(req.file);
+        let attachment;
+        try {
+            attachment = await uploadFileToR2(req.file);
+        } catch (storageError) {
+            const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+            const uploaded = await cloudinary.uploader.upload(dataUri, {
+                resource_type: "auto",
+                folder: "pingme/attachments",
+            });
+            attachment = {
+                key: uploaded.public_id,
+                url: uploaded.secure_url,
+                name: req.file.originalname,
+                type: req.file.mimetype,
+                size: req.file.size,
+                storage: "cloudinary",
+            };
+        }
         res.status(201).json({ attachment });
     } catch (error) {
         console.log("Error in uploadMessageAttachment: ", error.message);
