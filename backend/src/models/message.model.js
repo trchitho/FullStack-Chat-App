@@ -12,6 +12,15 @@ const attachmentSchema = new mongoose.Schema(
     { _id: false }
 );
 
+const callSchema = new mongoose.Schema(
+    {
+        type: String,
+        status: String,
+        duration: Number,
+    },
+    { _id: false }
+);
+
 const messageSchema = new mongoose.Schema(
     {
         senderId: {
@@ -35,7 +44,8 @@ const messageSchema = new mongoose.Schema(
             messageId: String,
             senderName: String,
             preview: String,
-        }
+        },
+        call: callSchema
     },
     {timestamps: true}
 )
