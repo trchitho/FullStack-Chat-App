@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  BellOff,
   MoreHorizontal,
   Pencil,
   Search,
@@ -51,6 +52,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const [callState, setCallState] = useState(null);
   const [reportUser, setReportUser] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [muteUser, setMuteUser] = useState(null);
 
   useEffect(() => {
     getUsers();
@@ -72,8 +74,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       toast.success(language === "vi" ? "Đã cập nhật trạng thái chưa đọc" : "Unread state updated");
     }
     if (labelKey === "mute") {
-      setUserActions((actions) => toggleStoredId(actions, "muted", user._id));
-      toast.success(language === "vi" ? "Đã cập nhật thông báo đoạn chat" : "Notification setting updated");
+      setMuteUser(user);
     }
     if (labelKey === "viewProfile") setProfileUser(user);
     if (labelKey === "voiceCall") setCallState({ user, type: "voice" });
