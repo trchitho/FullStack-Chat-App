@@ -14,10 +14,10 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { t } from "../lib/i18n";
+import { useChatStore } from "../store/useChatStore";
 
 const samplePeople = ["Nguyễn Thắng", "Trần Đình Huy Hoàng", "Son Ngoc Pham", "Bách Ngô"];
-const archivedChats = [];
-const restrictedAccounts = [];
+const sidebarActionStorageKey = "pingme-sidebar-user-actions";
 const snoozeOptions = ["Trong 15 phút", "Trong 1 giờ", "Trong 8 giờ", "Trong 24 giờ", "Đến khi tắt"];
 const snoozeDurations = {
   "Trong 15 phút": 15 * 60 * 1000,
