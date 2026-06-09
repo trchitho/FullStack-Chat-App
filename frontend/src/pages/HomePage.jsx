@@ -13,11 +13,13 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="h-screen bg-base-100 pt-16">
-      <div className="relative flex h-[calc(100vh-4rem)] overflow-hidden">
-        <Sidebar onOpenPanel={setActivePanel} />
+    <main className="h-dvh max-w-full overflow-x-hidden bg-base-100 pt-16">
+      <div className="relative flex h-[calc(100dvh-4rem)] min-h-0 max-w-full overflow-hidden">
+        <div className={`${selectedUser ? "hidden md:flex" : "flex"} min-h-0 shrink-0`}>
+          <Sidebar onOpenPanel={setActivePanel} />
+        </div>
 
-        <section className="min-w-0 flex-1 bg-base-100">
+        <section className={`${selectedUser ? "flex" : "hidden md:flex"} min-w-0 flex-1 bg-base-100`}>
           {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
         </section>
 
