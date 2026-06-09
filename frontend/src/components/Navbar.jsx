@@ -18,9 +18,9 @@ const Navbar = () => {
 
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
-      <div className="flex h-16 items-center justify-between gap-4 px-4">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-content" aria-label="PingMe">
+      <div className="flex h-16 items-center justify-between gap-2 px-3 sm:gap-4 sm:px-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link to="/" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-content" aria-label="PingMe">
             <MessageCircle className="size-6" />
           </Link>
           <label className="input input-sm flex h-10 w-60 items-center gap-2 rounded-full border-none bg-base-300 px-4 max-md:hidden">
@@ -29,7 +29,7 @@ const Navbar = () => {
           </label>
         </div>
 
-        <div className="relative flex items-center justify-end gap-2">
+        <div className="relative flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
           <Link to="/settings" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Cài đặt" : "Settings"}>
             <Settings className="size-5" />
           </Link>
@@ -54,7 +54,7 @@ const Navbar = () => {
 };
 
 const NotificationDropdown = ({ language }) => (
-  <div className="absolute right-0 top-12 z-[120] w-80 rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
+  <div className="absolute right-0 top-12 z-[120] w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
     <div className="mb-3 text-lg font-bold">{language === "vi" ? "Thông báo" : "Notifications"}</div>
     <div className="rounded-xl bg-base-200 p-3">
       <div className="font-semibold">{language === "vi" ? "PingMe đang hoạt động" : "PingMe is active"}</div>
