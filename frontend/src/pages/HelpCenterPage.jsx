@@ -147,28 +147,28 @@ const HelpCenterPage = () => {
           })}
         </aside>
 
-        <section className="space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-4 text-2xl font-bold">Chủ đề thịnh hành</h3>
-            <div className="grid gap-3 md:grid-cols-2">
+        <section className="min-w-0 space-y-5 md:space-y-6">
+          <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <h3 className="mb-4 text-xl font-bold sm:text-2xl">Chủ đề thịnh hành</h3>
+            <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
               {filteredArticles.map((article) => (
                 <button
                   key={article.id}
                   type="button"
                   onClick={() => setActiveArticleId(article.id)}
-                  className={`rounded-2xl border p-4 text-left transition ${article.id === activeArticleId ? "border-blue-600 bg-blue-50" : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"}`}
+                  className={`min-w-0 rounded-2xl border p-4 text-left transition ${article.id === activeArticleId ? "border-blue-600 bg-blue-50" : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"}`}
                 >
                   <div className="text-sm font-semibold text-blue-700">{article.category}</div>
-                  <div className="mt-2 font-bold leading-6">{article.title}</div>
+                  <div className="mt-2 break-words font-bold leading-6">{article.title}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          <article className="rounded-3xl border border-slate-200 bg-white px-5 py-7 shadow-sm md:px-10">
+          <article className="min-w-0 rounded-3xl border border-slate-200 bg-white px-4 py-6 shadow-sm sm:px-5 sm:py-7 md:px-10">
             <div className="mb-7 border-b border-slate-200 pb-5">
               <div className="text-sm font-semibold text-blue-700">{activeArticle.category}</div>
-              <h3 className="mt-2 text-3xl font-bold tracking-tight">{activeArticle.title}</h3>
+              <h3 className="mt-2 break-words text-[clamp(1.6rem,7vw,2.5rem)] font-bold leading-tight tracking-tight">{activeArticle.title}</h3>
             </div>
             {activeContent ? <MarkdownContent content={activeContent} /> : <div className="text-slate-500">Đang tải nội dung...</div>}
           </article>
