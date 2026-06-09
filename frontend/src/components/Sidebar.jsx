@@ -334,17 +334,38 @@ const MainSidebarMenu = ({ position, onOpenPanel, language }) => (
   </div>
 );
 
-const SimpleModal = ({ title, children, onClose }) => (
+const SimpleModal = ({ title, children, onClose }) => {
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onClose]);
+
+  return (
   <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-    <div className="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      tabIndex={-1}
+      className="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-5 shadow-2xl"
+      onClick={(event) => event.stopPropagation()}
+    >
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-bold">{title}</h2>
-        <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose}>✕</button>
+        <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose} aria-label="Đóng">✕</button>
       </div>
       {children}
     </div>
   </div>
-);
+  );
+};
 
 const ConfirmChatAction = ({ action, language, onCancel, onConfirm }) => {
   const labels = {
