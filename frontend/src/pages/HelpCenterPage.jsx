@@ -91,25 +91,25 @@ const HelpCenterPage = () => {
   }, [query]);
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
+    <main className="min-h-dvh max-w-full overflow-x-hidden bg-slate-50 text-slate-950">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-blue-600 text-white">
-              <MessageCircle className="size-6" />
+        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+              <MessageCircle className="size-5 sm:size-6" />
             </div>
-            <h1 className="text-2xl font-bold">Trung tâm trợ giúp</h1>
+            <h1 className="min-w-0 truncate text-xl font-bold sm:text-2xl">Trung tâm trợ giúp</h1>
           </div>
-          <Link to="/" className="rounded-full bg-slate-100 px-4 py-2 font-semibold hover:bg-slate-200">PingMe</Link>
+          <Link to="/" className="shrink-0 rounded-full bg-slate-100 px-3 py-2 font-semibold hover:bg-slate-200 sm:px-4">PingMe</Link>
         </div>
       </header>
 
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-4xl px-5 py-10 text-center">
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">Chúng tôi có thể giúp gì cho bạn?</h2>
-          <label className="mx-auto mt-7 flex h-16 max-w-3xl items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-5">
-            <Search className="size-6 text-slate-500" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-lg outline-none" placeholder="Tìm kiếm bài viết trợ giúp..." />
+        <div className="mx-auto max-w-4xl px-4 py-8 text-center sm:px-5 sm:py-10">
+          <h2 className="mx-auto max-w-full text-[clamp(2rem,9vw,3.5rem)] font-bold leading-[1.05] tracking-tight">Chúng tôi có thể giúp gì cho bạn?</h2>
+          <label className="mx-auto mt-6 flex h-14 max-w-3xl items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 sm:h-16 sm:gap-4 sm:px-5">
+            <Search className="size-5 shrink-0 text-slate-500 sm:size-6" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-lg" placeholder="Tìm kiếm bài viết trợ giúp..." />
           </label>
         </div>
       </section>
