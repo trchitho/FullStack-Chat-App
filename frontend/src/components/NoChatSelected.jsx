@@ -1,8 +1,9 @@
 import { MessageSquare } from "lucide-react";
 import { useLanguageStore } from "../store/useLanguageStore";
+import { t } from "../lib/i18n";
 
 const NoChatSelected = () => {
-  const isVi = useLanguageStore((state) => state.language === "vi");
+  const language = useLanguageStore((state) => state.language);
 
   return (
     <div className="w-full flex flex-1 flex-col items-center justify-center p-16 bg-base-100/50">
@@ -20,9 +21,9 @@ const NoChatSelected = () => {
         </div>
 
         {/* Welcome Text */}
-        <h2 className="text-2xl font-bold">{isVi ? "Chào mừng đến với PingMe!" : "Welcome to PingMe!"}</h2>
+        <h2 className="text-2xl font-bold">{t(language, "welcome")}</h2>
         <p className="text-base-content/60">
-          {isVi ? "Chọn một cuộc trò chuyện ở thanh bên để bắt đầu nhắn tin" : "Select a conversation from the sidebar to start chatting"}
+          {t(language, "selectConversation")}
         </p>
       </div>
     </div>
