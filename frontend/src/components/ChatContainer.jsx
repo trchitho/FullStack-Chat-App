@@ -19,6 +19,7 @@ const ChatContainer = () => {
   const [confirmAction, setConfirmAction] = useState(null);
   const [hiddenMessageIds, setHiddenMessageIds] = useState([]);
   const [revokedMessageIds, setRevokedMessageIds] = useState([]);
+  const [pinnedMessage, setPinnedMessage] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -49,6 +50,17 @@ const ChatContainer = () => {
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
       <ChatHeader />
+      {pinnedMessage && (
+        <div className="shrink-0 border-b border-base-300 bg-base-200 px-6 py-3">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-base-100 px-4 py-2">
+            <div className="min-w-0">
+              <div className="text-sm font-bold">Đã ghim</div>
+              <div className="truncate text-sm text-base-content/70">{pinnedMessage.preview}</div>
+            </div>
+            <button type="button" className="btn btn-ghost btn-xs" onClick={() => setPinnedMessage(null)}>Bỏ ghim</button>
+          </div>
+        </div>
+      )}
 
       <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-8 py-5">
         {messages.length === 0 ? (
