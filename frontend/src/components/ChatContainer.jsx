@@ -8,11 +8,14 @@ import { formatMessageTime } from '../lib/utils';
 import { FileText, Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
+import { useLanguageStore } from '../store/useLanguageStore';
 
 const ChatContainer = () => {
   const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
 
   const {authUser} = useAuthStore();
+  const { language } = useLanguageStore();
+  const isVi = language === "vi";
   const messagesContainerRef = useRef(null);
   const [reactionPickerFor, setReactionPickerFor] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
@@ -26,10 +29,10 @@ const ChatContainer = () => {
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
   const getMessagePreview = (message) => {
     if (message.text) return message.text;
-    if (message.image || message.attachment?.type?.startsWith("image/")) return "[Hình ảnh]";
-    if (message.attachment?.type?.startsWith("audio/")) return "[Tin nhắn thoại]";
-    if (message.attachment) return "[Tệp đính kèm]";
-    return "[Tin nhắn]";
+    if (message.image || message.attachment?.type?.startsWith("image/")) return isVi ? "[Hình ảnh]" : "[Image]";
+    if (message.attachment?.type?.startsWith("audio/")) return isVi ? "[Tin nhắn thoại]" : "[Voice message]";
+    if (message.attachment) return isVi ? "[Tệp đính kèm]" : "[Attachment]";
+    return isVi ? "[Tin nhắn]" : "[Message]";
   };
 
   useEffect(() => {
@@ -106,7 +109,7 @@ const ChatContainer = () => {
           <div className="flex h-full flex-col items-center justify-center text-center text-base-content/70">
             <img src={selectedUser.profilePic || "/avatar.png"} alt="" className="mb-4 size-20 rounded-full object-cover" />
             <h2 className="text-xl font-bold text-base-content">{selectedUser.fullName}</h2>
-            <p className="mt-2 max-w-md text-sm">Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây.</p>
+            <p className="mt-2 max-w-md text-sm">{isVi ? "Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây." : "Start the conversation. New messages will appear here."}</p>
           </div>
         ) : messages.filter((message) => !hiddenMessageIds.includes(message._id)).map((message) => {
           const isOwnMessage = message.senderId === authUser._id;
@@ -139,7 +142,7 @@ const ChatContainer = () => {
                 isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
               }`}>
               {isRevoked ? (
-                <p className="italic opacity-70">{isOwnMessage ? "Bạn đã thu hồi một tin nhắn" : "Tin nhắn đã được thu hồi"}</p>
+                <p className="italic opacity-70">{isOwnMessage ? (isVi ? "Bạn đã thu hồi một tin nhắn" : "You recalled a message") : (isVi ? "Tin nhắn đã được thu hồi" : "This message was recalled")}</p>
               ) : message.replyTo?.preview && (
                 <div className="mb-2 rounded-2xl bg-black/10 px-3 py-2 text-sm">
                   <div className="font-bold">{message.replyTo.senderName}</div>
@@ -158,14 +161,14 @@ const ChatContainer = () => {
                 message.attachment.type?.startsWith("image/") ? (
                   <img
                     src={message.attachment.url}
-                    alt={message.attachment.name || "Tệp ảnh"}
+                    alt={message.attachment.name || (isVi ? "Tệp ảnh" : "Image file")}
                     className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] cursor-zoom-in rounded-2xl object-contain"
                     onClick={() => setLightboxImage(message.attachment.url)}
                   />
                 ) : message.attachment.type?.startsWith("audio/") ? (
                   <audio controls className="w-full max-w-xs">
                     <source src={message.attachment.url} type={message.attachment.type} />
-                    Trình duyệt không hỗ trợ phát âm thanh.
+                    {isVi ? "Trình duyệt không hỗ trợ phát âm thanh." : "Your browser does not support audio playback."}
                   </audio>
                 ) : (
                   <a
@@ -175,7 +178,7 @@ const ChatContainer = () => {
                     className="flex max-w-xs items-center gap-3 rounded-2xl bg-black/10 px-3 py-2 hover:bg-black/15"
                   >
                     <FileText className="size-5 shrink-0" />
-                    <span className="min-w-0 truncate">{message.attachment.name || "Tệp đính kèm"}</span>
+                    <span className="min-w-0 truncate">{message.attachment.name || (isVi ? "Tệp đính kèm" : "Attachment")}</span>
                   </a>
                 )
               )}
@@ -191,7 +194,7 @@ const ChatContainer = () => {
                   type="button"
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
-                  title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc"
+                  title={isVi ? "Bày tỏ cảm xúc bằng biểu tượng cảm xúc" : "React with an emoji"}
                   onClick={() => {
                     const shouldOpen = reactionPickerFor !== message._id;
                     closeFloatingMenus();
@@ -204,7 +207,7 @@ const ChatContainer = () => {
                   type="button"
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
-                  title="Trả lời tin nhắn này"
+                  title={isVi ? "Trả lời tin nhắn này" : "Reply to this message"}
                   onClick={() => {
                     closeFloatingMenus();
                     setReplyTo({
@@ -220,7 +223,7 @@ const ChatContainer = () => {
                   type="button"
                   data-pingme-menu-trigger
                   className="btn btn-circle btn-ghost btn-xs"
-                  title="Hành động khác"
+                  title={isVi ? "Hành động khác" : "More actions"}
                   onClick={() => {
                     const shouldOpen = actionMenuFor !== message._id;
                     closeFloatingMenus();
@@ -258,18 +261,18 @@ const ChatContainer = () => {
                     }}
                   >
                     <Trash2 className="size-4" />
-                    {isOwnMessage ? "Thu hồi" : "Gỡ"}
+                    {isOwnMessage ? (isVi ? "Thu hồi" : "Recall") : (isVi ? "Gỡ" : "Remove")}
                   </button>
                   <button
                     type="button"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
                     onClick={() => {
-                      toast("Tính năng chuyển tiếp sẽ được bổ sung");
+                      toast(isVi ? "Tính năng chuyển tiếp sẽ được bổ sung" : "Forwarding will be added soon");
                       setActionMenuFor(null);
                     }}
                   >
                     <Forward className="size-4" />
-                    Chuyển tiếp
+                    {isVi ? "Chuyển tiếp" : "Forward"}
                   </button>
                   <button
                     type="button"
@@ -280,7 +283,7 @@ const ChatContainer = () => {
                     }}
                   >
                     <Pin className="size-4" />
-                    Ghim
+                    {isVi ? "Ghim" : "Pin"}
                   </button>
                 </div>
               )}
@@ -295,15 +298,15 @@ const ChatContainer = () => {
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg rounded-2xl bg-base-100 p-6 shadow-2xl">
             <h2 className="text-2xl font-bold">
-              {confirmAction.isOwnMessage ? "Thu hồi tin nhắn này?" : "Gỡ đối với bạn"}
+              {confirmAction.isOwnMessage ? (isVi ? "Thu hồi tin nhắn này?" : "Recall this message?") : (isVi ? "Gỡ đối với bạn" : "Remove for you")}
             </h2>
             <p className="mt-3 text-base-content/70">
               {confirmAction.isOwnMessage
-                ? "Tin nhắn này sẽ bị thu hồi khỏi đoạn chat. Những người khác có thể đã xem hoặc chuyển tiếp tin nhắn đó."
-                : "Tin nhắn này sẽ bị gỡ khỏi thiết bị của bạn, nhưng vẫn hiển thị với các thành viên khác trong đoạn chat."}
+                ? (isVi ? "Tin nhắn này sẽ bị thu hồi khỏi đoạn chat. Những người khác có thể đã xem hoặc chuyển tiếp tin nhắn đó." : "This message will be recalled from the chat. Others may have already seen or forwarded it.")
+                : (isVi ? "Tin nhắn này sẽ bị gỡ khỏi thiết bị của bạn, nhưng vẫn hiển thị với các thành viên khác trong đoạn chat." : "This message will be removed from your device, but it may still appear for other chat members.")}
             </p>
             <div className="mt-6 flex justify-end gap-2">
-              <button type="button" className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Hủy</button>
+              <button type="button" className="btn btn-ghost" onClick={() => setConfirmAction(null)}>{isVi ? "Hủy" : "Cancel"}</button>
               <button
                 type="button"
                 className="btn btn-primary"
@@ -313,7 +316,7 @@ const ChatContainer = () => {
                   setConfirmAction(null);
                 }}
               >
-                {confirmAction.isOwnMessage ? "Thu hồi" : "Gỡ"}
+                {confirmAction.isOwnMessage ? (isVi ? "Thu hồi" : "Recall") : (isVi ? "Gỡ" : "Remove")}
               </button>
             </div>
           </div>
@@ -321,7 +324,7 @@ const ChatContainer = () => {
       )}
       {lightboxImage && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/85 p-4" onClick={() => setLightboxImage(null)}>
-          <button type="button" className="absolute right-5 top-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20" onClick={() => setLightboxImage(null)} aria-label="Đóng ảnh">
+          <button type="button" className="absolute right-5 top-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20" onClick={() => setLightboxImage(null)} aria-label={isVi ? "Đóng ảnh" : "Close image"}>
             <X className="size-6" />
           </button>
           <img src={lightboxImage} alt="Attachment full screen" className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
