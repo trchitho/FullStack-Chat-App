@@ -105,7 +105,7 @@ const ChatContainer = () => {
         </div>
       )}
 
-      <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-8 py-5">
+      <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 py-3 sm:px-4 md:px-6 lg:px-8 lg:py-5">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center text-base-content/70">
             <img src={selectedUser.profilePic || "/avatar.png"} alt="" className="mb-4 size-20 rounded-full object-cover" />
@@ -139,7 +139,7 @@ const ChatContainer = () => {
               </time>
             </div>
             <div className={`flex items-center gap-2 ${isOwnMessage ? "flex-row-reverse" : ""}`}>
-              <div className={`chat-bubble relative flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
+              <div className={`chat-bubble relative flex max-w-[78vw] min-w-0 flex-col break-words rounded-3xl px-3 py-2 text-sm sm:px-4 sm:text-base md:max-w-[min(68%,720px)] ${
                 isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
               }`}>
               {isRevoked ? (
@@ -154,7 +154,7 @@ const ChatContainer = () => {
                 <img
                   src={message.image}
                   alt="Attachment"
-                  className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] cursor-zoom-in rounded-2xl object-contain"
+                  className="mb-2 max-h-[360px] w-full max-w-[78vw] cursor-zoom-in rounded-2xl object-contain md:max-w-[420px]"
                   onClick={() => setLightboxImage(message.image)}
                 />
               )}
@@ -163,11 +163,11 @@ const ChatContainer = () => {
                   <img
                     src={message.attachment.url}
                     alt={message.attachment.name || (isVi ? "Tệp ảnh" : "Image file")}
-                    className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] cursor-zoom-in rounded-2xl object-contain"
+                    className="mb-2 max-h-[360px] w-full max-w-[78vw] cursor-zoom-in rounded-2xl object-contain md:max-w-[420px]"
                     onClick={() => setLightboxImage(message.attachment.url)}
                   />
                 ) : message.attachment.type?.startsWith("audio/") ? (
-                  <audio controls className="w-full max-w-xs">
+                  <audio controls className="w-full max-w-[78vw] md:max-w-xs">
                     <source src={message.attachment.url} type={message.attachment.type} />
                     {isVi ? "Trình duyệt không hỗ trợ phát âm thanh." : "Your browser does not support audio playback."}
                   </audio>
