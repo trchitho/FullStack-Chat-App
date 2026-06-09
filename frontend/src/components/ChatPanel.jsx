@@ -80,8 +80,8 @@ const panelCopy = {
 const pc = (language, key) => panelCopy[language]?.[key] || panelCopy.vi[key] || key;
 
 const PanelShell = ({ title, children, onClose, onBack }) => (
-  <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
-    <section className="max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-base-300 bg-base-200 p-4 shadow-2xl">
+  <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 p-3 backdrop-blur-sm sm:p-4">
+    <section className="max-h-[calc(100dvh-24px)] w-[calc(100vw-24px)] max-w-2xl overflow-y-auto rounded-2xl border border-base-300 bg-base-200 p-4 shadow-2xl">
       <div className="mb-4 flex items-center gap-3">
         <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={onBack || onClose}>
           {onBack ? <ArrowLeft className="size-5" /> : <X className="size-5" />}
