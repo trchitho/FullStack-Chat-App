@@ -4,6 +4,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from 'lucide-re
 import { Link } from 'react-router-dom';
 import AuthImagePattern from '../components/AuthImagePattern';
 import toast from 'react-hot-toast';
+import { useLanguageStore } from '../store/useLanguageStore';
 
 const SignUpPage = () => {
   const [showPassword , setShowPassword] = useState(false);
@@ -14,13 +15,14 @@ const SignUpPage = () => {
   })
 
   const { signup, isSigningUp } = useAuthStore();
+  const isVi = useLanguageStore((state) => state.language === "vi");
 
   const validateForm = () => {
-    if (!formData.fullName.trim()) return toast.error("Full name is required");
-    if (!formData.email.trim()) return toast.error("Email is required");
-    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
-    if (!formData.password) return toast.error("Password is required");
-    if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+    if (!formData.fullName.trim()) return toast.error(isVi ? "Vui lòng nhập họ tên" : "Full name is required");
+    if (!formData.email.trim()) return toast.error(isVi ? "Vui lòng nhập email" : "Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error(isVi ? "Email không hợp lệ" : "Invalid email format");
+    if (!formData.password) return toast.error(isVi ? "Vui lòng nhập mật khẩu" : "Password is required");
+    if (formData.password.length < 6) return toast.error(isVi ? "Mật khẩu tối thiểu 6 ký tự" : "Password must be at least 6 characters");
 
     return true;
   };
@@ -47,15 +49,15 @@ const SignUpPage = () => {
               >
                 <MessageSquare className="size-6 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold mt-2">Create Account</h1>
-              <p className="text-base-content/60">Get started with your free account</p>
+              <h1 className="text-2xl font-bold mt-2">{isVi ? "Tạo tài khoản" : "Create Account"}</h1>
+              <p className="text-base-content/60">{isVi ? "Bắt đầu với tài khoản miễn phí của bạn" : "Get started with your free account"}</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Full Name</span>
+                <span className="label-text font-medium">{isVi ? "Họ tên" : "Full Name"}</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -91,7 +93,7 @@ const SignUpPage = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Password</span>
+                <span className="label-text font-medium">{isVi ? "Mật khẩu" : "Password"}</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -122,19 +124,19 @@ const SignUpPage = () => {
               {isSigningUp ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />
-                  Loading...
+                  {isVi ? "Đang tạo..." : "Loading..."}
                 </>
               ) : (
-                "Create Account"
+                isVi ? "Tạo tài khoản" : "Create Account"
               )}
             </button>
           </form>
 
           <div className="text-center">
             <p className="text-base-content/60">
-              Already have an account?{" "}
+              {isVi ? "Đã có tài khoản?" : "Already have an account?"}{" "}
               <Link to="/login" className="link link-primary">
-                Sign in
+                {isVi ? "Đăng nhập" : "Sign in"}
               </Link>
             </p>
           </div>
@@ -144,8 +146,8 @@ const SignUpPage = () => {
       {/* right side */}
 
       <AuthImagePattern
-        title="Join our community"
-        subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
+        title={isVi ? "Tham gia cộng đồng PingMe" : "Join our community"}
+        subtitle={isVi ? "Kết nối bạn bè, chia sẻ khoảnh khắc và giữ liên lạc với người thân." : "Connect with friends, share moments, and stay in touch with your loved ones."}
       />
     </div>
   )
