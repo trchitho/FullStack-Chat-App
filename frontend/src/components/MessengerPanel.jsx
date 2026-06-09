@@ -25,8 +25,8 @@ const snoozeDurations = {
 };
 
 const PanelShell = ({ title, children, onClose, onBack }) => (
-  <div className="absolute inset-0 z-40 flex bg-base-100/70 backdrop-blur-sm">
-    <aside className="h-full w-[360px] border-r border-base-300 bg-base-200 p-4 shadow-xl">
+  <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
+    <section className="max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-base-300 bg-base-200 p-4 shadow-2xl">
       <div className="mb-4 flex items-center gap-3">
         <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={onBack || onClose}>
           {onBack ? <ArrowLeft className="size-5" /> : <X className="size-5" />}
@@ -34,8 +34,7 @@ const PanelShell = ({ title, children, onClose, onBack }) => (
         <h2 className="text-2xl font-bold">{title}</h2>
       </div>
       {children}
-    </aside>
-    <div className="min-w-0 flex-1 bg-base-100" onClick={onClose} />
+    </section>
   </div>
 );
 
