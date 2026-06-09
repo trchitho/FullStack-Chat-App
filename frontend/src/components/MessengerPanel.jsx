@@ -345,29 +345,6 @@ const SettingsDetail = ({ section, onBack, language }) => {
   );
 };
 
-const HelpPanel = ({ onClose }) => (
-  <PanelShell title="Trợ giúp" onClose={onClose}>
-    <h3 className="text-xl font-bold">Chúng tôi có thể giúp gì cho bạn?</h3>
-    <label className="input input-sm my-4 flex h-11 items-center gap-2 rounded-full border-none bg-base-300 px-4">
-      <Search className="size-4" />
-      <input className="grow" placeholder="Tìm kiếm bài viết trợ giúp..." />
-    </label>
-    <div className="grid gap-2 md:grid-cols-2">
-      {["Tính năng trên Messenger", "Quản lý tài khoản", "Quyền riêng tư và an toàn", "Thanh toán và kinh doanh"].map((item) => (
-        <button key={item} type="button" className="rounded-xl bg-base-100 p-3 text-left font-semibold hover:bg-base-300">{item}</button>
-      ))}
-    </div>
-    <h4 className="mt-5 font-bold">Chủ đề thịnh hành</h4>
-    {["Khôi phục đoạn chat", "Quản lý thông báo", "Báo cáo tin nhắn hoặc cuộc trò chuyện", "Chặn tài khoản", "Tùy chỉnh giao diện"].map((item) => (
-      <button key={item} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-semibold hover:bg-base-300">
-        {item}
-        <ChevronRight className="size-5" />
-      </button>
-    ))}
-    <div className="fixed bottom-6 right-6 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-content shadow-2xl">Chat trợ giúp</div>
-  </PanelShell>
-);
-
 const PrivacyPanel = ({ onClose, language }) => (
   <PanelShell title={t(language, "privacy")} onClose={onClose}>
     {(language === "vi" ? [
@@ -402,7 +379,6 @@ const MessengerPanel = ({ panel, onClose, onOpenProfile }) => {
   if (panel === "archived") return <ListPanel title={t(language, "archived")} people={archivedChats} onClose={onClose} language={language} />;
   if (panel === "restricted") return <ListPanel title={t(language, "restricted")} people={restrictedAccounts} description={language === "vi" ? "Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." : "Limit interactions with someone without blocking them."} onClose={onClose} language={language} />;
   if (panel === "privacy") return <PrivacyPanel onClose={onClose} language={language} />;
-  if (panel === "help") return <HelpPanel onClose={onClose} />;
   return null;
 };
 
