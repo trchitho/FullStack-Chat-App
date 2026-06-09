@@ -323,7 +323,12 @@ const ChatContainer = () => {
       <MessageInput replyTo={replyTo} onCancelReply={() => setReplyTo(null)} />
       {confirmAction && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-base-100 p-6 shadow-2xl">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={confirmAction.isOwnMessage ? (isVi ? "Thu hồi tin nhắn" : "Recall message") : (isVi ? "Gỡ tin nhắn" : "Remove message")}
+            className="w-full max-w-lg rounded-2xl bg-base-100 p-6 shadow-2xl"
+          >
             <h2 className="text-2xl font-bold">
               {confirmAction.isOwnMessage ? (isVi ? "Thu hồi tin nhắn này?" : "Recall this message?") : (isVi ? "Gỡ đối với bạn" : "Remove for you")}
             </h2>
@@ -350,11 +355,17 @@ const ChatContainer = () => {
         </div>
       )}
       {lightboxImage && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/85 p-4" onClick={() => setLightboxImage(null)}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={isVi ? "Xem ảnh toàn màn hình" : "Full screen image viewer"}
+          className="fixed inset-0 z-[130] flex items-center justify-center bg-black/85 p-4"
+          onClick={() => setLightboxImage(null)}
+        >
           <button type="button" className="absolute right-5 top-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20" onClick={() => setLightboxImage(null)} aria-label={isVi ? "Đóng ảnh" : "Close image"}>
             <X className="size-6" />
           </button>
-          <img src={lightboxImage} alt="Attachment full screen" className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
+          <img src={lightboxImage} alt={isVi ? "Ảnh toàn màn hình" : "Attachment full screen"} className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
     </div>
