@@ -12,6 +12,7 @@ import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { t } from "../lib/i18n";
+import toast from "react-hot-toast";
 
 const sidebarActionStorageKey = "pingme-sidebar-user-actions";
 
@@ -22,6 +23,17 @@ const readStoredActions = () => {
     return {};
   }
 };
+
+const toggleStoredId = (actions, key, id) => {
+  const current = new Set(actions[key] || []);
+  current.has(id) ? current.delete(id) : current.add(id);
+  return { ...actions, [key]: [...current] };
+};
+
+const addStoredId = (actions, key, id) => ({
+  ...actions,
+  [key]: [...new Set([...(actions[key] || []), id])],
+});
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
