@@ -68,6 +68,14 @@ const MessageInput = () => {
     }
   };
 
+  const handleQuickLike = async () => {
+    try {
+      await sendMessage({ text: "👍" });
+    } catch (error) {
+      console.error("Failed to send quick like:", error);
+    }
+  };
+
   return (
     <div className="relative shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
       {imagePreview && (
@@ -125,8 +133,10 @@ const MessageInput = () => {
           </button>
         </div>
         <button
-          type="submit"
+          type={text.trim() || imagePreview ? "submit" : "button"}
           className="btn btn-sm btn-circle btn-ghost text-primary"
+          onClick={text.trim() || imagePreview ? undefined : handleQuickLike}
+          aria-label={text.trim() || imagePreview ? "Gửi tin nhắn" : "Gửi thích"}
         >
           {text.trim() || imagePreview ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
