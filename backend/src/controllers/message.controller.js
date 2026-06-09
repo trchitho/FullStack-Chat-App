@@ -5,6 +5,13 @@ import { uploadFileToR2 } from "../lib/r2.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 
+const normalizeAttachment = (attachment) => {
+    if (!attachment || typeof attachment !== "object") return undefined;
+    const { url, key, name, type, size, storage } = attachment;
+    if (!url) return undefined;
+    return { url, key, name, type, size, storage };
+};
+
 export const getUsersForSidebar = async (req, res) => {
     try {
         const loggedInUserId = req.user._id;
@@ -53,6 +60,7 @@ export const sendMessage = async (req, res) => {
         const { id:receiverId } = req.params;
         const senderId = req.user._id;
         const { text, image, replyTo, attachment } = req.body;
+        const normalizedAttachment = normalizeAttachment(attachment);
 
         let imageUrl;
 
@@ -67,7 +75,7 @@ export const sendMessage = async (req, res) => {
             receiverId,
             text,
             image: imageUrl,
-            attachment,
+            attachment: normalizedAttachment,
             replyTo
         });
 
