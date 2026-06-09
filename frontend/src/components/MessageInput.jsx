@@ -57,11 +57,17 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
+        replyTo: replyTo && {
+          messageId: replyTo.id,
+          senderName: replyTo.senderName,
+          preview: replyTo.preview,
+        },
       });
 
       // Clear form
       setText("");
       setImagePreview(null);
+      onCancelReply?.();
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);

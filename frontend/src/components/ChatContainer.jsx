@@ -82,6 +82,12 @@ const ChatContainer = () => {
               <div className={`chat-bubble relative flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
                 isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
               }`}>
+              {message.replyTo?.preview && (
+                <div className="mb-2 rounded-2xl bg-black/10 px-3 py-2 text-sm">
+                  <div className="font-bold">{message.replyTo.senderName}</div>
+                  <div className="line-clamp-1 opacity-80">{message.replyTo.preview}</div>
+                </div>
+              )}
               {message.image && (
                 <img
                   src={message.image}
