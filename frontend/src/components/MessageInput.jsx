@@ -113,6 +113,13 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     }
   };
 
+  const cancelRecording = () => {
+    audioChunksRef.current = [];
+    mediaRecorderRef.current?.stream?.getTracks().forEach((track) => track.stop());
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview && !attachmentFile) return;
