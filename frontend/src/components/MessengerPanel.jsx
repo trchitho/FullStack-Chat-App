@@ -12,6 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
+import { useLanguageStore } from "../store/useLanguageStore";
+import { t } from "../lib/i18n";
 
 const samplePeople = ["Nguyễn Thắng", "Trần Đình Huy Hoàng", "Son Ngoc Pham", "Bách Ngô"];
 const archivedChats = [];
@@ -23,6 +25,59 @@ const snoozeDurations = {
   "Trong 8 giờ": 8 * 60 * 60 * 1000,
   "Trong 24 giờ": 24 * 60 * 60 * 1000,
 };
+
+const panelCopy = {
+  vi: {
+    account: "Tài khoản",
+    viewOwnProfile: "Xem trang cá nhân của bạn",
+    activeStatus: "Trạng thái hoạt động",
+    activeOn: "ĐANG BẬT",
+    activeOff: "ĐANG TẮT",
+    notifications: "Thông báo",
+    sound: "Âm thanh thông báo",
+    soundDesc: "Dùng thông báo bằng âm thanh để biết về tin nhắn, cuộc gọi đến, đoạn chat video và âm thanh trong ứng dụng.",
+    dnd: "Không làm phiền",
+    dndDesc: "Tắt thông báo trong một khoảng thời gian cụ thể.",
+    darkMode: "Chế độ tối",
+    darkDesc: "Điều chỉnh giao diện của PingMe để giảm độ chói và cho đôi mắt được nghỉ ngơi.",
+    off: "Tắt",
+    on: "Bật",
+    auto: "Tự động",
+    payments: "Quản lý khoản thanh toán",
+    messagingActivity: "Quản lý hoạt động gửi tin nhắn",
+    blocking: "Quản lý phần Chặn",
+    snoozeTitle: "Tắt thông báo",
+    snoozeBody: "Cửa sổ chat vẫn đóng và bạn sẽ không nhận được thông báo đẩy trên thiết bị.",
+    cancel: "Hủy",
+    next: "Tiếp",
+  },
+  en: {
+    account: "Account",
+    viewOwnProfile: "View your profile",
+    activeStatus: "Active status",
+    activeOn: "ON",
+    activeOff: "OFF",
+    notifications: "Notifications",
+    sound: "Notification sounds",
+    soundDesc: "Use sounds for messages, calls, video chats, and in-app audio.",
+    dnd: "Do not disturb",
+    dndDesc: "Mute notifications for a specific period.",
+    darkMode: "Dark mode",
+    darkDesc: "Adjust PingMe appearance to reduce glare and rest your eyes.",
+    off: "Off",
+    on: "On",
+    auto: "Automatic",
+    payments: "Manage payments",
+    messagingActivity: "Manage messaging activity",
+    blocking: "Manage blocking",
+    snoozeTitle: "Mute notifications",
+    snoozeBody: "Chat windows stay closed and you will not receive push notifications on this device.",
+    cancel: "Cancel",
+    next: "Next",
+  },
+};
+
+const pc = (language, key) => panelCopy[language]?.[key] || panelCopy.vi[key] || key;
 
 const PanelShell = ({ title, children, onClose, onBack }) => (
   <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
@@ -38,12 +93,12 @@ const PanelShell = ({ title, children, onClose, onBack }) => (
   </div>
 );
 
-const AccountPreview = ({ authUser, onOpenProfile }) => (
+const AccountPreview = ({ authUser, onOpenProfile, language }) => (
   <button type="button" className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-300" onClick={onOpenProfile}>
     <img src={authUser?.profilePic || "/avatar.png"} alt={authUser?.fullName} className="size-12 rounded-full object-cover" />
     <div>
-      <div className="font-bold">{authUser?.fullName || "Tài khoản"}</div>
-      <div className="text-sm text-base-content/60">Xem trang cá nhân của bạn</div>
+      <div className="font-bold">{authUser?.fullName || pc(language, "account")}</div>
+      <div className="text-sm text-base-content/60">{pc(language, "viewOwnProfile")}</div>
     </div>
   </button>
 );
@@ -62,6 +117,7 @@ const ToggleRow = ({ icon: Icon, title, description, checked, onChange }) => (
 const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const { authUser } = useAuthStore();
   const { activeStatus, setActiveStatus } = useAuthStore();
+  const { language } = useLanguageStore();
   const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
   const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);
@@ -72,11 +128,11 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const setDarkMode = (mode) => setTheme(mode === "Tắt" ? "light" : mode === "Bật" ? "coffee" : "dark");
 
   return (
-    <PanelShell title="Tùy chọn" onClose={onClose}>
+    <PanelShell title={t(language, "options")} onClose={onClose}>
       <div className="space-y-4">
         <section>
-          <h3 className="mb-2 px-3 text-xl font-bold">Tài khoản</h3>
-          <AccountPreview authUser={authUser} onOpenProfile={onOpenProfile} />
+          <h3 className="mb-2 px-3 text-xl font-bold">{pc(language, "account")}</h3>
+          <AccountPreview authUser={authUser} onOpenProfile={onOpenProfile} language={language} />
         </section>
 
         <button
@@ -85,22 +141,22 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
           onClick={() => setActiveStatus(!activeStatus)}
         >
           <UserCircle className="size-5" />
-          Trạng thái hoạt động: {activeStatus ? "ĐANG BẬT" : "ĐANG TẮT"}
+          {pc(language, "activeStatus")}: {activeStatus ? pc(language, "activeOn") : pc(language, "activeOff")}
         </button>
 
         <section className="border-t border-base-300 pt-3">
-          <h3 className="px-3 text-xl font-bold">Thông báo</h3>
+          <h3 className="px-3 text-xl font-bold">{pc(language, "notifications")}</h3>
           <ToggleRow
             icon={Volume2}
-            title="Âm thanh thông báo"
-            description="Dùng thông báo bằng âm thanh để biết về tin nhắn, cuộc gọi đến, đoạn chat video và âm thanh trong ứng dụng."
+            title={pc(language, "sound")}
+            description={pc(language, "soundDesc")}
             checked={soundEnabled}
             onChange={setSoundEnabled}
           />
           <ToggleRow
             icon={Bell}
-            title="Không làm phiền"
-            description="Tắt thông báo trong một khoảng thời gian cụ thể."
+            title={pc(language, "dnd")}
+            description={pc(language, "dndDesc")}
             checked={doNotDisturb}
             onChange={(value) => {
               setDoNotDisturb(value);
@@ -114,12 +170,12 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
             <Moon className="mt-1 size-5" />
             <div className="space-y-3">
               <div>
-                <div className="font-bold">Chế độ tối</div>
-                <p className="text-sm text-base-content/60">Điều chỉnh giao diện của Messenger để giảm độ chói và cho đôi mắt được nghỉ ngơi.</p>
+                <div className="font-bold">{pc(language, "darkMode")}</div>
+                <p className="text-sm text-base-content/60">{pc(language, "darkDesc")}</p>
               </div>
               {["Tắt", "Bật", "Tự động"].map((mode) => (
                 <label key={mode} className="flex cursor-pointer items-center justify-between gap-8">
-                  <span className="font-semibold">{mode}</span>
+                  <span className="font-semibold">{pc(language, mode === "Tắt" ? "off" : mode === "Bật" ? "on" : "auto")}</span>
                   <input type="radio" className="radio radio-primary radio-sm" checked={darkMode === mode} onChange={() => setDarkMode(mode)} />
                 </label>
               ))}
@@ -128,30 +184,30 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
         </section>
 
         <button type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300">
-          <span className="flex items-center gap-3"><Shield className="size-5" />Quản lý khoản thanh toán</span>
+          <span className="flex items-center gap-3"><Shield className="size-5" />{pc(language, "payments")}</span>
           <ChevronRight className="size-5" />
         </button>
 
-        {["Quản lý hoạt động gửi tin nhắn", "Quản lý phần Chặn"].map((label) => (
-          <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300" onClick={() => setDetailSection(label)}>
-            <span className="flex items-center gap-3"><Shield className="size-5" />{label}</span>
+        {["messagingActivity", "blocking"].map((key) => (
+          <button key={key} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300" onClick={() => setDetailSection(key)}>
+            <span className="flex items-center gap-3"><Shield className="size-5" />{pc(language, key)}</span>
             <ChevronRight className="size-5" />
           </button>
         ))}
       </div>
 
       {detailSection && (
-        <SettingsDetail title={detailSection} onBack={() => setDetailSection(null)} />
+        <SettingsDetail section={detailSection} onBack={() => setDetailSection(null)} language={language} />
       )}
 
       {showSnooze && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
           <div className="w-96 rounded-xl bg-base-100 p-5 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold">Tắt thông báo</h3>
+              <h3 className="text-xl font-bold">{pc(language, "snoozeTitle")}</h3>
               <button type="button" onClick={() => setShowSnooze(false)}><X className="size-5" /></button>
             </div>
-            <p className="mb-4 text-sm text-base-content/70">Cửa sổ chat vẫn đóng và bạn sẽ không nhận được thông báo đẩy trên thiết bị.</p>
+            <p className="mb-4 text-sm text-base-content/70">{pc(language, "snoozeBody")}</p>
             <div className="space-y-2">
               {snoozeOptions.map((option) => (
                 <label key={option} className="flex cursor-pointer items-center justify-between rounded-lg p-3 font-semibold hover:bg-base-300">
@@ -164,13 +220,13 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
               <button className="btn btn-ghost" onClick={() => {
                 setDoNotDisturb(false);
                 setShowSnooze(false);
-              }}>Hủy</button>
+              }}>{pc(language, "cancel")}</button>
               <button className="btn btn-primary" onClick={() => {
                 const duration = snoozeDurations[snoozeChoice];
                 localStorage.setItem("messenger-dnd-until", duration ? String(Date.now() + duration) : "manual");
                 setDoNotDisturb(true);
                 setShowSnooze(false);
-              }}>Tiếp</button>
+              }}>{pc(language, "next")}</button>
             </div>
           </div>
         </div>
@@ -224,26 +280,39 @@ const ListPanel = ({ title, people, description, onClose }) => (
   </PanelShell>
 );
 
-const SettingsDetail = ({ title, onBack }) => {
-  const isMessaging = title.includes("gửi tin nhắn");
+const SettingsDetail = ({ section, onBack, language }) => {
+  const isMessaging = section === "messagingActivity";
+  const title = pc(language, section);
   const rows = isMessaging
-    ? [
+    ? (language === "vi" ? [
         ["Bạn bè của bạn", "Cách tìm và liên hệ với bạn"],
         ["Bạn của bạn bè", "Ai có thể gửi cho bạn lời mời kết bạn?"],
         ["Chỉ mình tôi", "Ai có thể xem danh sách bạn bè của bạn?"],
         ["Có thể có mối liên hệ", "PingMe có thể gợi ý trang cá nhân của bạn cho ai dựa trên email?"],
         ["Bạn của bạn bè", "Những người có số điện thoại của bạn"],
         ["Tắt", "Công cụ tìm kiếm ngoài hệ thống liên kết đến trang cá nhân của bạn"],
-        ["Tin nhắn đang chờ", "Với những người có số điện thoại của bạn"],
-        ["Đoạn chat", "Với bạn của bạn bè trên PingMe"],
-        ["Đoạn chat", "Gửi tin nhắn đang chờ từ những người trong nhóm của bạn đến"],
-        ["Tin nhắn đang chờ", "Với những người khác trên PingMe"],
+        [t(language, "requests"), "Với những người có số điện thoại của bạn"],
+        [t(language, "chats"), "Với bạn của bạn bè trên PingMe"],
+        [t(language, "chats"), "Gửi tin nhắn đang chờ từ những người trong nhóm của bạn đến"],
+        [t(language, "requests"), "Với những người khác trên PingMe"],
+      ] : [
+        ["Your friends", "How people find and contact you"],
+        ["Friends of friends", "Who can send you friend requests?"],
+        ["Only me", "Who can see your friend list?"],
+        ["Possible connection", "Who can PingMe suggest your profile to based on email?"],
+        ["Friends of friends", "People with your phone number"],
+        ["Off", "Allow external search engines to link to your profile"],
+        [t(language, "requests"), "People with your phone number"],
+        [t(language, "chats"), "Friends of friends on PingMe"],
+        [t(language, "chats"), "Send requests from people in your groups to"],
+        [t(language, "requests"), "Other people on PingMe"],
       ]
+      )
     : [
-        ["Chỉnh sửa", "Danh sách hạn chế"],
-        ["Chỉnh sửa", "Chặn trang cá nhân và Trang"],
-        ["Chỉnh sửa", "Biệt danh bị chặn"],
-        ["Chỉnh sửa", "Chặn tin nhắn"],
+        [language === "vi" ? "Chỉnh sửa" : "Edit", language === "vi" ? "Danh sách hạn chế" : "Restricted list"],
+        [language === "vi" ? "Chỉnh sửa" : "Edit", language === "vi" ? "Chặn trang cá nhân và Trang" : "Block profiles and pages"],
+        [language === "vi" ? "Chỉnh sửa" : "Edit", language === "vi" ? "Biệt danh bị chặn" : "Blocked nicknames"],
+        [language === "vi" ? "Chỉnh sửa" : "Edit", language === "vi" ? "Chặn tin nhắn" : "Blocked messages"],
       ];
 
   return (
@@ -256,8 +325,8 @@ const SettingsDetail = ({ title, onBack }) => {
       </div>
       <p className="mb-4 text-sm text-base-content/70">
         {isMessaging
-          ? "Cách tìm và liên hệ với bạn, cũng như cách bạn nhận tin nhắn đang chờ."
-          : "Đang chặn. Quản lý những tài khoản, biệt danh và tin nhắn bị hạn chế hoặc bị chặn."}
+          ? (language === "vi" ? "Cách tìm và liên hệ với bạn, cũng như cách bạn nhận tin nhắn đang chờ." : "Control how people find and contact you, and how you receive message requests.")
+          : (language === "vi" ? "Đang chặn. Quản lý những tài khoản, biệt danh và tin nhắn bị hạn chế hoặc bị chặn." : "Manage restricted accounts, blocked nicknames, and blocked messages.")}
       </p>
       <div className="space-y-2">
         {rows.map(([value, label]) => (
@@ -265,10 +334,10 @@ const SettingsDetail = ({ title, onBack }) => {
             <span>
               <span className="block font-bold">{label}</span>
               <span className="text-sm text-base-content/60">
-                {isMessaging ? value : "Khi chỉnh sửa, bạn có thể cập nhật danh sách này trong giao diện quản lý chặn."}
+                {isMessaging ? value : (language === "vi" ? "Khi chỉnh sửa, bạn có thể cập nhật danh sách này trong giao diện quản lý chặn." : "Edit this list in the blocking management interface.")}
               </span>
             </span>
-            {isMessaging ? <ChevronRight className="size-5 shrink-0" /> : <span className="btn btn-sm">Chỉnh sửa</span>}
+            {isMessaging ? <ChevronRight className="size-5 shrink-0" /> : <span className="btn btn-sm">{language === "vi" ? "Chỉnh sửa" : "Edit"}</span>}
           </button>
         ))}
       </div>
