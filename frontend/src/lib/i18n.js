@@ -24,6 +24,9 @@ export const copy = {
     selectConversation: "Chọn một cuộc trò chuyện ở thanh bên để bắt đầu nhắn tin",
     noMessages: "Chưa có tin nhắn",
     activeNow: "Đang hoạt động",
+    inactive: "Không hoạt động",
+    chatInfo: "Thông tin đoạn chat",
+    closeChat: "Đóng đoạn chat",
   },
   en: {
     chats: "Chats",
@@ -50,6 +53,9 @@ export const copy = {
     selectConversation: "Select a conversation from the sidebar to start chatting",
     noMessages: "No messages yet",
     activeNow: "Active now",
+    inactive: "Inactive",
+    chatInfo: "Chat info",
+    closeChat: "Close chat",
   },
 };
 
