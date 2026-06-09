@@ -147,10 +147,10 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
   return (
     <>
-    <aside className="relative flex h-full w-[360px] max-w-full shrink-0 flex-col overflow-x-hidden border-r border-base-300 bg-base-200 max-lg:w-[92px]">
-      <div className="min-w-0 space-y-4 border-b border-base-300 p-4 max-lg:px-3">
+    <aside className="relative flex h-full w-full max-w-full shrink-0 flex-col overflow-x-hidden border-r border-base-300 bg-base-200 md:w-[300px] lg:w-[360px]">
+      <div className="min-w-0 space-y-4 border-b border-base-300 p-3 sm:p-4">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold tracking-tight max-lg:hidden">{t(language, "chats")}</h1>
+          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">{t(language, "chats")}</h1>
           <div className="flex gap-2">
             <button
               type="button"
@@ -176,7 +176,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           </div>
         </div>
 
-        <label className="input input-sm flex h-11 items-center gap-2 rounded-full border-none bg-base-300 px-4 max-lg:hidden">
+        <label className="input input-sm flex h-11 items-center gap-2 rounded-full border-none bg-base-300 px-4">
           <Search className="size-5 text-base-content/60" />
           <input
             type="search"
@@ -187,7 +187,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           />
         </label>
 
-        <div className="flex items-center gap-2 max-lg:hidden">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {chatFilters.map((filter) => (
             <button
               key={filter.id}
