@@ -47,7 +47,7 @@ const setMutedUntil = (actions, userId, minutes) => ({
 });
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
+  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, sendCallEvent } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { language } = useLanguageStore();
   const [activeFilter, setActiveFilter] = useState("all");
@@ -288,7 +288,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       {confirmAction && (
         <ConfirmChatAction action={confirmAction} language={language} onCancel={() => setConfirmAction(null)} onConfirm={confirmSelectedAction} />
       )}
-      {callState && <CallDialog callState={callState} language={language} onClose={() => setCallState(null)} />}
+      {callState && <CallDialog callState={callState} language={language} onClose={() => setCallState(null)} onSave={sendCallEvent} />}
       {reportUser && <ReportDialog user={reportUser} language={language} onClose={() => setReportUser(null)} />}
       {muteUser && (
         <MuteDialog
