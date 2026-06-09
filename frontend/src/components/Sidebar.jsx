@@ -290,6 +290,17 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       )}
       {callState && <CallDialog callState={callState} language={language} onClose={() => setCallState(null)} />}
       {reportUser && <ReportDialog user={reportUser} language={language} onClose={() => setReportUser(null)} />}
+      {muteUser && (
+        <MuteDialog
+          language={language}
+          onClose={() => setMuteUser(null)}
+          onConfirm={(minutes) => {
+            setUserActions((actions) => setMutedUntil(actions, muteUser._id, minutes));
+            toast.success(language === "vi" ? "Đã tắt thông báo" : "Notifications muted");
+            setMuteUser(null);
+          }}
+        />
+      )}
     </>
   );
 };
