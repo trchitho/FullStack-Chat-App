@@ -185,7 +185,14 @@ const ChatContainer = () => {
                     <Forward className="size-4" />
                     Chuyển tiếp
                   </button>
-                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
+                    onClick={() => {
+                      setPinnedMessage({ id: message._id, preview: message.text || "[Hình ảnh]" });
+                      setActionMenuFor(null);
+                    }}
+                  >
                     <Pin className="size-4" />
                     Ghim
                   </button>
