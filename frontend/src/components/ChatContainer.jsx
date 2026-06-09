@@ -5,7 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
+import { FileText, Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 
@@ -24,6 +24,13 @@ const ChatContainer = () => {
   const [pinnedMessage, setPinnedMessage] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
+  const getMessagePreview = (message) => {
+    if (message.text) return message.text;
+    if (message.image || message.attachment?.type?.startsWith("image/")) return "[Hình ảnh]";
+    if (message.attachment?.type?.startsWith("audio/")) return "[Tin nhắn thoại]";
+    if (message.attachment) return "[Tệp đính kèm]";
+    return "[Tin nhắn]";
+  };
 
   useEffect(() => {
     getMessages(selectedUser._id)
@@ -142,6 +149,31 @@ const ChatContainer = () => {
                   onClick={() => setLightboxImage(message.image)}
                 />
               )}
+              {!isRevoked && message.attachment?.url && (
+                message.attachment.type?.startsWith("image/") ? (
+                  <img
+                    src={message.attachment.url}
+                    alt={message.attachment.name || "Tệp ảnh"}
+                    className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] cursor-zoom-in rounded-2xl object-contain"
+                    onClick={() => setLightboxImage(message.attachment.url)}
+                  />
+                ) : message.attachment.type?.startsWith("audio/") ? (
+                  <audio controls className="w-full max-w-xs">
+                    <source src={message.attachment.url} type={message.attachment.type} />
+                    Trình duyệt không hỗ trợ phát âm thanh.
+                  </audio>
+                ) : (
+                  <a
+                    href={message.attachment.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex max-w-xs items-center gap-3 rounded-2xl bg-black/10 px-3 py-2 hover:bg-black/15"
+                  >
+                    <FileText className="size-5 shrink-0" />
+                    <span className="min-w-0 truncate">{message.attachment.name || "Tệp đính kèm"}</span>
+                  </a>
+                )
+              )}
               {!isRevoked && message.text && <p>{message.text}</p>}
               {messageReactions[message._id] && (
                 <span className="absolute -bottom-4 right-3 rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
@@ -169,7 +201,7 @@ const ChatContainer = () => {
                   onClick={() => setReplyTo({
                     id: message._id,
                     senderName: isOwnMessage ? authUser.fullName : selectedUser.fullName,
-                    preview: message.text || "[Hình ảnh]",
+                    preview: getMessagePreview(message),
                   })}
                 >
                   <Reply className="size-4" />
@@ -231,8 +263,8 @@ const ChatContainer = () => {
                   <button
                     type="button"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
-                    onClick={() => {
-                      setPinnedMessage({ id: message._id, preview: message.text || "[Hình ảnh]" });
+                  onClick={() => {
+                      setPinnedMessage({ id: message._id, preview: getMessagePreview(message) });
                       setActionMenuFor(null);
                     }}
                   >
