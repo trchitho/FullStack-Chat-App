@@ -70,3 +70,44 @@ const AdminPage = () => {
             </div>
           ))}
         </section>
+        <section className="overflow-hidden rounded-2xl bg-base-100 shadow">
+          <div className="border-b border-base-300 p-4">
+            <h2 className="text-xl font-bold">Người dùng hệ thống</h2>
+            <p className="text-sm text-base-content/60">Không hiển thị nội dung tin nhắn, token, mật khẩu hoặc dữ liệu riêng tư.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Người dùng</th>
+                  <th>Email</th>
+                  <th>Tin đã gửi</th>
+                  <th>Hoạt động gần nhất</th>
+                  <th>Ngày tạo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user._id}>
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <img src={user.profilePic || "/avatar.png"} alt="" className="size-10 rounded-full object-cover" />
+                        <span className="font-semibold">{user.fullName}</span>
+                      </div>
+                    </td>
+                    <td>{user.email}</td>
+                    <td>{user.sentMessages || 0}</td>
+                    <td>{user.lastActivityAt ? new Date(user.lastActivityAt).toLocaleString("vi-VN") : "Chưa có"}</td>
+                    <td>{new Date(user.createdAt).toLocaleDateString("vi-VN")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default AdminPage;
