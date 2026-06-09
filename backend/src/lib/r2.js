@@ -45,5 +45,6 @@ export const uploadFileToR2 = async (file) => {
     name: file.originalname,
     type: file.mimetype,
     size: file.size,
+    storage: "r2",
   };
 };
