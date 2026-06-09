@@ -9,12 +9,21 @@ import {
   User,
 } from "lucide-react";
 import { useLanguageStore } from "../store/useLanguageStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
   const { language } = useLanguageStore();
   const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    if (!showNotifications) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setShowNotifications(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [showNotifications]);
 
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur">
@@ -35,7 +44,14 @@ const Navbar = () => {
           </Link>
           {authUser && (
             <>
-            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={() => setShowNotifications((value) => !value)} aria-label={language === "vi" ? "Thông báo" : "Notifications"}>
+            <button
+              type="button"
+              className="btn btn-circle btn-sm border-none bg-base-300"
+              onClick={() => setShowNotifications((value) => !value)}
+              aria-label={language === "vi" ? "Thông báo" : "Notifications"}
+              aria-expanded={showNotifications}
+              aria-controls="pingme-notifications"
+            >
               <Bell className="size-5" />
             </button>
             <Link to="/profile" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Trang cá nhân" : "Profile"}>
@@ -54,7 +70,7 @@ const Navbar = () => {
 };
 
 const NotificationDropdown = ({ language }) => (
-  <div className="absolute right-0 top-12 z-[120] w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
+  <div id="pingme-notifications" role="region" aria-label={language === "vi" ? "Thông báo PingMe" : "PingMe notifications"} className="absolute right-0 top-12 z-[120] w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
     <div className="mb-3 text-lg font-bold">{language === "vi" ? "Thông báo" : "Notifications"}</div>
     <div className="rounded-xl bg-base-200 p-3">
       <div className="font-semibold">{language === "vi" ? "PingMe đang hoạt động" : "PingMe is active"}</div>
