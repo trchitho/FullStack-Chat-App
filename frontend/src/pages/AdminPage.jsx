@@ -39,9 +39,9 @@ const AdminPage = () => {
         <form onSubmit={submitLogin} className="w-full max-w-sm rounded-2xl bg-base-100 p-6 shadow-2xl">
           <h1 className="mb-1 text-2xl font-bold">Admin PingMe</h1>
           <p className="mb-5 text-sm text-base-content/60">Khu vực quản trị chỉ hiển thị metadata, không xem nội dung riêng tư.</p>
-          <input className="input input-bordered mb-3 w-full" value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} placeholder="Tài khoản" />
-          <input className="input input-bordered mb-4 w-full" type="password" value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} placeholder="Mật khẩu" />
-          <button className="btn btn-primary w-full">Đăng nhập admin</button>
+          <input className="input input-bordered mb-3 w-full" value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} placeholder="Tài khoản" aria-label="Tài khoản admin" />
+          <input className="input input-bordered mb-4 w-full" type="password" value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} placeholder="Mật khẩu" aria-label="Mật khẩu admin" />
+          <button type="submit" className="btn btn-primary w-full">Đăng nhập admin</button>
         </form>
       </main>
     );
@@ -55,7 +55,7 @@ const AdminPage = () => {
             <h1 className="text-3xl font-bold">Bảng điều khiển Admin</h1>
             <p className="text-base-content/60">Giám sát hoạt động hệ thống theo nguyên tắc không đọc nội dung riêng tư.</p>
           </div>
-          <button className="btn" onClick={async () => { await axiosInstance.post("/admin/logout"); setAdmin(null); }}>Đăng xuất</button>
+          <button type="button" className="btn" onClick={async () => { await axiosInstance.post("/admin/logout"); setAdmin(null); }}>Đăng xuất</button>
         </header>
         <section className="grid gap-4 md:grid-cols-4">
           {[
