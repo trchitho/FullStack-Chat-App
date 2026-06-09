@@ -5,7 +5,7 @@ import { useChatStore } from "../store/useChatStore";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
-import MessengerPanel from "../components/MessengerPanel";
+import ChatPanel from "../components/ChatPanel";
 
 const HomePage = () => {
   const { selectedUser } = useChatStore();
@@ -21,7 +21,7 @@ const HomePage = () => {
           {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
         </section>
 
-        <MessengerPanel
+        <ChatPanel
           panel={activePanel}
           onClose={() => setActivePanel(null)}
           onOpenProfile={() => navigate("/profile")}

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { chatFilters, sidebarMenuItems, userCardActions } from "../constants/messengerUi";
+import { chatFilters, sidebarMenuItems, userCardActions } from "../constants/chatUi";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents";
 import { useLanguageStore } from "../store/useLanguageStore";

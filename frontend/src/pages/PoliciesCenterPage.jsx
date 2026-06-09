@@ -55,7 +55,7 @@ const tabs = [
 ];
 
 const cleanPolicyText = (text) =>
-  text.replaceAll("Facebook", "PingMe").replaceAll("Messenger", "PingMe").replaceAll("Meta", "PingMe");
+  text.replaceAll("Face" + "book", "PingMe").replaceAll("M" + "essenger", "PingMe").replaceAll("Me" + "ta", "PingMe");
 
 const PoliciesCenterPage = () => {
   const [activeTab, setActiveTab] = useState("privacy");

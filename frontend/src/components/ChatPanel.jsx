@@ -118,8 +118,8 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
   const { authUser } = useAuthStore();
   const { activeStatus, setActiveStatus } = useAuthStore();
   const { language } = useLanguageStore();
-  const [soundEnabled, setSoundEnabled] = useStateFromStorage("messenger-sound-enabled", true);
-  const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("messenger-dnd", false);
+  const [soundEnabled, setSoundEnabled] = useStateFromStorage("pingme-sound-enabled", true);
+  const [doNotDisturb, setDoNotDisturb] = useStateFromStorage("pingme-dnd", false);
   const [showSnooze, setShowSnooze] = useState(false);
   const [snoozeChoice, setSnoozeChoice] = useState("Trong 1 giờ");
   const [detailSection, setDetailSection] = useState(null);
@@ -223,7 +223,7 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
               }}>{pc(language, "cancel")}</button>
               <button className="btn btn-primary" onClick={() => {
                 const duration = snoozeDurations[snoozeChoice];
-                localStorage.setItem("messenger-dnd-until", duration ? String(Date.now() + duration) : "manual");
+                localStorage.setItem("pingme-dnd-until", duration ? String(Date.now() + duration) : "manual");
                 setDoNotDisturb(true);
                 setShowSnooze(false);
               }}>{pc(language, "next")}</button>
@@ -371,7 +371,7 @@ const PrivacyPanel = ({ onClose, language }) => (
   </PanelShell>
 );
 
-const MessengerPanel = ({ panel, onClose, onOpenProfile }) => {
+const ChatPanel = ({ panel, onClose, onOpenProfile }) => {
   const { language } = useLanguageStore();
   if (!panel) return null;
   if (panel === "settings") return <SettingsPanel onClose={onClose} onOpenProfile={onOpenProfile} />;
@@ -382,4 +382,4 @@ const MessengerPanel = ({ panel, onClose, onOpenProfile }) => {
   return null;
 };
 
-export default MessengerPanel;
+export default ChatPanel;
