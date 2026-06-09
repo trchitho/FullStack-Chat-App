@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '../store/useChatStore';
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
@@ -12,6 +12,9 @@ const ChatContainer = () => {
 
   const {authUser} = useAuthStore();
   const messagesContainerRef = useRef(null);
+  const [reactionPickerFor, setReactionPickerFor] = useState(null);
+  const [messageReactions, setMessageReactions] = useState({});
+  const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
     getMessages(selectedUser._id)
@@ -55,7 +58,7 @@ const ChatContainer = () => {
           return (
           <div
             key={message._id}
-            className={`chat group min-w-0 ${isOwnMessage ? "chat-end" : "chat-start"}`}
+            className={`chat group relative min-w-0 ${isOwnMessage ? "chat-end" : "chat-start"}`}
           >
             <div className=" chat-image avatar">
               <div className="size-10 rounded-full border">
@@ -75,7 +78,7 @@ const ChatContainer = () => {
               </time>
             </div>
             <div className={`flex items-center gap-2 ${isOwnMessage ? "flex-row-reverse" : ""}`}>
-              <div className={`chat-bubble flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
+              <div className={`chat-bubble relative flex max-w-[min(68%,720px)] min-w-0 flex-col break-words rounded-3xl px-4 py-2 text-base ${
                 isOwnMessage ? "bg-primary text-primary-content" : "bg-base-300 text-base-content"
               }`}>
               {message.image && (
@@ -86,9 +89,19 @@ const ChatContainer = () => {
                 />
               )}
               {message.text && <p>{message.text}</p>}
+              {messageReactions[message._id] && (
+                <span className="absolute -bottom-4 right-3 rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
+                  {messageReactions[message._id]}
+                </span>
+              )}
               </div>
               <div className="flex opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
-                <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc">
+                <button
+                  type="button"
+                  className="btn btn-circle btn-ghost btn-xs"
+                  title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc"
+                  onClick={() => setReactionPickerFor(reactionPickerFor === message._id ? null : message._id)}
+                >
                   <SmilePlus className="size-4" />
                 </button>
                 <button type="button" className="btn btn-circle btn-ghost btn-xs" title="Trả lời tin nhắn này">
@@ -98,6 +111,23 @@ const ChatContainer = () => {
                   <MoreHorizontal className="size-4" />
                 </button>
               </div>
+              {reactionPickerFor === message._id && (
+                <div className="absolute z-40 mt-[-44px] flex rounded-full bg-base-100 p-1 shadow-2xl">
+                  {reactionEmojis.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className="rounded-full p-1.5 text-xl hover:bg-base-300"
+                      onClick={() => {
+                        setMessageReactions((current) => ({ ...current, [message._id]: emoji }));
+                        setReactionPickerFor(null);
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           );
