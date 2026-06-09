@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Laugh, Send, ThumbsUp, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -6,8 +6,29 @@ import toast from "react-hot-toast";
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
   const { sendMessage } = useChatStore();
+  const composerEmojis = ["😀", "😆", "😍", "😂", "😢", "😡", "👍", "❤️", "🎉", "🙏"];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setShowEmojiPicker(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -48,7 +69,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+    <div className="relative shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
@@ -94,7 +115,12 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
-          <button type="button" className="btn btn-circle btn-ghost btn-sm text-primary" aria-label="Biểu cảm">
+          <button
+            type="button"
+            className="btn btn-circle btn-ghost btn-sm text-primary"
+            onClick={() => setShowEmojiPicker((value) => !value)}
+            aria-label="Mở biểu tượng cảm xúc"
+          >
             <Laugh size={20} />
           </button>
         </div>
@@ -105,6 +131,23 @@ const MessageInput = () => {
           {text.trim() || imagePreview ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
       </form>
+      {showEmojiPicker && (
+        <div ref={emojiPickerRef} className="absolute bottom-20 right-16 z-50 grid grid-cols-5 gap-2 rounded-2xl border border-base-300 bg-base-100 p-3 shadow-2xl">
+          {composerEmojis.map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              className="rounded-lg p-2 text-xl hover:bg-base-300"
+              onClick={() => {
+                setText((value) => `${value}${emoji}`);
+                setShowEmojiPicker(false);
+              }}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
