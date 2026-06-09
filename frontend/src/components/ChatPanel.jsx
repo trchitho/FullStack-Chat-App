@@ -385,11 +385,15 @@ const PrivacyPanel = ({ onClose, language }) => (
 
 const ChatPanel = ({ panel, onClose, onOpenProfile }) => {
   const { language } = useLanguageStore();
+  const { users } = useChatStore();
+  const { actions, removeUserAction } = useSidebarActions();
+  const archivedChats = users.filter((user) => (actions.archived || []).includes(user._id));
+  const restrictedAccounts = users.filter((user) => (actions.blocked || []).includes(user._id));
   if (!panel) return null;
   if (panel === "settings") return <SettingsPanel onClose={onClose} onOpenProfile={onOpenProfile} />;
   if (panel === "requests") return <ListPanel title={t(language, "requests")} people={samplePeople} description={language === "vi" ? "Bạn có thể mở tin nhắn đang chờ để biết thêm thông tin về người gửi." : "Open message requests to learn more about senders."} onClose={onClose} language={language} />;
-  if (panel === "archived") return <ListPanel title={t(language, "archived")} people={archivedChats} onClose={onClose} language={language} />;
-  if (panel === "restricted") return <ListPanel title={t(language, "restricted")} people={restrictedAccounts} description={language === "vi" ? "Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." : "Limit interactions with someone without blocking them."} onClose={onClose} language={language} />;
+  if (panel === "archived") return <ListPanel title={t(language, "archived")} people={archivedChats} actionLabel={language === "vi" ? "Bỏ lưu trữ" : "Unarchive"} onAction={(user) => removeUserAction("archived", user._id)} onClose={onClose} language={language} />;
+  if (panel === "restricted") return <ListPanel title={t(language, "restricted")} people={restrictedAccounts} actionLabel={language === "vi" ? "Bỏ chặn" : "Unblock"} onAction={(user) => removeUserAction("blocked", user._id)} description={language === "vi" ? "Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." : "Limit interactions with someone without blocking them."} onClose={onClose} language={language} />;
   if (panel === "privacy") return <PrivacyPanel onClose={onClose} language={language} />;
   return null;
 };
