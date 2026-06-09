@@ -259,7 +259,7 @@ function useSidebarActions() {
   return { actions, removeUserAction };
 }
 
-const ListPanel = ({ title, people, description, onClose, language }) => (
+const ListPanel = ({ title, people, description, actionLabel, onAction, onClose, language }) => (
   <PanelShell title={title} onClose={onClose}>
     {description && <p className="mb-5 text-sm text-base-content/70">{description}</p>}
     <label className="input input-sm mb-4 flex h-10 items-center gap-2 rounded-full border-none bg-base-300 px-4">
@@ -275,13 +275,14 @@ const ListPanel = ({ title, people, description, onClose, language }) => (
     )}
     <div className="space-y-1">
       {people.length > 0 ? people.map((person) => (
-        <button key={person} type="button" className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-300">
-          <img src="/avatar.png" alt="" className="size-12 rounded-full" />
-          <div>
-            <div className="font-bold">{person}</div>
+        <div key={person._id || person} className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-300">
+          <img src={person.profilePic || "/avatar.png"} alt="" className="size-12 rounded-full" />
+          <div className="min-w-0 flex-1">
+            <div className="truncate font-bold">{person.fullName || person}</div>
             <div className="text-sm text-base-content/60">{language === "vi" ? "Tin nhắn không hiển thị" : "Hidden message"} · 3 năm</div>
           </div>
-        </button>
+          {actionLabel && <button type="button" className="btn btn-sm" onClick={() => onAction?.(person)}>{actionLabel}</button>}
+        </div>
       )) : (
         <div className="rounded-2xl bg-base-100 p-6 text-center text-sm text-base-content/60">
           {language === "vi" ? "Chưa có dữ liệu trong mục này." : "No data in this section yet."}
