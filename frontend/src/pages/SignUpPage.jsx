@@ -36,9 +36,9 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="grid min-h-dvh max-w-full overflow-x-hidden lg:grid-cols-2">
       {/* left side */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+      <div className="flex min-w-0 flex-col items-center justify-center p-4 sm:p-6 lg:p-12">
         <div className="w-full max-w-md space-y-8">
           {/* LOGO */}
           <div className="text-center mb-8">
