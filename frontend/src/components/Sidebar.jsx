@@ -392,9 +392,10 @@ const MuteDialog = ({ language, onClose, onConfirm }) => {
   );
 };
 
-const CallDialog = ({ callState, language, onClose }) => {
+const CallDialog = ({ callState, language, onClose, onSave }) => {
   const videoRef = useRef(null);
   const [status, setStatus] = useState(language === "vi" ? "Đang xin quyền thiết bị..." : "Requesting device access...");
+  const startedAtRef = useRef(Date.now());
 
   useEffect(() => {
     let stream;
@@ -408,6 +409,12 @@ const CallDialog = ({ callState, language, onClose }) => {
     return () => stream?.getTracks().forEach((track) => track.stop());
   }, [callState.type, language]);
 
+  const endCall = async () => {
+    const duration = Math.max(1, Math.round((Date.now() - startedAtRef.current) / 1000));
+    await onSave(callState.user._id, { type: callState.type, status: "completed", duration });
+    onClose();
+  };
+
   return (
     <SimpleModal title={callState.type === "video" ? t(language, "videoChat") : t(language, "voiceCall")} onClose={onClose}>
       <div className="space-y-4 text-center">
@@ -415,7 +422,7 @@ const CallDialog = ({ callState, language, onClose }) => {
         <div className="text-xl font-bold">{callState.user.fullName}</div>
         {callState.type === "video" && <video ref={videoRef} autoPlay muted playsInline className="mx-auto aspect-video w-full rounded-xl bg-black object-cover" />}
         <p className="text-sm text-base-content/70">{status}</p>
-        <button type="button" className="btn btn-error" onClick={onClose}>{language === "vi" ? "Kết thúc" : "End"}</button>
+        <button type="button" className="btn btn-error" onClick={endCall}>{language === "vi" ? "Kết thúc" : "End"}</button>
       </div>
     </SimpleModal>
   );
