@@ -13,25 +13,29 @@ import {
   VolumeX,
 } from "lucide-react";
 
-export const chatFilters = ["Tất cả", "Chưa đọc", "Nhóm"];
+export const chatFilters = [
+  { id: "all", labelKey: "all" },
+  { id: "unread", labelKey: "unread" },
+  { id: "groups", labelKey: "groups" },
+];
 
 export const sidebarMenuItems = [
-  { id: "settings", label: "Tùy chọn", icon: Shield },
-  { id: "requests", label: "Tin nhắn đang chờ", icon: MessageCircleMore },
-  { id: "archived", label: "Đoạn chat đã lưu trữ", icon: Archive },
-  { id: "restricted", label: "Tài khoản đã hạn chế", icon: VolumeX },
-  { id: "privacy", label: "Quyền riêng tư và an toàn", icon: ShieldCheck },
-  { id: "help", label: "Trợ giúp", icon: CircleHelp },
+  { id: "settings", labelKey: "options", icon: Shield },
+  { id: "requests", labelKey: "requests", icon: MessageCircleMore },
+  { id: "archived", labelKey: "archived", icon: Archive },
+  { id: "restricted", labelKey: "restricted", icon: VolumeX },
+  { id: "privacy", labelKey: "privacy", icon: ShieldCheck },
+  { id: "help", labelKey: "help", icon: CircleHelp },
 ];
 
 export const userCardActions = [
-  { label: "Đánh dấu là chưa đọc", icon: MailOpen },
-  { label: "Tắt thông báo", icon: BellOff },
-  { label: "Xem trang cá nhân", icon: UserCircle },
-  { label: "Gọi thoại", icon: Phone },
-  { label: "Chat video", icon: Video },
-  { label: "Chặn", icon: Shield },
-  { label: "Lưu trữ đoạn chat", icon: Archive },
-  { label: "Xóa đoạn chat", icon: VolumeX },
-  { label: "Báo cáo", icon: Flag },
+  { labelKey: "markUnread", icon: MailOpen },
+  { labelKey: "mute", icon: BellOff },
+  { labelKey: "viewProfile", icon: UserCircle },
+  { labelKey: "voiceCall", icon: Phone },
+  { labelKey: "videoChat", icon: Video },
+  { labelKey: "block", icon: Shield },
+  { labelKey: "archiveChat", icon: Archive },
+  { labelKey: "deleteChat", icon: VolumeX },
+  { labelKey: "report", icon: Flag },
 ];
