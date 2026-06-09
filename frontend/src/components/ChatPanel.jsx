@@ -344,6 +344,18 @@ const SettingsDetail = ({ section, onBack, language, users = [], actions = {}, r
           : (language === "vi" ? "Đang chặn. Quản lý những tài khoản, biệt danh và tin nhắn bị hạn chế hoặc bị chặn." : "Manage restricted accounts, blocked nicknames, and blocked messages.")}
       </p>
       <div className="space-y-2">
+        {!isMessaging && blockedUsers.length > 0 && (
+          <div className="rounded-2xl bg-base-100 p-3">
+            <div className="mb-2 font-bold">{language === "vi" ? "Tài khoản đang bị chặn" : "Blocked accounts"}</div>
+            {blockedUsers.map((user) => (
+              <div key={user._id} className="flex items-center gap-3 rounded-xl p-2">
+                <img src={user.profilePic || "/avatar.png"} alt="" className="size-10 rounded-full" />
+                <span className="min-w-0 flex-1 truncate font-semibold">{user.fullName}</span>
+                <button type="button" className="btn btn-sm" onClick={() => removeUserAction("blocked", user._id)}>{language === "vi" ? "Bỏ chặn" : "Unblock"}</button>
+              </div>
+            ))}
+          </div>
+        )}
         {rows.map(([value, label]) => (
           <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-base-300">
             <span>
