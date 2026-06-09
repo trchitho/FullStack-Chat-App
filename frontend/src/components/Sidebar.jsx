@@ -232,11 +232,12 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 </div>
                 <div className="min-w-0 flex-1 max-lg:hidden">
                   <div className={`truncate font-semibold ${isMarkedUnread ? "text-primary" : ""}`}>{user.fullName}</div>
-                  <div className="truncate text-sm text-base-content/60">
+                  <div className={`truncate text-sm ${isMarkedUnread ? "font-bold text-base-content" : "text-base-content/60"}`}>
                     {isMuted ? (language === "vi" ? "Đã tắt thông báo" : "Muted") : user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
                 </div>
-                {isMarkedUnread && <span className="size-2.5 shrink-0 rounded-full bg-primary max-lg:hidden" />}
+                {isMuted && <BellOff className="size-4 shrink-0 text-base-content/50 max-lg:hidden" />}
+                {isMarkedUnread && <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-content max-lg:hidden">Mới</span>}
               </button>
 
               <button
