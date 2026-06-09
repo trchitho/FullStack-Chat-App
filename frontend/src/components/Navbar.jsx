@@ -29,16 +29,40 @@ const Navbar = () => {
           </label>
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        <div className="relative flex items-center justify-end gap-2">
+          <Link to="/settings" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Cài đặt" : "Settings"}>
+            <Settings className="size-5" />
+          </Link>
           {authUser && (
-            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Thông báo" : "Notifications"}>
+            <>
+            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={() => setShowNotifications((value) => !value)} aria-label={language === "vi" ? "Thông báo" : "Notifications"}>
               <Bell className="size-5" />
             </button>
+            <Link to="/profile" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Trang cá nhân" : "Profile"}>
+              {authUser.profilePic ? <img src={authUser.profilePic} alt="" className="size-8 rounded-full object-cover" /> : <User className="size-5" />}
+            </Link>
+            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={logout} aria-label={language === "vi" ? "Đăng xuất" : "Log out"}>
+              <LogOut className="size-5" />
+            </button>
+            </>
           )}
+          {showNotifications && <NotificationDropdown language={language} />}
         </div>
       </div>
     </header>
   );
 };
+
+const NotificationDropdown = ({ language }) => (
+  <div className="absolute right-0 top-12 z-[120] w-80 rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
+    <div className="mb-3 text-lg font-bold">{language === "vi" ? "Thông báo" : "Notifications"}</div>
+    <div className="rounded-xl bg-base-200 p-3">
+      <div className="font-semibold">{language === "vi" ? "PingMe đang hoạt động" : "PingMe is active"}</div>
+      <div className="text-sm text-base-content/60">
+        {language === "vi" ? "Bạn sẽ thấy thông báo tin nhắn, cuộc gọi và hoạt động hệ thống tại đây." : "Message, call, and system activity notifications will appear here."}
+      </div>
+    </div>
+  </div>
+);
 
 export default Navbar;
