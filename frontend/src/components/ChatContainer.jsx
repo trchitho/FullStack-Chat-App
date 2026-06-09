@@ -7,6 +7,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
 import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 
 const ChatContainer = () => {
   const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
@@ -43,6 +44,22 @@ const ChatContainer = () => {
     };
     document.addEventListener("keydown", closeLightbox);
     return () => document.removeEventListener("keydown", closeLightbox);
+  }, []);
+
+  useEffect(() => {
+    const closeMenus = () => {
+      setActionMenuFor(null);
+      setReactionPickerFor(null);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+    window.addEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener(FLOATING_MENU_CLOSE_EVENT, closeMenus);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
   }, []);
 
   if(isMessagesLoading) { 
@@ -137,7 +154,11 @@ const ChatContainer = () => {
                   type="button"
                   className="btn btn-circle btn-ghost btn-xs"
                   title="Bày tỏ cảm xúc bằng biểu tượng cảm xúc"
-                  onClick={() => setReactionPickerFor(reactionPickerFor === message._id ? null : message._id)}
+                  onClick={() => {
+                    const shouldOpen = reactionPickerFor !== message._id;
+                    closeFloatingMenus();
+                    setReactionPickerFor(shouldOpen ? message._id : null);
+                  }}
                 >
                   <SmilePlus className="size-4" />
                 </button>
@@ -157,7 +178,11 @@ const ChatContainer = () => {
                   type="button"
                   className="btn btn-circle btn-ghost btn-xs"
                   title="Hành động khác"
-                  onClick={() => setActionMenuFor(actionMenuFor === message._id ? null : message._id)}
+                  onClick={() => {
+                    const shouldOpen = actionMenuFor !== message._id;
+                    closeFloatingMenus();
+                    setActionMenuFor(shouldOpen ? message._id : null);
+                  }}
                 >
                   <MoreHorizontal className="size-4" />
                 </button>
