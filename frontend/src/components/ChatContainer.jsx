@@ -5,7 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2 } from 'lucide-react';
+import { Forward, MoreHorizontal, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ChatContainer = () => {
@@ -21,6 +21,7 @@ const ChatContainer = () => {
   const [hiddenMessageIds, setHiddenMessageIds] = useState([]);
   const [revokedMessageIds, setRevokedMessageIds] = useState([]);
   const [pinnedMessage, setPinnedMessage] = useState(null);
+  const [lightboxImage, setLightboxImage] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -35,6 +36,14 @@ const ChatContainer = () => {
     const container = messagesContainerRef.current;
     if (container) container.scrollTop = container.scrollHeight;
   }, [messages]);
+
+  useEffect(() => {
+    const closeLightbox = (event) => {
+      if (event.key === "Escape") setLightboxImage(null);
+    };
+    document.addEventListener("keydown", closeLightbox);
+    return () => document.removeEventListener("keydown", closeLightbox);
+  }, []);
 
   if(isMessagesLoading) { 
     return (
@@ -112,7 +121,8 @@ const ChatContainer = () => {
                 <img
                   src={message.image}
                   alt="Attachment"
-                  className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] rounded-2xl object-contain"
+                  className="mb-2 max-h-[360px] w-full max-w-[min(420px,72vw)] cursor-zoom-in rounded-2xl object-contain"
+                  onClick={() => setLightboxImage(message.image)}
                 />
               )}
               {!isRevoked && message.text && <p>{message.text}</p>}
@@ -239,6 +249,14 @@ const ChatContainer = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {lightboxImage && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/85 p-4" onClick={() => setLightboxImage(null)}>
+          <button type="button" className="absolute right-5 top-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20" onClick={() => setLightboxImage(null)} aria-label="Đóng ảnh">
+            <X className="size-6" />
+          </button>
+          <img src={lightboxImage} alt="Attachment full screen" className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
     </div>
