@@ -128,6 +128,11 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
           </div>
         </section>
 
+        <button type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300">
+          <span className="flex items-center gap-3"><Shield className="size-5" />Quản lý khoản thanh toán</span>
+          <ChevronRight className="size-5" />
+        </button>
+
         {["Quản lý hoạt động gửi tin nhắn", "Quản lý phần Chặn"].map((label) => (
           <button key={label} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-bold hover:bg-base-300" onClick={() => setDetailSection(label)}>
             <span className="flex items-center gap-3"><Shield className="size-5" />{label}</span>
@@ -256,12 +261,43 @@ const SettingsDetail = ({ title, onBack }) => {
 
 const HelpPanel = ({ onClose }) => (
   <PanelShell title="Trợ giúp" onClose={onClose}>
-    <p className="mb-4 text-sm text-base-content/70">Trung tâm trợ giúp Messenger</p>
-    {["Đăng nhập và mật khẩu", "Quyền riêng tư và an toàn", "Tin nhắn", "Cuộc gọi thoại và video", "Báo cáo sự cố"].map((item) => (
-      <a key={item} href="https://www.facebook.com/help/messenger-app/" target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl p-3 font-bold hover:bg-base-300">
+    <h3 className="text-xl font-bold">Chúng tôi có thể giúp gì cho bạn?</h3>
+    <label className="input input-sm my-4 flex h-11 items-center gap-2 rounded-full border-none bg-base-300 px-4">
+      <Search className="size-4" />
+      <input className="grow" placeholder="Tìm kiếm bài viết trợ giúp..." />
+    </label>
+    <div className="grid gap-2 md:grid-cols-2">
+      {["Tính năng trên Messenger", "Quản lý tài khoản", "Quyền riêng tư và an toàn", "Thanh toán và kinh doanh"].map((item) => (
+        <button key={item} type="button" className="rounded-xl bg-base-100 p-3 text-left font-semibold hover:bg-base-300">{item}</button>
+      ))}
+    </div>
+    <h4 className="mt-5 font-bold">Chủ đề thịnh hành</h4>
+    {["Khôi phục đoạn chat", "Quản lý thông báo", "Báo cáo tin nhắn hoặc cuộc trò chuyện", "Chặn tài khoản", "Tùy chỉnh giao diện"].map((item) => (
+      <button key={item} type="button" className="flex w-full items-center justify-between rounded-xl p-3 text-left font-semibold hover:bg-base-300">
         {item}
         <ChevronRight className="size-5" />
-      </a>
+      </button>
+    ))}
+    <div className="fixed bottom-6 right-6 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-content shadow-2xl">Chat trợ giúp</div>
+  </PanelShell>
+);
+
+const PrivacyPanel = ({ onClose }) => (
+  <PanelShell title="Quyền riêng tư và an toàn" onClose={onClose}>
+    {[
+      ["Trạng thái hoạt động", "Kiểm soát ai có thể thấy khi bạn đang hoạt động."],
+      ["Tin nhắn đang chờ", "Quản lý cách người lạ gửi tin nhắn cho bạn."],
+      ["Tài khoản đã hạn chế", "Xem và quản lý danh sách tài khoản bị hạn chế."],
+      ["Chặn", "Chặn tài khoản, tin nhắn hoặc biệt danh không mong muốn."],
+      ["Báo cáo sự cố", "Gửi báo cáo khi bạn gặp nội dung hoặc hành vi không phù hợp."],
+    ].map(([title, desc]) => (
+      <button key={title} type="button" className="flex w-full items-center justify-between border-b border-base-300 p-3 text-left hover:bg-base-300">
+        <span>
+          <span className="block font-bold">{title}</span>
+          <span className="text-sm text-base-content/60">{desc}</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0" />
+      </button>
     ))}
   </PanelShell>
 );
@@ -272,6 +308,7 @@ const MessengerPanel = ({ panel, onClose, onOpenProfile }) => {
   if (panel === "requests") return <ListPanel title="Tin nhắn đang chờ" people={samplePeople} description="Bạn có thể mở tin nhắn đang chờ để biết thêm thông tin về người gửi." onClose={onClose} />;
   if (panel === "archived") return <ListPanel title="Đoạn chat đã lưu trữ" people={archivedChats} onClose={onClose} />;
   if (panel === "restricted") return <ListPanel title="Tài khoản đã hạn chế" people={restrictedAccounts} description="Bạn có thể giới hạn hoạt động tương tác với ai đó mà không phải chặn họ." onClose={onClose} />;
+  if (panel === "privacy") return <PrivacyPanel onClose={onClose} />;
   if (panel === "help") return <HelpPanel onClose={onClose} />;
   return null;
 };
