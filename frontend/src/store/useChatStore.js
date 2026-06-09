@@ -3,6 +3,9 @@ import { toast } from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
+const sortUsersByLatestMessage = (users) =>
+  [...users].sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
+
 export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
@@ -40,7 +43,14 @@ export const useChatStore = create((set, get) => ({
         `/messages/send/${selectedUser._id}`,
         messageData
       );
-      set({ messages: [...messages, res.data] });
+      set({
+        messages: [...messages, res.data],
+        users: sortUsersByLatestMessage(get().users.map((user) =>
+          user._id === selectedUser._id
+            ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: res.data.text || "[Tệp đính kèm]" }
+            : user
+        )),
+      });
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -69,6 +79,11 @@ export const useChatStore = create((set, get) => ({
 
       set({
         messages: [...get().messages, newMessage],
+        users: sortUsersByLatestMessage(get().users.map((user) =>
+          user._id === newMessage.senderId
+            ? { ...user, lastMessageAt: newMessage.createdAt, lastMessageText: newMessage.text || "[Tệp đính kèm]" }
+            : user
+        )),
       });
     });
   },

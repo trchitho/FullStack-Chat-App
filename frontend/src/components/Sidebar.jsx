@@ -139,7 +139,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 <div className="min-w-0 flex-1 max-lg:hidden">
                   <div className="truncate font-semibold">{user.fullName}</div>
                   <div className="truncate text-sm text-base-content/60">
-                    {isOnline ? "Đang hoạt động" : "Tin nhắn và cuộc gọi gần đây"}
+                    {user.lastMessageText || (isOnline ? "Đang hoạt động" : "Chưa có tin nhắn")}
                   </div>
                 </div>
               </button>
