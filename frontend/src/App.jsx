@@ -8,6 +8,7 @@ import SettingsPage from './pages/SettingsPage'
 import ProfilePage from './pages/ProfilePage'
 import HelpCenterPage from './pages/HelpCenterPage'
 import PoliciesCenterPage from './pages/PoliciesCenterPage'
+import AdminPage from './pages/AdminPage'
 import { useAuthStore } from './store/useAuthStore' 
 import {Loader} from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
@@ -17,7 +18,7 @@ const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
   const {theme} = useThemeStore();
   const location = useLocation();
-  const standalonePage = location.pathname.startsWith("/help") || location.pathname.startsWith("/policies_center");
+  const standalonePage = location.pathname.startsWith("/help") || location.pathname.startsWith("/policies_center") || location.pathname.startsWith("/admin");
   
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const App = () => {
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to='/login' />} />
         <Route path="/help/messages-app/" element={<HelpCenterPage />} />
         <Route path="/policies_center" element={<PoliciesCenterPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
       
       <Toaster />
