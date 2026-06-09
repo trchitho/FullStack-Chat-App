@@ -10,6 +10,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const attachmentInputRef = useRef(null);
@@ -38,6 +39,15 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       document.removeEventListener("keydown", handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isRecording) {
+      setRecordingSeconds(0);
+      return undefined;
+    }
+    const intervalId = window.setInterval(() => setRecordingSeconds((value) => value + 1), 1000);
+    return () => window.clearInterval(intervalId);
+  }, [isRecording]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
