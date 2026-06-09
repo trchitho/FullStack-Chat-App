@@ -135,6 +135,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
+    <>
     <aside className="relative flex h-full w-[360px] max-w-full shrink-0 flex-col overflow-x-hidden border-r border-base-300 bg-base-200 max-lg:w-[92px]">
       <div className="min-w-0 space-y-4 border-b border-base-300 p-4 max-lg:px-3">
         <div className="flex items-center justify-between gap-3">
@@ -261,6 +262,21 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         )}
       </div>
     </aside>
+      {profileUser && (
+        <SimpleModal title={language === "vi" ? "Trang cá nhân" : "Profile"} onClose={() => setProfileUser(null)}>
+          <div className="flex items-center gap-4">
+            <img src={profileUser.profilePic || "/avatar.png"} alt="" className="size-16 rounded-full object-cover" />
+            <div>
+              <div className="text-xl font-bold">{profileUser.fullName}</div>
+              <div className="text-sm text-base-content/60">{onlineUsers.includes(profileUser._id) ? t(language, "activeNow") : t(language, "inactive")}</div>
+            </div>
+          </div>
+        </SimpleModal>
+      )}
+      {confirmAction && (
+        <ConfirmChatAction action={confirmAction} language={language} onCancel={() => setConfirmAction(null)} onConfirm={confirmSelectedAction} />
+      )}
+    </>
   );
 };
 
@@ -292,6 +308,36 @@ const MainSidebarMenu = ({ position, onOpenPanel, language }) => (
     ))}
   </div>
 );
+
+const SimpleModal = ({ title, children, onClose }) => (
+  <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+    <div className="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-bold">{title}</h2>
+        <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose}>✕</button>
+      </div>
+      {children}
+    </div>
+  </div>
+);
+
+const ConfirmChatAction = ({ action, language, onCancel, onConfirm }) => {
+  const labels = {
+    archive: language === "vi" ? ["Lưu trữ đoạn chat", "Đoạn chat sẽ được ẩn khỏi danh sách hiện tại."] : ["Archive chat", "This chat will be hidden from the current list."],
+    block: language === "vi" ? ["Chặn tài khoản", "Bạn sẽ không thấy đoạn chat này trong danh sách nữa."] : ["Block account", "You will no longer see this chat in the list."],
+    delete: language === "vi" ? ["Xóa đoạn chat", "Đoạn chat sẽ bị gỡ khỏi danh sách của bạn."] : ["Delete chat", "This chat will be removed from your list."],
+  };
+  const [title, body] = labels[action.type];
+  return (
+    <SimpleModal title={title} onClose={onCancel}>
+      <p className="text-base-content/70">{body}</p>
+      <div className="mt-5 flex justify-end gap-2">
+        <button type="button" className="btn btn-ghost" onClick={onCancel}>{language === "vi" ? "Hủy" : "Cancel"}</button>
+        <button type="button" className="btn btn-primary" onClick={onConfirm}>{language === "vi" ? "Xác nhận" : "Confirm"}</button>
+      </div>
+    </SimpleModal>
+  );
+};
 
 const UserActionMenu = ({ position, language, user, onAction }) => (
   <div
