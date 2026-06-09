@@ -36,8 +36,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="relative flex h-full w-[360px] shrink-0 flex-col border-r border-base-300 bg-base-200 max-lg:w-[92px]">
-      <div className="space-y-4 border-b border-base-300 p-4 max-lg:px-3">
+    <aside className="relative flex h-full w-[360px] max-w-full shrink-0 flex-col overflow-x-hidden border-r border-base-300 bg-base-200 max-lg:w-[92px]">
+      <div className="min-w-0 space-y-4 border-b border-base-300 p-4 max-lg:px-3">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-3xl font-bold tracking-tight max-lg:hidden">Đoạn chat</h1>
           <div className="flex gap-2">
@@ -60,7 +60,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           <input
             type="search"
             className="grow"
-            placeholder="Tìm kiếm trên Messenger"
+            placeholder="Tìm kiếm người dùng"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -101,17 +101,17 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         </div>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-2">
+      <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-2">
         {filteredUsers.map((user) => {
           const isOnline = onlineUsers.includes(user._id);
           const isSelected = selectedUser?._id === user._id;
 
           return (
-            <div key={user._id} className="group relative">
+            <div key={user._id} className="group relative min-w-0">
               <button
                 type="button"
                 onClick={() => setSelectedUser(user)}
-                className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${
+                className={`flex w-full min-w-0 items-center gap-3 rounded-xl p-3 text-left transition ${
                   isSelected ? "bg-primary/15" : "hover:bg-base-300"
                 }`}
               >
