@@ -189,14 +189,16 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       )}
 
       {attachmentFile && (
-        <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-base-200 px-4 py-2 text-sm">
-          <div className="min-w-0">
-            <div className="truncate font-semibold">{attachmentFile.name}</div>
-            <div className="text-base-content/60">{Math.ceil(attachmentFile.size / 1024)} KB</div>
+        <div className="mb-3 flex items-center gap-3 rounded-2xl bg-base-300 p-3">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-base-100">
+            <Paperclip className="size-5 text-primary" />
           </div>
-          <button type="button" className="btn btn-circle btn-ghost btn-xs" onClick={() => setAttachmentFile(null)} aria-label={isVi ? "Gỡ file đính kèm" : "Remove attachment"}>
-            <X className="size-4" />
-          </button>
+          <div className="relative max-w-40 rounded-xl bg-base-100 px-3 py-2 pr-8 text-sm font-semibold">
+            <div className="truncate">{attachmentFile.name}</div>
+            <button type="button" className="absolute -right-2 -top-2 btn btn-circle btn-xs" onClick={removeAttachment} aria-label={isVi ? "Gỡ file đính kèm" : "Remove attachment"}>
+              <X className="size-3" />
+            </button>
+          </div>
         </div>
       )}
 
