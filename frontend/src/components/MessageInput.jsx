@@ -9,6 +9,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const attachmentInputRef = useRef(null);
@@ -101,6 +102,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     if (!text.trim() && !imagePreview && !attachmentFile) return;
 
     try {
+      setIsSending(true);
       const attachment = attachmentFile ? await uploadAttachment(attachmentFile) : undefined;
       await sendMessage({
         text: text.trim(),
@@ -122,6 +124,9 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       if (attachmentInputRef.current) attachmentInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
+      toast.error(isVi ? "Không gửi được tin nhắn" : "Could not send message");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -183,6 +188,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <button
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${imagePreview ? "bg-primary/10" : ""}`}
+          disabled={isSending}
           onClick={() => fileInputRef.current?.click()}
           title={isVi ? "Gửi ảnh" : "Send image"}
           aria-label={isVi ? "Gửi ảnh" : "Send image"}
@@ -192,6 +198,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <button
           type="button"
           className="btn btn-circle btn-ghost btn-sm text-primary"
+          disabled={isSending}
           onClick={() => attachmentInputRef.current?.click()}
           title={isVi ? "Đính kèm file" : "Attach file"}
           aria-label={isVi ? "Đính kèm file" : "Attach file"}
@@ -201,6 +208,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <button
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${isRecording ? "bg-error/15 text-error" : ""}`}
+          disabled={isSending}
           onClick={toggleRecording}
           title={isRecording ? (isVi ? "Dừng ghi âm" : "Stop recording") : (isVi ? "Gửi tin nhắn thoại" : "Send voice message")}
           aria-label={isRecording ? (isVi ? "Dừng ghi âm" : "Stop recording") : (isVi ? "Gửi tin nhắn thoại" : "Send voice message")}
@@ -210,7 +218,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-base-300 px-4">
           <input
             type="text"
-            className="input input-sm h-11 min-h-11 flex-1 border-none bg-transparent focus:outline-none"
+          className="input input-sm h-11 min-h-11 flex-1 border-none bg-transparent focus:outline-none"
+            disabled={isSending}
             placeholder="Aa"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -242,11 +251,12 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <button
           type={text.trim() || imagePreview || attachmentFile ? "submit" : "button"}
           className="btn btn-sm btn-circle btn-ghost text-primary"
+          disabled={isSending}
           onClick={text.trim() || imagePreview || attachmentFile ? undefined : handleQuickLike}
           title={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
           aria-label={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
         >
-          {text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <ThumbsUp size={22} />}
+          {isSending ? <span className="loading loading-spinner loading-xs" /> : text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <ThumbsUp size={22} />}
         </button>
       </form>
       {showEmojiPicker && (
