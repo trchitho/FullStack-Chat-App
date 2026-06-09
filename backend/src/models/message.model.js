@@ -24,6 +24,7 @@ const messageSchema = new mongoose.Schema(
             name: String,
             type: String,
             size: Number,
+            storage: String,
         },
         replyTo: {
             messageId: String,
