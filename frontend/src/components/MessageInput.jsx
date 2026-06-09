@@ -271,7 +271,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         <div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-base-300 px-3 sm:gap-2 sm:px-4">
           <input
             type="text"
-          className="input input-sm h-10 min-h-10 flex-1 border-none bg-transparent focus:outline-none sm:h-11 sm:min-h-11"
+          className="input input-sm h-10 min-h-10 flex-1 border-none bg-transparent sm:h-11 sm:min-h-11"
             disabled={isSending}
             placeholder="Aa"
             value={text}
@@ -321,6 +321,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
               key={emoji}
               type="button"
               className="rounded-lg p-2 text-xl hover:bg-base-300"
+              aria-label={`${isVi ? "Chèn biểu tượng" : "Insert emoji"} ${emoji}`}
               onClick={() => {
                 setText((value) => `${value}${emoji}`);
                 setShowEmojiPicker(false);
