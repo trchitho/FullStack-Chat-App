@@ -16,6 +16,7 @@ const ChatContainer = () => {
   const [messageReactions, setMessageReactions] = useState({});
   const [replyTo, setReplyTo] = useState(null);
   const [actionMenuFor, setActionMenuFor] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
 
   useEffect(() => {
@@ -152,7 +153,14 @@ const ChatContainer = () => {
               )}
               {actionMenuFor === message._id && (
                 <div className="absolute z-40 mt-8 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-2xl">
-                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
+                    onClick={() => {
+                      setConfirmAction({ messageId: message._id, isOwnMessage });
+                      setActionMenuFor(null);
+                    }}
+                  >
                     <Trash2 className="size-4" />
                     {isOwnMessage ? "Thu hồi" : "Gỡ"}
                   </button>
@@ -173,6 +181,24 @@ const ChatContainer = () => {
       </div>
 
       <MessageInput replyTo={replyTo} onCancelReply={() => setReplyTo(null)} />
+      {confirmAction && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-base-100 p-6 shadow-2xl">
+            <h2 className="text-2xl font-bold">
+              {confirmAction.isOwnMessage ? "Thu hồi tin nhắn này?" : "Gỡ đối với bạn"}
+            </h2>
+            <p className="mt-3 text-base-content/70">
+              {confirmAction.isOwnMessage
+                ? "Tin nhắn này sẽ bị thu hồi khỏi đoạn chat. Những người khác có thể đã xem hoặc chuyển tiếp tin nhắn đó."
+                : "Tin nhắn này sẽ bị gỡ khỏi thiết bị của bạn, nhưng vẫn hiển thị với các thành viên khác trong đoạn chat."}
+            </p>
+            <div className="mt-6 flex justify-end gap-2">
+              <button type="button" className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Hủy</button>
+              <button type="button" className="btn btn-primary">{confirmAction.isOwnMessage ? "Thu hồi" : "Gỡ"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
