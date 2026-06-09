@@ -6,6 +6,9 @@ import { useAuthStore } from "./useAuthStore";
 const sortUsersByLatestMessage = (users) =>
   [...users].sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
 
+const messagePreview = (message) =>
+  message.call ? "Cuộc gọi" : message.text || (message.attachment ? "[Tệp đính kèm]" : "");
+
 export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
@@ -47,7 +50,7 @@ export const useChatStore = create((set, get) => ({
         messages: [...messages, res.data],
         users: sortUsersByLatestMessage(get().users.map((user) =>
           user._id === selectedUser._id
-            ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: res.data.text || "[Tệp đính kèm]" }
+            ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data) }
             : user
         )),
       });
