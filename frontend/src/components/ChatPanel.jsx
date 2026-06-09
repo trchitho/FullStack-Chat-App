@@ -204,7 +204,7 @@ const SettingsPanel = ({ onClose, onOpenProfile }) => {
 
       {showSnooze && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
-          <div className="w-96 rounded-xl bg-base-100 p-5 shadow-2xl">
+          <div className="w-[min(24rem,calc(100vw-24px))] rounded-xl bg-base-100 p-5 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-bold">{pc(language, "snoozeTitle")}</h3>
               <button type="button" onClick={() => setShowSnooze(false)}><X className="size-5" /></button>
