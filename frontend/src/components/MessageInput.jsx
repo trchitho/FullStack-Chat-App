@@ -121,6 +121,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type="button"
           className={`btn btn-circle btn-ghost btn-sm text-primary ${imagePreview ? "bg-primary/10" : ""}`}
           onClick={() => fileInputRef.current?.click()}
+          title="Gửi ảnh"
           aria-label="Gửi ảnh"
         >
           <Image size={20} />
@@ -145,6 +146,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             type="button"
             className="btn btn-circle btn-ghost btn-sm text-primary"
             onClick={() => setShowEmojiPicker((value) => !value)}
+            title="Mở biểu tượng cảm xúc"
             aria-label="Mở biểu tượng cảm xúc"
           >
             <Laugh size={20} />
@@ -154,6 +156,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           type={text.trim() || imagePreview ? "submit" : "button"}
           className="btn btn-sm btn-circle btn-ghost text-primary"
           onClick={text.trim() || imagePreview ? undefined : handleQuickLike}
+          title={text.trim() || imagePreview ? "Gửi tin nhắn" : "Gửi thích"}
           aria-label={text.trim() || imagePreview ? "Gửi tin nhắn" : "Gửi thích"}
         >
           {text.trim() || imagePreview ? <Send size={22} /> : <ThumbsUp size={22} />}

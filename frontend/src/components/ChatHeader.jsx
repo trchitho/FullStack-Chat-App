@@ -25,10 +25,10 @@ const ChatHeader = () => {
         </div>
 
         <div className="flex items-center gap-1 text-primary">
-          <button type="button" className="btn btn-circle btn-ghost btn-sm" aria-label="Gọi thoại"><Phone className="size-5" /></button>
-          <button type="button" className="btn btn-circle btn-ghost btn-sm" aria-label="Video trò chuyện"><Video className="size-5" /></button>
-          <button type="button" className="btn btn-circle btn-ghost btn-sm" aria-label="Thông tin đoạn chat"><Info className="size-5" /></button>
-          <button type="button" className="btn btn-circle btn-ghost btn-sm text-base-content/70" onClick={() => setSelectedUser(null)} aria-label="Đóng đoạn chat">
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" title="Gọi thoại" aria-label="Gọi thoại"><Phone className="size-5" /></button>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" title="Video trò chuyện" aria-label="Video trò chuyện"><Video className="size-5" /></button>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" title="Thông tin đoạn chat" aria-label="Thông tin đoạn chat"><Info className="size-5" /></button>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm text-base-content/70" title="Đóng đoạn chat" onClick={() => setSelectedUser(null)} aria-label="Đóng đoạn chat">
             <X className="size-5" />
           </button>
         </div>
