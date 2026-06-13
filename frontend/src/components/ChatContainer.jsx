@@ -255,7 +255,9 @@ const ChatContainer = () => {
                     closeFloatingMenus();
                     setReplyTo({
                       id: message._id,
-                      senderName: isOwnMessage ? authUser.fullName : selectedUser.fullName,
+                      senderName: isOwnMessage
+                        ? authUser.fullName
+                        : message.senderId?.fullName || selectedUser.fullName,
                       preview: getMessagePreview(message),
                     });
                   }}
