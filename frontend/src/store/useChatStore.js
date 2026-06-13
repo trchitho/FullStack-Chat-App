@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
+import { useNotificationStore } from "./useNotificationStore";
 
 const sortUsersByLatestMessage = (users) =>
   [...users].sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
@@ -109,6 +110,7 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (socket?.connected) socket.emit("conversationSeen", { peerId: userId });
     else await axiosInstance.patch(`/messages/conversations/${userId}/seen`);
+    useNotificationStore.getState().markSenderRead(userId).catch(() => {});
     set({
       users: get().users.map((user) =>
         user._id === userId
