@@ -45,6 +45,16 @@ io.on('connection', (socket) => {
         if (senderSocketId) io.to(senderSocketId).emit("messageDeliveredUpdate", message);
     });
 
+    socket.on("conversationSeen", async ({ peerId }) => {
+        const seenAt = new Date();
+        await Message.updateMany(
+            { senderId: peerId, receiverId: userId, "seenBy.user": { $ne: userId } },
+            { $push: { seenBy: { user: userId, at: seenAt } } }
+        );
+        const peerSocketId = getReceiverSocketId(peerId);
+        if (peerSocketId) io.to(peerSocketId).emit("conversationSeenUpdate", { userId, seenAt });
+    });
+
     socket.on('disconnect', () => {
         console.log('A user disconnected');
         delete userSocketMap[userId];
