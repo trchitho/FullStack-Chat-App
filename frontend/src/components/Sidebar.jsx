@@ -63,7 +63,10 @@ const setMutedUntil = (actions, userId, minutes) => ({
 });
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, sendCallEvent } = useChatStore();
+  const {
+    getUsers, users, selectedUser, setSelectedUser, isUsersLoading,
+    sendCallEvent, updateConversationSetting, openNewMessage,
+  } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { language } = useLanguageStore();
   const [activeFilter, setActiveFilter] = useState("all");
@@ -94,12 +97,15 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const handleUserAction = (labelKey, user) => {
     closeFloatingMenus();
     setOpenUserMenu(null);
-    if (labelKey === "markUnread") {
-      setUserActions((actions) => toggleStoredId(actions, "unread", user._id));
-      toast.success(language === "vi" ? "Đã cập nhật trạng thái chưa đọc" : "Unread state updated");
+    if (labelKey === "toggleRead") {
+      const isUnread = user.manuallyUnread || user.unreadCount > 0;
+      updateConversationSetting(user._id, { manuallyUnread: !isUnread });
+      toast.success(language === "vi" ? "Đã cập nhật trạng thái đọc" : "Read state updated");
     }
-    if (labelKey === "mute") {
-      setMuteUser(user);
+    if (labelKey === "toggleMute") {
+      if (user.mutedUntil && new Date(user.mutedUntil) > new Date()) {
+        updateConversationSetting(user._id, { mutedUntil: null });
+      } else setMuteUser(user);
     }
     if (labelKey === "viewProfile") setProfileUser(user);
     if (labelKey === "voiceCall") setCallState({ user, type: "voice" });
