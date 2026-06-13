@@ -226,6 +226,15 @@ export const useChatStore = create((set, get) => ({
         ),
       });
     });
+    socket.on("groupSeenUpdate", ({ conversationId, userId, seenAt }) => {
+      if (get().selectedUser?._id !== conversationId) return;
+      set({
+        messages: get().messages.map((message) => {
+          const alreadySeen = message.seenBy?.some((receipt) => String(receipt.user?._id || receipt.user) === userId);
+          return alreadySeen ? message : { ...message, seenBy: [...(message.seenBy || []), { user: userId, at: seenAt }] };
+        }),
+      });
+    });
   },
 
   unsubscribeFromMessages: () => {
@@ -236,6 +245,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("newGroupMessage");
     socket.off("messageDeliveredUpdate");
     socket.off("conversationSeenUpdate");
+    socket.off("groupSeenUpdate");
   },
 
   setSelectedUser: (selectedUser) => {
