@@ -9,6 +9,8 @@ const NewMessageComposer = () => {
     users,
     isNewMessageOpen,
     closeNewMessage,
+    createGroupConversation,
+    sendMessage,
     sendMessageTo,
     setSelectedUser,
   } = useChatStore();
@@ -50,10 +52,15 @@ const NewMessageComposer = () => {
     event.preventDefault();
     if (!selected.length || !text.trim()) return;
     try {
-      const sent = await Promise.all(selected.map((user) => sendMessageTo(user._id, { text: text.trim() })));
-      const firstUser = selected[0];
-      setSelectedUser(firstUser);
-      useChatStore.setState({ messages: selected.length === 1 ? [sent[0]] : [] });
+      if (selected.length === 1) {
+        const sent = await sendMessageTo(selected[0]._id, { text: text.trim() });
+        setSelectedUser(selected[0]);
+        useChatStore.setState({ messages: [sent] });
+      } else {
+        const group = await createGroupConversation(selected.map((user) => user._id));
+        setSelectedUser(group);
+        await sendMessage({ text: text.trim() });
+      }
       setSelected([]);
       setText("");
       closeNewMessage();
