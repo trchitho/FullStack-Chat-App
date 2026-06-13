@@ -62,3 +62,20 @@ const NewMessageComposer = () => {
       toast.error(isVi ? "Không gửi được tin nhắn" : "Could not send message");
     }
   };
+
+  return (
+    <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/60 p-0 sm:p-4" onMouseDown={closeNewMessage}>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label={isVi ? "Tin nhắn mới" : "New message"}
+        className="flex h-dvh w-full flex-col overflow-hidden bg-base-100 sm:h-[min(44rem,90dvh)] sm:max-w-2xl sm:rounded-2xl sm:border sm:border-base-300 sm:shadow-2xl"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="flex shrink-0 items-center justify-between border-b border-base-300 px-4 py-3">
+          <h2 className="text-xl font-bold">{isVi ? "Tin nhắn mới" : "New message"}</h2>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={closeNewMessage} aria-label={isVi ? "Đóng" : "Close"}>
+            <X className="size-5" />
+          </button>
+        </header>
+        <form onSubmit={sendFirstMessage} className="flex min-h-0 flex-1 flex-col">
