@@ -48,3 +48,19 @@ export const getGroupConversations = async (req, res) => {
         res.status(500).json({ message: "Could not load group conversations" });
     }
 };
+
+export const getGroupMessages = async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params.id);
+        if (!conversation || !ensureParticipant(conversation, req.user._id)) {
+            return res.status(403).json({ message: "Conversation access denied" });
+        }
+        const messages = await Message.find({ conversationId: conversation._id })
+            .sort({ createdAt: 1 })
+            .populate("senderId", "fullName profilePic")
+            .lean();
+        res.status(200).json(messages);
+    } catch {
+        res.status(500).json({ message: "Could not load group messages" });
+    }
+};
