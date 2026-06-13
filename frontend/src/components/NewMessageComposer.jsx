@@ -98,3 +98,23 @@ const NewMessageComposer = () => {
               placeholder={isVi ? "Tìm người nhận" : "Search recipients"}
             />
           </div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+            <div className="mb-2 px-2 text-sm font-bold text-base-content/60">
+              {isVi ? "Danh bạ của bạn" : "Your contacts"}
+            </div>
+            {visibleUsers.map((user) => {
+              const checked = selected.some((item) => item._id === user._id);
+              return (
+                <button
+                  key={user._id}
+                  type="button"
+                  className={`flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-base-200 ${checked ? "bg-primary/10" : ""}`}
+                  onClick={() => toggleUser(user)}
+                >
+                  <img src={user.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
+                  <span className="min-w-0 flex-1 truncate font-semibold">{user.fullName}</span>
+                  <input type="checkbox" checked={checked} readOnly className="checkbox checkbox-primary checkbox-sm" tabIndex={-1} />
+                </button>
+              );
+            })}
+          </div>
