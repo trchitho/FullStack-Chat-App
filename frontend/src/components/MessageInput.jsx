@@ -250,6 +250,11 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
               <X className="size-3" />
             </button>
           </div>
+          {audioPreviewUrl && (
+            <audio controls src={audioPreviewUrl} className="h-10 min-w-0 flex-1">
+              {isVi ? "Trình duyệt không hỗ trợ âm thanh." : "Audio playback is not supported."}
+            </audio>
+          )}
         </div>
       )}
 
