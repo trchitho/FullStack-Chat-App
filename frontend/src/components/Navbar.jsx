@@ -10,11 +10,20 @@ import {
 } from "lucide-react";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { useEffect, useState } from "react";
+import { useNotificationStore } from "../store/useNotificationStore";
+import { useChatStore } from "../store/useChatStore";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
   const { language } = useLanguageStore();
   const [showNotifications, setShowNotifications] = useState(false);
+  const { notifications, getNotifications, markAllRead } = useNotificationStore();
+  const { users, setSelectedUser } = useChatStore();
+  const unreadCount = notifications.filter((item) => !item.readAt).length;
+
+  useEffect(() => {
+    if (authUser) getNotifications();
+  }, [authUser, getNotifications]);
 
   useEffect(() => {
     if (!showNotifications) return undefined;
