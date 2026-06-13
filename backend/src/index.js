@@ -3,6 +3,7 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import notificationRoutes from "./routes/notification.route.js";
+import conversationRoutes from "./routes/conversation.route.js";
 
 import cors from "cors";
 
@@ -55,6 +56,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
