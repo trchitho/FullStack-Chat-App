@@ -19,7 +19,11 @@ export const createGroupConversation = async (req, res) => {
             createdBy: req.user._id,
         });
         await conversation.populate("participants", "fullName profilePic email");
-        res.status(201).json(conversation);
+        res.status(201).json({
+            ...conversation.toObject(),
+            fullName: conversation.name,
+            isGroup: true,
+        });
     } catch {
         res.status(500).json({ message: "Could not create group conversation" });
     }
