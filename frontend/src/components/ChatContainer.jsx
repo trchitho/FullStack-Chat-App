@@ -29,6 +29,7 @@ const ChatContainer = () => {
   const [pinnedMessage, setPinnedMessage] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
+  const getSenderId = (message) => String(message.senderId?._id || message.senderId);
   const getMessagePreview = (message) => {
     if (message.text) return message.text;
     if (message.call) return isVi ? "[Cuộc gọi]" : "[Call]";
@@ -40,7 +41,7 @@ const ChatContainer = () => {
   const visibleMessages = messages.filter((message) => !hiddenMessageIds.includes(message._id));
   const lastOwnMessageId = [...visibleMessages]
     .reverse()
-    .find((message) => message.senderId === authUser._id)?._id;
+    .find((message) => getSenderId(message) === authUser._id)?._id;
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -124,7 +125,7 @@ const ChatContainer = () => {
             <p className="mt-2 max-w-md text-sm">{isVi ? "Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây." : "Start the conversation. New messages will appear here."}</p>
           </div>
         ) : visibleMessages.map((message) => {
-          const isOwnMessage = message.senderId === authUser._id;
+          const isOwnMessage = getSenderId(message) === authUser._id;
           const isRevoked = revokedMessageIds.includes(message._id);
 
           return (
@@ -136,9 +137,9 @@ const ChatContainer = () => {
               <div className="size-10 rounded-full border">
                 <img
                   src={
-                    message.senderId === authUser._id
+                    isOwnMessage
                       ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
+                      : message.senderId?.profilePic || selectedUser.profilePic || "/avatar.png"
                   }
                   alt="profile pic"
                 />
