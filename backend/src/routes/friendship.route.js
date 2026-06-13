@@ -10,13 +10,15 @@ import {
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
+const handle = (controller) => (req, res, next) =>
+    Promise.resolve(controller(req, res, next)).catch(next);
 router.use(protectRoute);
 
-router.get("/", listFriends);
-router.get("/requests", listFriendRequests);
-router.get("/relationship/:userId", getRelationship);
-router.post("/request/:userId", sendFriendRequest);
-router.patch("/requests/:requestId", respondToFriendRequest);
-router.delete("/:userId", removeFriendship);
+router.get("/", handle(listFriends));
+router.get("/requests", handle(listFriendRequests));
+router.get("/relationship/:userId", handle(getRelationship));
+router.post("/request/:userId", handle(sendFriendRequest));
+router.patch("/requests/:requestId", handle(respondToFriendRequest));
+router.delete("/:userId", handle(removeFriendship));
 
 export default router;
