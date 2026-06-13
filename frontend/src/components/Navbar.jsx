@@ -95,14 +95,31 @@ const Navbar = () => {
   );
 };
 
-const NotificationDropdown = ({ language }) => (
+const NotificationDropdown = ({ language, notifications, onReadAll, onOpen }) => (
   <div id="pingme-notifications" role="region" aria-label={language === "vi" ? "Thông báo PingMe" : "PingMe notifications"} className="absolute right-0 top-12 z-[120] w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-base-300 bg-base-100 p-4 shadow-2xl">
-    <div className="mb-3 text-lg font-bold">{language === "vi" ? "Thông báo" : "Notifications"}</div>
-    <div className="rounded-xl bg-base-200 p-3">
-      <div className="font-semibold">{language === "vi" ? "PingMe đang hoạt động" : "PingMe is active"}</div>
-      <div className="text-sm text-base-content/60">
-        {language === "vi" ? "Bạn sẽ thấy thông báo tin nhắn, cuộc gọi và hoạt động hệ thống tại đây." : "Message, call, and system activity notifications will appear here."}
-      </div>
+    <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="text-lg font-bold">{language === "vi" ? "Thông báo" : "Notifications"}</div>
+      {notifications.some((item) => !item.readAt) && (
+        <button type="button" className="btn btn-ghost btn-xs" onClick={onReadAll}>
+          {language === "vi" ? "Đánh dấu đã đọc" : "Mark read"}
+        </button>
+      )}
+    </div>
+    <div className="max-h-96 space-y-1 overflow-y-auto">
+      {notifications.length === 0 ? (
+        <div className="rounded-xl bg-base-200 p-5 text-center text-sm text-base-content/60">
+          {language === "vi" ? "Chưa có thông báo mới." : "No notifications yet."}
+        </div>
+      ) : notifications.map((item) => (
+        <button key={item._id} type="button" className={`flex w-full gap-3 rounded-xl p-3 text-left hover:bg-base-200 ${item.readAt ? "" : "bg-primary/10"}`} onClick={() => onOpen(item)}>
+          <img src={item.senderId?.profilePic || "/avatar.png"} alt="" className="size-10 rounded-full object-cover" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-bold">{item.senderId?.fullName || "PingMe"}</span>
+            <span className="block truncate text-sm text-base-content/70">{item.preview}</span>
+            <time className="text-xs text-base-content/50">{new Date(item.createdAt).toLocaleString(language === "vi" ? "vi-VN" : "en-US")}</time>
+          </span>
+        </button>
+      ))}
     </div>
   </div>
 );
