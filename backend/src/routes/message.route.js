@@ -4,6 +4,7 @@ import { protectRoute } from '../middlewares/auth.middleware.js';
 import {
     getMessages,
     getUsersForSidebar,
+    downloadMessageAttachment,
     markConversationSeen,
     markMessageDelivered,
     sendMessage,
@@ -28,6 +29,7 @@ router.post('/send/:id', protectRoute, sendMessage);
 
 // upload message attachment to object storage
 router.post('/attachments', protectRoute, upload.single('file'), uploadMessageAttachment);
+router.get('/attachments/:messageId/download', protectRoute, downloadMessageAttachment);
 router.patch('/receipts/:messageId/delivered', protectRoute, markMessageDelivered);
 router.patch('/conversations/:userId/seen', protectRoute, markConversationSeen);
 router.patch('/conversations/:userId/settings', protectRoute, updateConversationSetting);
