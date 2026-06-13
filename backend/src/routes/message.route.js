@@ -1,7 +1,15 @@
 import express from 'express';
 import multer from 'multer';
 import { protectRoute } from '../middlewares/auth.middleware.js';
-import { getMessages, getUsersForSidebar, sendMessage, uploadMessageAttachment } from '../controllers/message.controller.js';
+import {
+    getMessages,
+    getUsersForSidebar,
+    markConversationSeen,
+    markMessageDelivered,
+    sendMessage,
+    updateConversationSetting,
+    uploadMessageAttachment,
+} from '../controllers/message.controller.js';
 
 const router = express.Router();
 const upload = multer({
@@ -20,5 +28,8 @@ router.post('/send/:id', protectRoute, sendMessage);
 
 // upload message attachment to object storage
 router.post('/attachments', protectRoute, upload.single('file'), uploadMessageAttachment);
+router.patch('/receipts/:messageId/delivered', protectRoute, markMessageDelivered);
+router.patch('/conversations/:userId/seen', protectRoute, markConversationSeen);
+router.patch('/conversations/:userId/settings', protectRoute, updateConversationSetting);
 
 export default router;
