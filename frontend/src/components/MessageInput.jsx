@@ -19,6 +19,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const cancelRecordingRef = useRef(false);
+  const recordingSecondsRef = useRef(0);
   const { sendMessage, uploadAttachment } = useChatStore();
   const { language } = useLanguageStore();
   const isVi = language === "vi";
@@ -55,9 +56,13 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   useEffect(() => {
     if (!isRecording) {
       setRecordingSeconds(0);
+      recordingSecondsRef.current = 0;
       return undefined;
     }
-    const intervalId = window.setInterval(() => setRecordingSeconds((value) => value + 1), 1000);
+    const intervalId = window.setInterval(() => setRecordingSeconds((value) => {
+      recordingSecondsRef.current = value + 1;
+      return value + 1;
+    }), 1000);
     return () => window.clearInterval(intervalId);
   }, [isRecording]);
 
@@ -123,7 +128,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
         }
         const extension = mimeType.includes("ogg") ? "ogg" : "webm";
         const audioFile = new File([audioBlob], `voice-${Date.now()}.${extension}`, { type: mimeType });
-        setRecordedDuration(recordingSeconds);
+        setRecordedDuration(recordingSecondsRef.current);
         setAttachmentFile(audioFile);
         setIsRecording(false);
         stream.getTracks().forEach((track) => track.stop());
