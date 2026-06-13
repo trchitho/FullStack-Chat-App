@@ -24,10 +24,18 @@ export const useChatStore = create((set, get) => ({
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const res = await axiosInstance.get("/messages/users");
-      set({ users: res.data });
+      const [usersResponse, groupsResponse] = await Promise.all([
+        axiosInstance.get("/messages/users"),
+        axiosInstance.get("/conversations"),
+      ]);
+      set({
+        users: sortUsersByLatestMessage([
+          ...usersResponse.data,
+          ...groupsResponse.data,
+        ]),
+      });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Không tải được cuộc trò chuyện");
     }
     set({ isUsersLoading: false });
   },
