@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+const conversationSettingSchema = new mongoose.Schema(
+    {
+        peerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        mutedUntil: { type: Date, default: null },
+        manuallyUnread: { type: Boolean, default: false },
+        archived: { type: Boolean, default: false },
+    },
+    { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
     {
         email: {
@@ -19,7 +29,8 @@ const userSchema = new mongoose.Schema(
         profilePic: {
             type: String,
             default: "",
-        }
+        },
+        conversationSettings: { type: [conversationSettingSchema], default: [] },
     },
     {timestamps: true}
 );
