@@ -8,6 +8,7 @@ const attachmentSchema = new mongoose.Schema(
         type: String,
         size: Number,
         storage: String,
+        duration: Number,
     },
     { _id: false }
 );

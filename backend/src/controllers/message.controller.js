@@ -8,9 +8,9 @@ import User from "../models/user.model.js";
 
 const normalizeAttachment = (attachment) => {
     if (!attachment || typeof attachment !== "object") return undefined;
-    const { url, key, name, type, size, storage } = attachment;
+    const { url, key, name, type, size, storage, duration } = attachment;
     if (!url) return undefined;
-    return { url, key, name, type, size, storage };
+    return { url, key, name, type, size, storage, duration };
 };
 
 const normalizeCall = (call) => {
