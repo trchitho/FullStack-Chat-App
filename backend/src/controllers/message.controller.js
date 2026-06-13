@@ -229,3 +229,24 @@ export const updateConversationSetting = async (req, res) => {
     }
 };
 
+export const downloadMessageAttachment = async (req, res) => {
+    try {
+        const message = await Message.findById(req.params.messageId).lean();
+        if (!message?.attachment?.url) return res.status(404).json({ message: "Attachment not found" });
+        const userId = String(req.user._id);
+        if (![String(message.senderId), String(message.receiverId)].includes(userId)) {
+            return res.status(403).json({ message: "Attachment access denied" });
+        }
+        const upstream = await fetch(message.attachment.url);
+        if (!upstream.ok) return res.status(502).json({ message: "Attachment storage unavailable" });
+        const buffer = Buffer.from(await upstream.arrayBuffer());
+        const safeName = (message.attachment.name || "download").replace(/[\r\n"]/g, "_");
+        res.setHeader("Content-Type", message.attachment.type || "application/octet-stream");
+        res.setHeader("Content-Length", String(buffer.length));
+        res.setHeader("Content-Disposition", `attachment; filename="${safeName}"; filename*=UTF-8''${encodeURIComponent(safeName)}`);
+        res.status(200).send(buffer);
+    } catch (error) {
+        res.status(500).json({ message: "Could not download attachment" });
+    }
+};
+
