@@ -99,7 +99,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const audioType = getSupportedAudioType();
+      const recorder = new MediaRecorder(stream, audioType ? { mimeType: audioType } : undefined);
       audioChunksRef.current = [];
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) audioChunksRef.current.push(event.data);
@@ -112,8 +113,17 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           stream.getTracks().forEach((track) => track.stop());
           return;
         }
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const audioFile = new File([audioBlob], `voice-${Date.now()}.webm`, { type: "audio/webm" });
+        const mimeType = recorder.mimeType || "audio/webm";
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        if (!audioBlob.size) {
+          toast.error(isVi ? "Bản ghi âm trống" : "The recording is empty");
+          setIsRecording(false);
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        const extension = mimeType.includes("ogg") ? "ogg" : "webm";
+        const audioFile = new File([audioBlob], `voice-${Date.now()}.${extension}`, { type: mimeType });
+        setRecordedDuration(recordingSeconds);
         setAttachmentFile(audioFile);
         setIsRecording(false);
         stream.getTracks().forEach((track) => track.stop());
