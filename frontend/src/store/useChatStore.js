@@ -40,13 +40,17 @@ export const useChatStore = create((set, get) => ({
     set({ isUsersLoading: false });
   },
 
-  getMessages: async (userId) => {
+  getMessages: async (conversationId) => {
     set({ isMessagesLoading: true });
     try {
-      const res = await axiosInstance.get(`/messages/${userId}`);
+      const selectedUser = get().selectedUser;
+      const endpoint = selectedUser?.isGroup
+        ? `/conversations/${conversationId}/messages`
+        : `/messages/${conversationId}`;
+      const res = await axiosInstance.get(endpoint);
       set({ messages: res.data });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Không tải được tin nhắn");
     } finally {
       set({ isMessagesLoading: false });
     }
