@@ -72,6 +72,27 @@ export const useChatStore = create((set, get) => ({
     return res.data.attachment;
   },
 
+  updateConversationSetting: async (userId, changes) => {
+    const previousUsers = get().users;
+    set({
+      users: previousUsers.map((user) =>
+        user._id === userId ? { ...user, ...changes } : user
+      ),
+    });
+    try {
+      const { data } = await axiosInstance.patch(`/messages/conversations/${userId}/settings`, changes);
+      set({
+        users: get().users.map((user) =>
+          user._id === userId ? { ...user, ...data } : user
+        ),
+      });
+      return data;
+    } catch (error) {
+      set({ users: previousUsers });
+      throw error;
+    }
+  },
+
   sendCallEvent: async (userId, call) => {
     const res = await axiosInstance.post(`/messages/send/${userId}`, { call });
     const { selectedUser } = get();
