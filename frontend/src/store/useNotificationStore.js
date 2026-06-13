@@ -23,4 +23,15 @@ export const useNotificationStore = create((set, get) => ({
   addNotification: (notification) => {
     set({ notifications: [notification, ...get().notifications.filter((item) => item._id !== notification._id)] });
   },
+
+  markSenderRead: async (senderId) => {
+    await axiosInstance.patch(`/notifications/read/${senderId}`);
+    set({
+      notifications: get().notifications.map((item) =>
+        String(item.senderId?._id || item.senderId) === senderId
+          ? { ...item, readAt: item.readAt || new Date().toISOString() }
+          : item
+      ),
+    });
+  },
 }));
