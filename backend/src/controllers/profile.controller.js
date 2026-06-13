@@ -42,3 +42,21 @@ export const updateMyProfile = async (req, res) => {
     }).select(publicProfileFields);
     res.status(200).json(updated);
 };
+
+export const updateProfileMedia = async (req, res) => {
+    const field = req.params.field;
+    if (!["profilePic", "coverPhoto"].includes(field)) {
+        return res.status(400).json({ message: "Unsupported profile media field" });
+    }
+    if (!req.body.image) return res.status(400).json({ message: "Image is required" });
+    const uploaded = await cloudinary.uploader.upload(req.body.image, {
+        folder: `pingme/profiles/${req.user._id}`,
+        resource_type: "image",
+    });
+    const updated = await User.findByIdAndUpdate(
+        req.user._id,
+        { [field]: uploaded.secure_url },
+        { new: true }
+    ).select(publicProfileFields);
+    res.status(200).json(updated);
+};
