@@ -173,3 +173,23 @@ export const markMessageDelivered = async (req, res) => {
     }
 };
 
+export const markConversationSeen = async (req, res) => {
+    try {
+        const peerId = req.params.userId;
+        const seenAt = new Date();
+        await Message.updateMany(
+            { senderId: peerId, receiverId: req.user._id, "seenBy.user": { $ne: req.user._id } },
+            { $push: { seenBy: { user: req.user._id, at: seenAt } } }
+        );
+        await User.updateOne(
+            { _id: req.user._id, "conversationSettings.peerId": peerId },
+            { $set: { "conversationSettings.$.manuallyUnread": false } }
+        );
+        const senderSocketId = getReceiverSocketId(peerId);
+        if (senderSocketId) io.to(senderSocketId).emit("conversationSeenUpdate", { userId: req.user._id, seenAt });
+        res.status(200).json({ success: true, seenAt });
+    } catch (error) {
+        res.status(500).json({ message: "Could not mark conversation seen" });
+    }
+};
+
