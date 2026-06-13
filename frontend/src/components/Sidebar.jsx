@@ -26,12 +26,6 @@ const readStoredActions = () => {
   }
 };
 
-const toggleStoredId = (actions, key, id) => {
-  const current = new Set(actions[key] || []);
-  current.has(id) ? current.delete(id) : current.add(id);
-  return { ...actions, [key]: [...current] };
-};
-
 const addStoredId = (actions, key, id) => ({
   ...actions,
   [key]: [...new Set([...(actions[key] || []), id])],
@@ -52,15 +46,6 @@ const handleMenuArrowKeys = (event) => {
         : (currentIndex - 1 + items.length) % items.length;
   items[nextIndex].focus();
 };
-
-const setMutedUntil = (actions, userId, minutes) => ({
-  ...actions,
-  muted: [...new Set([...(actions.muted || []), userId])],
-  mutedUntil: {
-    ...(actions.mutedUntil || {}),
-    [userId]: minutes ? Date.now() + minutes * 60 * 1000 : null,
-  },
-});
 
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const {
@@ -192,7 +177,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
             >
               <MoreHorizontal className="size-5" />
             </button>
-            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" aria-label="Soạn tin nhắn">
+            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={openNewMessage} aria-label="Soạn tin nhắn">
               <Pencil className="size-4" />
             </button>
           </div>
@@ -319,7 +304,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           language={language}
           onClose={() => setMuteUser(null)}
           onConfirm={(minutes) => {
-            setUserActions((actions) => setMutedUntil(actions, muteUser._id, minutes));
+            const mutedUntil = minutes ? new Date(Date.now() + minutes * 60 * 1000).toISOString() : "9999-12-31T23:59:59.999Z";
+            updateConversationSetting(muteUser._id, { mutedUntil });
             toast.success(language === "vi" ? "Đã tắt thông báo" : "Notifications muted");
             setMuteUser(null);
           }}
