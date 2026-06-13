@@ -52,3 +52,28 @@ export const getUserPosts = async (req, res) => {
         .sort({ isPinned: -1, createdAt: -1 })).lean();
     res.status(200).json(posts);
 };
+
+export const reactToPost = async (req, res) => {
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    const allowed = ["like", "love", "haha", "wow", "sad", "angry"];
+    const type = req.body.type;
+    if (type && !allowed.includes(type)) return res.status(400).json({ message: "Invalid reaction" });
+    const existingIndex = post.reactions.findIndex((item) => String(item.user) === String(req.user._id));
+    if (!type && existingIndex >= 0) post.reactions.splice(existingIndex, 1);
+    else if (existingIndex >= 0) post.reactions[existingIndex].type = type;
+    else if (type) post.reactions.push({ user: req.user._id, type });
+    await post.save();
+    res.status(200).json(post.reactions);
+};
+
+export const addComment = async (req, res) => {
+    const content = req.body.content?.trim();
+    if (!content) return res.status(400).json({ message: "Comment is required" });
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    post.comments.push({ author: req.user._id, content });
+    await post.save();
+    await post.populate("comments.author", "fullName profilePic");
+    res.status(201).json(post.comments.at(-1));
+};
