@@ -155,7 +155,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
 
     try {
       setIsSending(true);
-      const attachment = attachmentFile ? await uploadAttachment(attachmentFile) : undefined;
+      const uploadedAttachment = attachmentFile ? await uploadAttachment(attachmentFile) : undefined;
+      const attachment = uploadedAttachment
+        ? { ...uploadedAttachment, duration: attachmentFile.type.startsWith("audio/") ? recordedDuration : undefined }
+        : undefined;
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
@@ -171,6 +174,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       setText("");
       setImagePreview(null);
       setAttachmentFile(null);
+      setRecordedDuration(0);
       onCancelReply?.();
       if (fileInputRef.current) fileInputRef.current.value = "";
       if (attachmentInputRef.current) attachmentInputRef.current.value = "";
