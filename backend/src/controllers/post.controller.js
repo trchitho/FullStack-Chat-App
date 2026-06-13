@@ -25,3 +25,30 @@ export const createPost = async (req, res) => {
     await post.populate("author", "fullName username profilePic");
     res.status(201).json(post);
 };
+
+export const getTimeline = async (req, res) => {
+    const friendIds = await getFriendIds(req.user._id);
+    const posts = await populatePost(Post.find({
+        $or: [
+            { author: req.user._id },
+            { author: { $in: friendIds }, audience: { $in: ["public", "friends"] } },
+        ],
+    }).sort({ isPinned: -1, createdAt: -1 }).limit(100)).lean();
+    res.status(200).json(posts);
+};
+
+export const getUserPosts = async (req, res) => {
+    const ownerId = req.params.userId === "me" ? req.user._id : req.params.userId;
+    const isOwner = String(ownerId) === String(req.user._id);
+    const isFriend = isOwner || await Friendship.exists({
+        status: "accepted",
+        $or: [
+            { requester: req.user._id, recipient: ownerId },
+            { requester: ownerId, recipient: req.user._id },
+        ],
+    });
+    const audiences = isOwner ? ["public", "friends", "private"] : isFriend ? ["public", "friends"] : ["public"];
+    const posts = await populatePost(Post.find({ author: ownerId, audience: { $in: audiences } })
+        .sort({ isPinned: -1, createdAt: -1 })).lean();
+    res.status(200).json(posts);
+};
