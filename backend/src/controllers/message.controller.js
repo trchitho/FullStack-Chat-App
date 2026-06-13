@@ -2,6 +2,7 @@ import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId } from "../lib/socket.js";
 import {io} from "../lib/socket.js";
 import { uploadFileToR2 } from "../lib/r2.js";
+import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
@@ -249,7 +250,11 @@ export const downloadMessageAttachment = async (req, res) => {
         const message = await Message.findById(req.params.messageId).lean();
         if (!message?.attachment?.url) return res.status(404).json({ message: "Attachment not found" });
         const userId = String(req.user._id);
-        if (![String(message.senderId), String(message.receiverId)].includes(userId)) {
+        const isDirectParticipant = [String(message.senderId), String(message.receiverId)].includes(userId);
+        const isGroupParticipant = message.conversationId
+            ? await Conversation.exists({ _id: message.conversationId, participants: req.user._id })
+            : false;
+        if (!isDirectParticipant && !isGroupParticipant) {
             return res.status(403).json({ message: "Attachment access denied" });
         }
         const upstream = await fetch(message.attachment.url);
