@@ -5,9 +5,7 @@ import { io } from "socket.io-client";
 import { useNotificationStore } from "./useNotificationStore";
 
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
-const ENABLE_SOCKET =
-  import.meta.env.MODE === "development" ||
-  import.meta.env.VITE_ENABLE_SOCKET === "true";
+const ENABLE_SOCKET = import.meta.env.VITE_ENABLE_SOCKET !== "false";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
