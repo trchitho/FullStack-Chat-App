@@ -24,3 +24,27 @@ export const createGroupConversation = async (req, res) => {
         res.status(500).json({ message: "Could not create group conversation" });
     }
 };
+
+export const getGroupConversations = async (req, res) => {
+    try {
+        const groups = await Conversation.find({ participants: req.user._id })
+            .sort({ lastMessageAt: -1 })
+            .populate("participants", "fullName profilePic email")
+            .lean();
+        const groupIds = groups.map((group) => group._id);
+        const latestMessages = await Message.aggregate([
+            { $match: { conversationId: { $in: groupIds } } },
+            { $sort: { createdAt: -1 } },
+            { $group: { _id: "$conversationId", lastMessageText: { $first: "$text" }, lastMessageAt: { $first: "$createdAt" } } },
+        ]);
+        const latestByGroup = new Map(latestMessages.map((item) => [String(item._id), item]));
+        res.status(200).json(groups.map((group) => ({
+            ...group,
+            ...latestByGroup.get(String(group._id)),
+            fullName: group.name,
+            isGroup: true,
+        })));
+    } catch {
+        res.status(500).json({ message: "Could not load group conversations" });
+    }
+};
