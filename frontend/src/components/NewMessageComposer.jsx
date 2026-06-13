@@ -79,3 +79,22 @@ const NewMessageComposer = () => {
           </button>
         </header>
         <form onSubmit={sendFirstMessage} className="flex min-h-0 flex-1 flex-col">
+          <div className="flex min-h-14 flex-wrap items-center gap-2 border-b border-base-300 px-4 py-2">
+            <span className="font-semibold">{isVi ? "Đến:" : "To:"}</span>
+            {selected.map((user) => (
+              <span key={user._id} className="flex items-center gap-2 rounded-full bg-primary/15 px-2 py-1 text-sm font-semibold text-primary">
+                <img src={user.profilePic || "/avatar.png"} alt="" className="size-6 rounded-full object-cover" />
+                {user.fullName}
+                <button type="button" onClick={() => toggleUser(user)} aria-label={`${isVi ? "Bỏ chọn" : "Remove"} ${user.fullName}`}>
+                  <X className="size-4" />
+                </button>
+              </span>
+            ))}
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="min-w-28 flex-1 bg-transparent py-2"
+              placeholder={isVi ? "Tìm người nhận" : "Search recipients"}
+            />
+          </div>
