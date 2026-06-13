@@ -97,3 +97,36 @@ export const sendGroupMessage = async (req, res) => {
         res.status(500).json({ message: "Could not send group message" });
     }
 };
+
+export const markGroupConversationSeen = async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params.id).lean();
+        if (!conversation || !ensureParticipant(conversation, req.user._id)) {
+            return res.status(403).json({ message: "Conversation access denied" });
+        }
+        const seenAt = new Date();
+        await Message.updateMany(
+            {
+                conversationId: conversation._id,
+                senderId: { $ne: req.user._id },
+                "deliveredTo.user": { $ne: req.user._id },
+            },
+            { $push: { deliveredTo: { user: req.user._id, at: seenAt } } }
+        );
+        await Message.updateMany(
+            {
+                conversationId: conversation._id,
+                senderId: { $ne: req.user._id },
+                "seenBy.user": { $ne: req.user._id },
+            },
+            { $push: { seenBy: { user: req.user._id, at: seenAt } } }
+        );
+        for (const participantId of conversation.participants) {
+            const socketId = getReceiverSocketId(participantId);
+            if (socketId) io.to(socketId).emit("groupSeenUpdate", { conversationId: conversation._id, userId: req.user._id, seenAt });
+        }
+        res.status(200).json({ success: true, seenAt });
+    } catch {
+        res.status(500).json({ message: "Could not mark group conversation seen" });
+    }
+};
