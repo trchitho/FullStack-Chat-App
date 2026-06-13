@@ -104,7 +104,13 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
 
   const confirmSelectedAction = () => {
     if (!confirmAction) return;
-    const actionKey = confirmAction.type === "archive" ? "archived" : confirmAction.type === "block" ? "blocked" : "deleted";
+    if (confirmAction.type === "archive") {
+      updateConversationSetting(confirmAction.user._id, { archived: true });
+      if (selectedUser?._id === confirmAction.user._id) setSelectedUser(null);
+      setConfirmAction(null);
+      return;
+    }
+    const actionKey = confirmAction.type === "block" ? "blocked" : "deleted";
     setUserActions((actions) => addStoredId(actions, actionKey, confirmAction.user._id));
     if (selectedUser?._id === confirmAction.user._id) setSelectedUser(null);
     toast.success(language === "vi" ? "Đã cập nhật đoạn chat" : "Chat updated");
