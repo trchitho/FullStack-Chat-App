@@ -51,6 +51,20 @@ const userSchema = new mongoose.Schema(
         nickname: { type: String, default: "" },
         quote: { type: String, default: "" },
         aboutMe: { type: String, default: "", maxlength: 2000 },
+        work: {
+            company: { type: String, default: "" },
+            position: { type: String, default: "" },
+            startDate: { type: Date, default: null },
+            endDate: { type: Date, default: null },
+            description: { type: String, default: "" },
+        },
+        education: {
+            school: { type: String, default: "" },
+            major: { type: String, default: "" },
+            degree: { type: String, default: "" },
+            startYear: { type: Number, default: null },
+            endYear: { type: Number, default: null },
+        },
         conversationSettings: { type: [conversationSettingSchema], default: [] },
     },
     {timestamps: true}
