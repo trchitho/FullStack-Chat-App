@@ -93,6 +93,18 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  sendMessageTo: async (userId, messageData) => {
+    const { data } = await axiosInstance.post(`/messages/send/${userId}`, messageData);
+    set({
+      users: sortUsersByLatestMessage(get().users.map((user) =>
+        user._id === userId
+          ? { ...user, lastMessageAt: data.createdAt, lastMessageText: messagePreview(data) }
+          : user
+      )),
+    });
+    return data;
+  },
+
   markConversationSeen: async (userId) => {
     const socket = useAuthStore.getState().socket;
     if (socket?.connected) socket.emit("conversationSeen", { peerId: userId });
