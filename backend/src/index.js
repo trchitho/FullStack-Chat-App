@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import adminRoutes from "./routes/admin.route.js";
+import notificationRoutes from "./routes/notification.route.js";
 
 import cors from "cors";
 
@@ -53,6 +54,7 @@ app.use("/api", async (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
