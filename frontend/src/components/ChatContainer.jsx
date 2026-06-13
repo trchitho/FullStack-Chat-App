@@ -5,14 +5,15 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { FileText, Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
+import { Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 import { useLanguageStore } from '../store/useLanguageStore';
 import MessageStatusIndicator from './MessageStatusIndicator';
+import FileMessage from './FileMessage';
 
 const ChatContainer = () => {
-  const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
+  const {messages, getMessages, isMessagesLoading, selectedUser, downloadAttachment} = useChatStore();
 
   const {authUser} = useAuthStore();
   const { language } = useLanguageStore();
@@ -194,15 +195,17 @@ const ChatContainer = () => {
                     {isVi ? "Trình duyệt không hỗ trợ phát âm thanh." : "Your browser does not support audio playback."}
                   </audio>
                 ) : (
-                  <a
-                    href={message.attachment.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex max-w-xs items-center gap-3 rounded-2xl bg-black/10 px-3 py-2 hover:bg-black/15"
-                  >
-                    <FileText className="size-5 shrink-0" />
-                    <span className="min-w-0 truncate">{message.attachment.name || (isVi ? "Tệp đính kèm" : "Attachment")}</span>
-                  </a>
+                  <FileMessage
+                    message={message}
+                    language={language}
+                    onDownload={async (item) => {
+                      try {
+                        await downloadAttachment(item);
+                      } catch {
+                        toast.error(isVi ? "Không tải được tệp" : "Could not download file");
+                      }
+                    }}
+                  />
                 )
               )}
               {!isRevoked && message.call && (
