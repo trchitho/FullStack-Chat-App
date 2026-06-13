@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axiosInstance from "../lib/axios";
-import { useAuthStore } from "./useAuthStore";
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [],
@@ -19,5 +18,9 @@ export const useNotificationStore = create((set, get) => ({
   markAllRead: async () => {
     await axiosInstance.patch("/notifications/read");
     set({ notifications: get().notifications.map((item) => ({ ...item, readAt: item.readAt || new Date().toISOString() })) });
+  },
+
+  addNotification: (notification) => {
+    set({ notifications: [notification, ...get().notifications.filter((item) => item._id !== notification._id)] });
   },
 }));
