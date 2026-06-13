@@ -177,5 +177,10 @@ export const useChatStore = create((set, get) => ({
     socket.off("conversationSeenUpdate");
   },
 
-  setSelectedUser: (selectedUser) => set({ selectedUser: selectedUser }),
+  setSelectedUser: (selectedUser) => {
+    set({ selectedUser, isNewMessageOpen: false });
+    if (selectedUser) get().markConversationSeen(selectedUser._id);
+  },
+  openNewMessage: () => set({ isNewMessageOpen: true }),
+  closeNewMessage: () => set({ isNewMessageOpen: false }),
 }));
