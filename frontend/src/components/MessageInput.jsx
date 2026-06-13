@@ -12,6 +12,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const [isSending, setIsSending] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [recordedDuration, setRecordedDuration] = useState(0);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const attachmentInputRef = useRef(null);
@@ -52,6 +53,16 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       document.removeEventListener("keydown", handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    if (!attachmentFile?.type.startsWith("audio/")) {
+      setAudioPreviewUrl("");
+      return undefined;
+    }
+    const url = URL.createObjectURL(attachmentFile);
+    setAudioPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [attachmentFile]);
 
   useEffect(() => {
     if (!isRecording) {
