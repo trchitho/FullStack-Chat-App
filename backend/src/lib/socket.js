@@ -1,6 +1,7 @@
 import {Server} from 'socket.io';
 import {createServer} from 'http';
 import express from 'express';
+import Conversation from '../models/conversation.model.js';
 import Message from '../models/message.model.js';
 
 const app = express();
@@ -36,8 +37,14 @@ io.on('connection', (socket) => {
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
     socket.on("messageDelivered", async ({ messageId }) => {
+        const existingMessage = await Message.findById(messageId).lean();
+        const isDirectRecipient = String(existingMessage?.receiverId) === String(userId);
+        const isGroupParticipant = existingMessage?.conversationId
+            ? await Conversation.exists({ _id: existingMessage.conversationId, participants: userId })
+            : false;
+        if (!isDirectRecipient && !isGroupParticipant) return;
         const message = await Message.findOneAndUpdate(
-            { _id: messageId, receiverId: userId, "deliveredTo.user": { $ne: userId } },
+            { _id: messageId, "deliveredTo.user": { $ne: userId } },
             { $push: { deliveredTo: { user: userId, at: new Date() } } },
             { new: true }
         );
