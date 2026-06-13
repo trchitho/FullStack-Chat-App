@@ -64,3 +64,31 @@ export const getGroupMessages = async (req, res) => {
         res.status(500).json({ message: "Could not load group messages" });
     }
 };
+
+export const sendGroupMessage = async (req, res) => {
+    try {
+        const conversation = await Conversation.findById(req.params.id);
+        if (!conversation || !ensureParticipant(conversation, req.user._id)) {
+            return res.status(403).json({ message: "Conversation access denied" });
+        }
+        const message = await Message.create({
+            conversationId: conversation._id,
+            senderId: req.user._id,
+            text: req.body.text,
+            attachment: req.body.attachment,
+            replyTo: req.body.replyTo,
+            call: req.body.call,
+        });
+        conversation.lastMessageAt = message.createdAt;
+        await conversation.save();
+        const recipients = conversation.participants.filter((id) => String(id) !== String(req.user._id));
+        for (const recipientId of recipients) {
+            const socketId = getReceiverSocketId(recipientId);
+            if (socketId) io.to(socketId).emit("newGroupMessage", { conversationId: conversation._id, message });
+            await Notification.create({ ownerId: recipientId, senderId: req.user._id, messageId: message._id, preview: message.text || "Tin nhắn nhóm mới" });
+        }
+        res.status(201).json(message);
+    } catch {
+        res.status(500).json({ message: "Could not send group message" });
+    }
+};
