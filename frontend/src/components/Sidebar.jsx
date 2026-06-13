@@ -499,12 +499,18 @@ const UserActionMenu = ({ position, language, user, onAction }) => (
     style={{ top: Math.max(8, position.top), left: Math.max(8, position.left) }}
     onKeyDown={handleMenuArrowKeys}
   >
-    {userCardActions.map(({ labelKey, icon: Icon }, index) => (
-      <button key={labelKey} type="button" role="menuitem" autoFocus={index === 0} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-semibold hover:bg-base-300" onClick={() => onAction(labelKey, user)}>
+    {userCardActions.map(({ labelKey, icon: Icon }, index) => {
+      const isUnread = user.manuallyUnread || user.unreadCount > 0;
+      const isMuted = user.mutedUntil && new Date(user.mutedUntil) > new Date();
+      const actionKey = labelKey === "markUnread" ? "toggleRead" : labelKey === "mute" ? "toggleMute" : labelKey;
+      const displayKey = labelKey === "markUnread" && isUnread ? "markRead" : labelKey === "mute" && isMuted ? "unmute" : labelKey;
+      return (
+      <button key={labelKey} type="button" role="menuitem" autoFocus={index === 0} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-semibold hover:bg-base-300" onClick={() => onAction(actionKey, user)}>
         <Icon className="size-4 shrink-0" />
-        {t(language, labelKey)}
+        {t(language, displayKey)}
       </button>
-    ))}
+      );
+    })}
   </div>
 );
 
