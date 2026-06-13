@@ -1,8 +1,10 @@
 import {
   Archive,
+  Bell,
   BellOff,
   CircleHelp,
   Flag,
+  Mail,
   MailOpen,
   MessageCircleMore,
   Phone,
@@ -29,8 +31,8 @@ export const sidebarMenuItems = [
 ];
 
 export const userCardActions = [
-  { labelKey: "markUnread", icon: MailOpen },
-  { labelKey: "mute", icon: BellOff },
+  { labelKey: "markUnread", icon: MailOpen, activeIcon: Mail },
+  { labelKey: "mute", icon: BellOff, activeIcon: Bell },
   { labelKey: "viewProfile", icon: UserCircle },
   { labelKey: "voiceCall", icon: Phone },
   { labelKey: "videoChat", icon: Video },
