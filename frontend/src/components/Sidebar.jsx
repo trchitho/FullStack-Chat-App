@@ -153,13 +153,11 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       ...(userActions.blocked || []),
       ...(userActions.deleted || []),
     ]);
-    const unreadIds = new Set(userActions.unread || []);
-
     return users.filter((user) => {
-      if (hiddenIds.has(user._id)) return false;
+      if (hiddenIds.has(user._id) || user.archived) return false;
       const matchesSearch = user.fullName.toLowerCase().includes(search);
       if (!matchesSearch) return false;
-      if (activeFilter === "unread") return user.unread || unreadIds.has(user._id);
+      if (activeFilter === "unread") return user.manuallyUnread || user.unreadCount > 0;
       if (activeFilter === "groups") return user.isGroup;
       return true;
     });
@@ -236,8 +234,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
         {filteredUsers.map((user) => {
           const isOnline = onlineUsers.includes(user._id);
           const isSelected = selectedUser?._id === user._id;
-          const isMarkedUnread = (userActions.unread || []).includes(user._id);
-          const isMuted = (userActions.muted || []).includes(user._id);
+          const isMarkedUnread = user.manuallyUnread || user.unreadCount > 0;
+          const isMuted = user.mutedUntil && new Date(user.mutedUntil) > new Date();
 
           return (
             <div key={user._id} className="group relative min-w-0">
