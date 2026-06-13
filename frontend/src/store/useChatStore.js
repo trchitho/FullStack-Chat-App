@@ -154,6 +154,18 @@ export const useChatStore = create((set, get) => ({
       });
       if (isActiveConversation) get().markConversationSeen(newMessage.senderId);
     });
+    socket.on("messageDeliveredUpdate", (updatedMessage) => {
+      set({ messages: replaceMessage(get().messages, updatedMessage) });
+    });
+    socket.on("conversationSeenUpdate", ({ userId, seenAt }) => {
+      set({
+        messages: get().messages.map((message) =>
+          message.receiverId === userId && message.senderId === useAuthStore.getState().authUser?._id
+            ? { ...message, seenBy: [{ user: userId, at: seenAt }] }
+            : message
+        ),
+      });
+    });
   },
 
   unsubscribeFromMessages: () => {
@@ -161,6 +173,8 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.off("newMessage");
+    socket.off("messageDeliveredUpdate");
+    socket.off("conversationSeenUpdate");
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser: selectedUser }),
