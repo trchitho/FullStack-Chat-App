@@ -132,25 +132,27 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
-
+      socket.emit("messageDelivered", { messageId: newMessage._id });
+      const activeUser = get().selectedUser;
+      const isActiveConversation = activeUser?._id === newMessage.senderId;
       set({
-        messages: [...get().messages, newMessage],
+        messages: isActiveConversation ? [...get().messages, newMessage] : get().messages,
         users: sortUsersByLatestMessage(get().users.map((user) =>
           user._id === newMessage.senderId
-            ? { ...user, lastMessageAt: newMessage.createdAt, lastMessageText: newMessage.text || "[Tệp đính kèm]" }
+            ? {
+                ...user,
+                lastMessageAt: newMessage.createdAt,
+                lastMessageText: messagePreview(newMessage),
+                unreadCount: isActiveConversation ? 0 : (user.unreadCount || 0) + 1,
+              }
             : user
         )),
       });
+      if (isActiveConversation) get().markConversationSeen(newMessage.senderId);
     });
   },
 
