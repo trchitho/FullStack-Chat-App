@@ -9,6 +9,7 @@ const NewMessageComposer = () => {
     users,
     isNewMessageOpen,
     closeNewMessage,
+    sendMessageTo,
     setSelectedUser,
   } = useChatStore();
   const { language } = useLanguageStore();
@@ -43,4 +44,21 @@ const NewMessageComposer = () => {
     );
     setQuery("");
     inputRef.current?.focus();
+  };
+
+  const sendFirstMessage = async (event) => {
+    event.preventDefault();
+    if (!selected.length || !text.trim()) return;
+    try {
+      const sent = await Promise.all(selected.map((user) => sendMessageTo(user._id, { text: text.trim() })));
+      const firstUser = selected[0];
+      setSelectedUser(firstUser);
+      useChatStore.setState({ messages: selected.length === 1 ? [sent[0]] : [] });
+      setSelected([]);
+      setText("");
+      closeNewMessage();
+      toast.success(isVi ? "Đã gửi tin nhắn" : "Message sent");
+    } catch {
+      toast.error(isVi ? "Không gửi được tin nhắn" : "Could not send message");
+    }
   };
