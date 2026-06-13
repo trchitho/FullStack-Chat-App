@@ -190,7 +190,8 @@ export const markMessageDelivered = async (req, res) => {
             { new: true }
         );
         if (!message) return res.status(404).json({ message: "Message not found" });
-        io.to(getReceiverSocketId(message.senderId))?.emit("messageDeliveredUpdate", message);
+        const senderSocketId = getReceiverSocketId(message.senderId);
+        if (senderSocketId) io.to(senderSocketId).emit("messageDeliveredUpdate", message);
         res.status(200).json(message);
     } catch (error) {
         res.status(500).json({ message: "Could not mark message delivered" });
