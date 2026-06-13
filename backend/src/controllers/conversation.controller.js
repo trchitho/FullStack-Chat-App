@@ -85,6 +85,7 @@ export const sendGroupMessage = async (req, res) => {
         });
         conversation.lastMessageAt = message.createdAt;
         await conversation.save();
+        await message.populate("senderId", "fullName profilePic");
         const recipients = conversation.participants.filter((id) => String(id) !== String(req.user._id));
         for (const recipientId of recipients) {
             const socketId = getReceiverSocketId(recipientId);
