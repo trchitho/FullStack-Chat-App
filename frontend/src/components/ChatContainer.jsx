@@ -9,6 +9,7 @@ import { FileText, Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Tr
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 import { useLanguageStore } from '../store/useLanguageStore';
+import MessageStatusIndicator from './MessageStatusIndicator';
 
 const ChatContainer = () => {
   const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
@@ -332,6 +333,9 @@ const ChatContainer = () => {
                 </div>
               )}
             </div>
+            {isOwnMessage && message._id === lastOwnMessageId && (
+              <MessageStatusIndicator message={message} recipient={selectedUser} language={language} />
+            )}
           </div>
           );
         })}
