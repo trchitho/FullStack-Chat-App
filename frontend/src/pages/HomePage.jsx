@@ -6,6 +6,7 @@ import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 import ChatPanel from "../components/ChatPanel";
+import NewMessageComposer from "../components/NewMessageComposer";
 
 const HomePage = () => {
   const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
@@ -33,6 +34,7 @@ const HomePage = () => {
           onClose={() => setActivePanel(null)}
           onOpenProfile={() => navigate("/profile")}
         />
+        <NewMessageComposer />
       </div>
     </main>
   );
