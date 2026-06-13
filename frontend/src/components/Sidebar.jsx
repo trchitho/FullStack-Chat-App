@@ -50,7 +50,7 @@ const handleMenuArrowKeys = (event) => {
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const {
     getUsers, users, selectedUser, setSelectedUser, isUsersLoading,
-    sendCallEvent, updateConversationSetting, openNewMessage,
+    sendCallEvent, updateConversationSetting, markConversationSeen, openNewMessage,
   } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { language } = useLanguageStore();
@@ -84,7 +84,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
     setOpenUserMenu(null);
     if (labelKey === "toggleRead") {
       const isUnread = user.manuallyUnread || user.unreadCount > 0;
-      updateConversationSetting(user._id, { manuallyUnread: !isUnread });
+      if (isUnread) markConversationSeen(user._id);
+      else updateConversationSetting(user._id, { manuallyUnread: true });
       toast.success(language === "vi" ? "Đã cập nhật trạng thái đọc" : "Read state updated");
     }
     if (labelKey === "toggleMute") {
