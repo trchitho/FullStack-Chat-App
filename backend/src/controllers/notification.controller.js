@@ -24,3 +24,15 @@ export const markNotificationsRead = async (req, res) => {
         res.status(500).json({ message: "Could not update notifications" });
     }
 };
+
+export const markSenderNotificationsRead = async (req, res) => {
+    try {
+        await Notification.updateMany(
+            { ownerId: req.user._id, senderId: req.params.senderId, readAt: null },
+            { $set: { readAt: new Date() } }
+        );
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: "Could not update sender notifications" });
+    }
+};
