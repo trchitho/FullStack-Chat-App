@@ -20,3 +20,24 @@ const replySchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+const commentSchema = new mongoose.Schema(
+    {
+        author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        content: { type: String, required: true, trim: true, maxlength: 2000 },
+        reactions: { type: [reactionSchema], default: [] },
+        replies: { type: [replySchema], default: [] },
+    },
+    { timestamps: true }
+);
+
+const mediaSchema = new mongoose.Schema(
+    {
+        url: { type: String, required: true },
+        key: String,
+        type: { type: String, enum: ["image", "video"], required: true },
+        mimeType: String,
+        size: Number,
+    },
+    { _id: false }
+);
