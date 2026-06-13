@@ -11,6 +11,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [recordedDuration, setRecordedDuration] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const attachmentInputRef = useRef(null);
@@ -23,6 +24,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const isVi = language === "vi";
   const composerEmojis = ["😀", "😆", "😍", "😂", "😢", "😡", "👍", "❤️", "🎉", "🙏"];
   const formattedRecordingTime = `${Math.floor(recordingSeconds / 60)}:${String(recordingSeconds % 60).padStart(2, "0")}`;
+  const getSupportedAudioType = () => {
+    const types = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
+    return types.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+  };
 
   const removeAttachment = () => {
     setAttachmentFile(null);
