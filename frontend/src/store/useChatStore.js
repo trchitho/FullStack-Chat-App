@@ -186,6 +186,24 @@ export const useChatStore = create((set, get) => ({
       });
       if (isActiveConversation) get().markConversationSeen(newMessage.senderId);
     });
+    socket.on("newGroupMessage", ({ conversationId, message }) => {
+      const activeConversation = get().selectedUser;
+      const isActive = activeConversation?.isGroup && activeConversation._id === conversationId;
+      set({
+        messages: isActive ? [...get().messages, message] : get().messages,
+        users: sortUsersByLatestMessage(get().users.map((conversation) =>
+          conversation._id === conversationId
+            ? {
+                ...conversation,
+                lastMessageAt: message.createdAt,
+                lastMessageText: messagePreview(message),
+                unreadCount: isActive ? 0 : (conversation.unreadCount || 0) + 1,
+              }
+            : conversation
+        )),
+      });
+      socket.emit("messageDelivered", { messageId: message._id });
+    });
     socket.on("messageDeliveredUpdate", (updatedMessage) => {
       set({ messages: replaceMessage(get().messages, updatedMessage) });
     });
@@ -205,6 +223,7 @@ export const useChatStore = create((set, get) => ({
     if (!socket) return;
 
     socket.off("newMessage");
+    socket.off("newGroupMessage");
     socket.off("messageDeliveredUpdate");
     socket.off("conversationSeenUpdate");
   },
