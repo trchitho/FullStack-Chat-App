@@ -11,7 +11,7 @@ import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents
 import { useLanguageStore } from '../store/useLanguageStore';
 
 const ChatContainer = () => {
-  const {messages, getMessages , isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore();
+  const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore();
 
   const {authUser} = useAuthStore();
   const { language } = useLanguageStore();
@@ -37,12 +37,8 @@ const ChatContainer = () => {
   };
 
   useEffect(() => {
-    getMessages(selectedUser._id)
-
-    subscribeToMessages();
-
-    return () => unsubscribeFromMessages();
-  },[selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+    getMessages(selectedUser._id);
+  },[selectedUser._id, getMessages]);
 
   useEffect(() => {
     const container = messagesContainerRef.current;
