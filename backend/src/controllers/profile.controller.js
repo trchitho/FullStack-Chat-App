@@ -20,3 +20,25 @@ export const getProfile = async (req, res) => {
     });
     res.status(200).json({ ...user, friendCount, isOwner: String(userId) === String(req.user._id) });
 };
+
+const editableFields = new Set([
+    "fullName", "username", "bio", "introText", "currentCity", "hometown",
+    "birthday", "relationshipStatus", "gender", "phone", "address", "nickname",
+    "quote", "aboutMe", "work", "education", "hobbies", "interests",
+    "placesVisited", "favoriteDestination", "languages", "skills", "links",
+    "profileVisibility",
+]);
+
+export const updateMyProfile = async (req, res) => {
+    const changes = Object.fromEntries(
+        Object.entries(req.body).filter(([key]) => editableFields.has(key))
+    );
+    if (!Object.keys(changes).length) {
+        return res.status(400).json({ message: "No editable profile fields supplied" });
+    }
+    const updated = await User.findByIdAndUpdate(req.user._id, changes, {
+        new: true,
+        runValidators: true,
+    }).select(publicProfileFields);
+    res.status(200).json(updated);
+};
