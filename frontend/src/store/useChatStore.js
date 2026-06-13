@@ -9,12 +9,16 @@ const sortUsersByLatestMessage = (users) =>
 const messagePreview = (message) =>
   message.call ? "Cuộc gọi" : message.text || (message.attachment ? "[Tệp đính kèm]" : "");
 
+const replaceMessage = (messages, updatedMessage) =>
+  messages.map((message) => message._id === updatedMessage._id ? updatedMessage : message);
+
 export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  isNewMessageOpen: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
