@@ -97,3 +97,19 @@ export const deletePost = async (req, res) => {
     await post.deleteOne();
     res.status(200).json({ success: true });
 };
+
+export const reactToComment = async (req, res) => {
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    const type = req.body.type;
+    const allowed = ["like", "love", "haha", "wow", "sad", "angry"];
+    if (type && !allowed.includes(type)) return res.status(400).json({ message: "Invalid reaction" });
+    const index = comment.reactions.findIndex((item) => String(item.user) === String(req.user._id));
+    if (!type && index >= 0) comment.reactions.splice(index, 1);
+    else if (index >= 0) comment.reactions[index].type = type;
+    else if (type) comment.reactions.push({ user: req.user._id, type });
+    await post.save();
+    res.status(200).json(comment.reactions);
+};
