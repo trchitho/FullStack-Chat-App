@@ -89,8 +89,20 @@ export const sendGroupMessage = async (req, res) => {
         const recipients = conversation.participants.filter((id) => String(id) !== String(req.user._id));
         for (const recipientId of recipients) {
             const socketId = getReceiverSocketId(recipientId);
-            if (socketId) io.to(socketId).emit("newGroupMessage", { conversationId: conversation._id, message });
-            await Notification.create({ ownerId: recipientId, senderId: req.user._id, messageId: message._id, preview: message.text || "Tin nhắn nhóm mới" });
+            const notification = await Notification.create({
+                ownerId: recipientId,
+                senderId: req.user._id,
+                messageId: message._id,
+                conversationId: conversation._id,
+                preview: message.text || "Tin nhắn nhóm mới",
+            });
+            if (socketId) {
+                io.to(socketId).emit("newGroupMessage", { conversationId: conversation._id, message });
+                io.to(socketId).emit("newNotification", {
+                    ...notification.toObject(),
+                    senderId: { _id: req.user._id, fullName: req.user.fullName, profilePic: req.user.profilePic },
+                });
+            }
         }
         res.status(201).json(message);
     } catch {
