@@ -33,6 +33,15 @@ export const getUsersForSidebar = async (req, res) => {
         const loggedInUserId = req.user._id;
         const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select('-password').lean();
         const userIds = filteredUsers.map((user) => user._id);
+        const currentUser = await User.findById(loggedInUserId).select("conversationSettings").lean();
+        const settingsByPeer = new Map(
+            (currentUser?.conversationSettings || []).map((item) => [String(item.peerId), item])
+        );
+        const unreadCounts = await Message.aggregate([
+            { $match: { receiverId: loggedInUserId, "seenBy.user": { $ne: loggedInUserId } } },
+            { $group: { _id: "$senderId", unreadCount: { $sum: 1 } } },
+        ]);
+        const unreadByUser = new Map(unreadCounts.map((item) => [String(item._id), item.unreadCount]));
         const latestMessages = await Message.aggregate([
             { $match: { $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }] } },
             { $sort: { createdAt: -1 } },
@@ -42,7 +51,12 @@ export const getUsersForSidebar = async (req, res) => {
         ]);
         const latestByUser = new Map(latestMessages.map((item) => [String(item._id), item]));
         const sortedUsers = filteredUsers
-            .map((user) => ({ ...user, ...latestByUser.get(String(user._id)) }))
+            .map((user) => ({
+                ...user,
+                ...latestByUser.get(String(user._id)),
+                ...settingsByPeer.get(String(user._id)),
+                unreadCount: unreadByUser.get(String(user._id)) || 0,
+            }))
             .sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
 
         res.status(200).json(sortedUsers);
