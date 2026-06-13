@@ -125,6 +125,16 @@ export const useChatStore = create((set, get) => ({
   },
 
   markConversationSeen: async (userId) => {
+    const selectedUser = get().selectedUser;
+    if (selectedUser?.isGroup) {
+      await axiosInstance.patch(`/conversations/${userId}/seen`);
+      set({
+        users: get().users.map((user) =>
+          user._id === userId ? { ...user, unreadCount: 0 } : user
+        ),
+      });
+      return;
+    }
     const socket = useAuthStore.getState().socket;
     if (socket?.connected) socket.emit("conversationSeen", { peerId: userId });
     else await axiosInstance.patch(`/messages/conversations/${userId}/seen`);
