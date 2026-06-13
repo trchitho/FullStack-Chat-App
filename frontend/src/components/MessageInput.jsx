@@ -148,7 +148,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       cancelRecordingRef.current = false;
       recorder.start();
       setIsRecording(true);
-    } catch (error) {
+    } catch {
       toast.error(isVi ? "Không thể bật micro" : "Could not start microphone");
     }
   };
