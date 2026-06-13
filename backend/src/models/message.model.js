@@ -21,6 +21,14 @@ const callSchema = new mongoose.Schema(
     { _id: false }
 );
 
+const receiptSchema = new mongoose.Schema(
+    {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        at: { type: Date, default: Date.now },
+    },
+    { _id: false }
+);
+
 const messageSchema = new mongoose.Schema(
     {
         senderId: {
@@ -45,7 +53,9 @@ const messageSchema = new mongoose.Schema(
             senderName: String,
             preview: String,
         },
-        call: callSchema
+        call: callSchema,
+        deliveredTo: { type: [receiptSchema], default: [] },
+        seenBy: { type: [receiptSchema], default: [] },
     },
     {timestamps: true}
 )
