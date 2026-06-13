@@ -93,6 +93,19 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  markConversationSeen: async (userId) => {
+    const socket = useAuthStore.getState().socket;
+    if (socket?.connected) socket.emit("conversationSeen", { peerId: userId });
+    else await axiosInstance.patch(`/messages/conversations/${userId}/seen`);
+    set({
+      users: get().users.map((user) =>
+        user._id === userId
+          ? { ...user, unreadCount: 0, manuallyUnread: false }
+          : user
+      ),
+    });
+  },
+
   sendCallEvent: async (userId, call) => {
     const res = await axiosInstance.post(`/messages/send/${userId}`, { call });
     const { selectedUser } = get();
