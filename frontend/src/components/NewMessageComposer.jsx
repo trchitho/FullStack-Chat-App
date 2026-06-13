@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
 import { useLanguageStore } from "../store/useLanguageStore";
@@ -118,3 +118,22 @@ const NewMessageComposer = () => {
               );
             })}
           </div>
+          <div className="flex shrink-0 items-center gap-2 border-t border-base-300 p-3">
+            <input
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              className="input input-bordered min-w-0 flex-1 rounded-full"
+              placeholder={isVi ? "Nhập tin nhắn..." : "Type a message..."}
+              disabled={!selected.length}
+            />
+            <button type="submit" className="btn btn-circle btn-primary" disabled={!selected.length || !text.trim()} aria-label={isVi ? "Gửi" : "Send"}>
+              <Send className="size-5" />
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  );
+};
+
+export default NewMessageComposer;
