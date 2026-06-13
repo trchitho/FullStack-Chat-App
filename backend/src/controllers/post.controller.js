@@ -77,3 +77,23 @@ export const addComment = async (req, res) => {
     await post.populate("comments.author", "fullName profilePic");
     res.status(201).json(post.comments.at(-1));
 };
+
+export const addCommentReply = async (req, res) => {
+    const content = req.body.content?.trim();
+    if (!content) return res.status(400).json({ message: "Reply is required" });
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    comment.replies.push({ author: req.user._id, content });
+    await post.save();
+    await post.populate("comments.replies.author", "fullName profilePic");
+    res.status(201).json(comment.replies.at(-1));
+};
+
+export const deletePost = async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.postId, author: req.user._id });
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    await post.deleteOne();
+    res.status(200).json({ success: true });
+};
