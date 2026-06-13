@@ -55,13 +55,18 @@ const Navbar = () => {
             <>
             <button
               type="button"
-              className="btn btn-circle btn-sm border-none bg-base-300"
+              className="btn btn-circle btn-sm relative border-none bg-base-300"
               onClick={() => setShowNotifications((value) => !value)}
               aria-label={language === "vi" ? "Thông báo" : "Notifications"}
               aria-expanded={showNotifications}
               aria-controls="pingme-notifications"
             >
               <Bell className="size-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-error px-1 text-xs font-bold text-error-content">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </button>
             <Link to="/profile" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Trang cá nhân" : "Profile"}>
               {authUser.profilePic ? <img src={authUser.profilePic} alt="" className="size-8 rounded-full object-cover" /> : <User className="size-5" />}
@@ -71,7 +76,19 @@ const Navbar = () => {
             </button>
             </>
           )}
-          {showNotifications && <NotificationDropdown language={language} />}
+          {showNotifications && (
+            <NotificationDropdown
+              language={language}
+              notifications={notifications}
+              onReadAll={markAllRead}
+              onOpen={(notification) => {
+                const senderId = notification.senderId?._id || notification.senderId;
+                const user = users.find((item) => item._id === senderId);
+                if (user) setSelectedUser(user);
+                setShowNotifications(false);
+              }}
+            />
+          )}
         </div>
       </div>
     </header>
