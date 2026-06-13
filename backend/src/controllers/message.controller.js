@@ -202,6 +202,10 @@ export const markConversationSeen = async (req, res) => {
         const peerId = req.params.userId;
         const seenAt = new Date();
         await Message.updateMany(
+            { senderId: peerId, receiverId: req.user._id, "deliveredTo.user": { $ne: req.user._id } },
+            { $push: { deliveredTo: { user: req.user._id, at: seenAt } } }
+        );
+        await Message.updateMany(
             { senderId: peerId, receiverId: req.user._id, "seenBy.user": { $ne: req.user._id } },
             { $push: { seenBy: { user: req.user._id, at: seenAt } } }
         );

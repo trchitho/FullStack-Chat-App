@@ -48,6 +48,10 @@ io.on('connection', (socket) => {
     socket.on("conversationSeen", async ({ peerId }) => {
         const seenAt = new Date();
         await Message.updateMany(
+            { senderId: peerId, receiverId: userId, "deliveredTo.user": { $ne: userId } },
+            { $push: { deliveredTo: { user: userId, at: seenAt } } }
+        );
+        await Message.updateMany(
             { senderId: peerId, receiverId: userId, "seenBy.user": { $ne: userId } },
             { $push: { seenBy: { user: userId, at: seenAt } } }
         );
