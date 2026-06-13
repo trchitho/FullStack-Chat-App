@@ -1,6 +1,7 @@
 import {Server} from 'socket.io';
 import {createServer} from 'http';
 import express from 'express';
+import Message from '../models/message.model.js';
 
 const app = express();
 
@@ -33,6 +34,16 @@ io.on('connection', (socket) => {
 
     // io.emit is used to send events to all connected clients..(send online users to all clients)
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
+
+    socket.on("messageDelivered", async ({ messageId }) => {
+        const message = await Message.findOneAndUpdate(
+            { _id: messageId, receiverId: userId, "deliveredTo.user": { $ne: userId } },
+            { $push: { deliveredTo: { user: userId, at: new Date() } } },
+            { new: true }
+        );
+        const senderSocketId = message && getReceiverSocketId(message.senderId);
+        if (senderSocketId) io.to(senderSocketId).emit("messageDeliveredUpdate", message);
+    });
 
     socket.on('disconnect', () => {
         console.log('A user disconnected');
