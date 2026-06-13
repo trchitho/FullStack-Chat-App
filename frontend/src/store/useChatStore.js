@@ -59,10 +59,10 @@ export const useChatStore = create((set, get) => ({
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
-      const res = await axiosInstance.post(
-        `/messages/send/${selectedUser._id}`,
-        messageData
-      );
+      const endpoint = selectedUser.isGroup
+        ? `/conversations/${selectedUser._id}/messages`
+        : `/messages/send/${selectedUser._id}`;
+      const res = await axiosInstance.post(endpoint, messageData);
       set({
         messages: [...messages, res.data],
         users: sortUsersByLatestMessage(get().users.map((user) =>
@@ -72,8 +72,14 @@ export const useChatStore = create((set, get) => ({
         )),
       });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Không gửi được tin nhắn");
     }
+  },
+
+  createGroupConversation: async (participantIds) => {
+    const { data } = await axiosInstance.post("/conversations", { participantIds });
+    set({ users: sortUsersByLatestMessage([data, ...get().users]) });
+    return data;
   },
 
   uploadAttachment: async (file) => {
