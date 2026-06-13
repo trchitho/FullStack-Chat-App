@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
 
@@ -8,9 +8,14 @@ import ChatContainer from "../components/ChatContainer";
 import ChatPanel from "../components/ChatPanel";
 
 const HomePage = () => {
-  const { selectedUser } = useChatStore();
+  const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
   const [activePanel, setActivePanel] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }, [subscribeToMessages, unsubscribeFromMessages]);
 
   return (
     <main className="h-dvh max-w-full overflow-x-hidden bg-base-100 pt-16">
