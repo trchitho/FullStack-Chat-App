@@ -32,7 +32,9 @@ const buildMessagePreview = ({ text, attachment, call }) => {
 export const getUsersForSidebar = async (req, res) => {
     try {
         const loggedInUserId = req.user._id;
-        const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select('-password').lean();
+        const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } })
+            .select("-password -conversationSettings")
+            .lean();
         const userIds = filteredUsers.map((user) => user._id);
         const currentUser = await User.findById(loggedInUserId).select("conversationSettings").lean();
         const settingsByPeer = new Map(
