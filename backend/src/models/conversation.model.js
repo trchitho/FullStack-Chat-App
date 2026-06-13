@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const conversationSchema = new mongoose.Schema(
     {
-        type: { type: String, enum: ["group"], default: "group" },
+        type: { type: String, enum: ["direct", "group"], default: "group" },
         name: { type: String, trim: true, maxlength: 120 },
         participants: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -10,6 +10,14 @@ const conversationSchema = new mongoose.Schema(
             required: true,
         }],
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        requestStatus: {
+            type: String,
+            enum: ["accepted", "pending", "deleted"],
+            default: "accepted",
+            index: true,
+        },
+        requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+        acceptedAt: { type: Date, default: null },
         lastMessageAt: { type: Date, default: Date.now },
     },
     { timestamps: true }
