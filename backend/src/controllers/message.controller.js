@@ -193,3 +193,25 @@ export const markConversationSeen = async (req, res) => {
     }
 };
 
+export const updateConversationSetting = async (req, res) => {
+    try {
+        const peerId = req.params.userId;
+        const allowed = ["mutedUntil", "manuallyUnread", "archived"];
+        const changes = Object.fromEntries(
+            Object.entries(req.body).filter(([key]) => allowed.includes(key))
+        );
+        const user = await User.findById(req.user._id);
+        const setting = user.conversationSettings.find((item) => String(item.peerId) === peerId);
+        if (setting) {
+            Object.assign(setting, changes);
+        } else {
+            user.conversationSettings.push({ peerId, ...changes });
+        }
+        await user.save();
+        const updated = user.conversationSettings.find((item) => String(item.peerId) === peerId);
+        res.status(200).json(updated);
+    } catch (error) {
+        res.status(400).json({ message: "Could not update conversation settings" });
+    }
+};
+
