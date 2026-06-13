@@ -59,3 +59,30 @@ export const removeFriendship = async (req, res) => {
     await relationship.deleteOne();
     res.status(200).json({ success: true });
 };
+
+export const listFriends = async (req, res) => {
+    const relationships = await Friendship.find({
+        status: "accepted",
+        $or: [{ requester: req.user._id }, { recipient: req.user._id }],
+    }).lean();
+    const friendIds = relationships.map((item) =>
+        String(item.requester) === String(req.user._id) ? item.recipient : item.requester
+    );
+    const friends = await User.find({ _id: { $in: friendIds } })
+        .select("fullName username profilePic bio currentCity")
+        .sort({ fullName: 1 })
+        .lean();
+    res.status(200).json(friends);
+};
+
+export const listFriendRequests = async (req, res) => {
+    const [incoming, outgoing] = await Promise.all([
+        Friendship.find({ recipient: req.user._id, status: "pending" })
+            .populate("requester", "fullName username profilePic bio")
+            .sort({ createdAt: -1 }),
+        Friendship.find({ requester: req.user._id, status: "pending" })
+            .populate("recipient", "fullName username profilePic bio")
+            .sort({ createdAt: -1 }),
+    ]);
+    res.status(200).json({ incoming, outgoing });
+};
