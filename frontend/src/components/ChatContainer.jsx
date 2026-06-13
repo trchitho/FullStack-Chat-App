@@ -35,6 +35,10 @@ const ChatContainer = () => {
     if (message.attachment) return isVi ? "[Tệp đính kèm]" : "[Attachment]";
     return isVi ? "[Tin nhắn]" : "[Message]";
   };
+  const visibleMessages = messages.filter((message) => !hiddenMessageIds.includes(message._id));
+  const lastOwnMessageId = [...visibleMessages]
+    .reverse()
+    .find((message) => message.senderId === authUser._id)?._id;
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -117,7 +121,7 @@ const ChatContainer = () => {
             <h2 className="text-xl font-bold text-base-content">{selectedUser.fullName}</h2>
             <p className="mt-2 max-w-md text-sm">{isVi ? "Hãy bắt đầu cuộc trò chuyện. Tin nhắn mới sẽ hiển thị tại đây." : "Start the conversation. New messages will appear here."}</p>
           </div>
-        ) : messages.filter((message) => !hiddenMessageIds.includes(message._id)).map((message) => {
+        ) : visibleMessages.map((message) => {
           const isOwnMessage = message.senderId === authUser._id;
           const isRevoked = revokedMessageIds.includes(message._id);
 
