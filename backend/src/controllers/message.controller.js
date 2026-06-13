@@ -3,6 +3,7 @@ import { getReceiverSocketId } from "../lib/socket.js";
 import {io} from "../lib/socket.js";
 import { uploadFileToR2 } from "../lib/r2.js";
 import Message from "../models/message.model.js";
+import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
 
 const normalizeAttachment = (attachment) => {
@@ -17,6 +18,14 @@ const normalizeCall = (call) => {
     const { type, status, duration } = call;
     if (!type || !status) return undefined;
     return { type, status, duration };
+};
+
+const buildMessagePreview = ({ text, attachment, call }) => {
+    if (text) return text.slice(0, 120);
+    if (call) return call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại";
+    if (attachment?.type?.startsWith("audio/")) return "Tin nhắn thoại";
+    if (attachment) return `Tệp: ${attachment.name || "Đính kèm"}`;
+    return "Tin nhắn mới";
 };
 
 export const getUsersForSidebar = async (req, res) => {
