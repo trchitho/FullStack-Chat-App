@@ -99,10 +99,25 @@ export const sendMessage = async (req, res) => {
 
         await newMessage.save();
 
+        const notification = await Notification.create({
+            ownerId: receiverId,
+            senderId,
+            messageId: newMessage._id,
+            preview: buildMessagePreview(newMessage),
+        });
+
         // real-time messaging using socket.io
         const receiverSocketId = getReceiverSocketId(receiverId);
         if(receiverSocketId) {
             io.to(receiverSocketId).emit('newMessage', newMessage);
+            io.to(receiverSocketId).emit("newNotification", {
+                ...notification.toObject(),
+                senderId: {
+                    _id: req.user._id,
+                    fullName: req.user.fullName,
+                    profilePic: req.user.profilePic,
+                },
+            });
         }
 
         res.status(201).json(newMessage);
