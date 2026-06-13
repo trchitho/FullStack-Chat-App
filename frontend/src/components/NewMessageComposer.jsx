@@ -22,3 +22,25 @@ const NewMessageComposer = () => {
     const search = query.trim().toLowerCase();
     return users.filter((user) => !search || `${user.fullName} ${user.email || ""}`.toLowerCase().includes(search));
   }, [query, users]);
+
+  useEffect(() => {
+    if (!isNewMessageOpen) return undefined;
+    inputRef.current?.focus();
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") closeNewMessage();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [closeNewMessage, isNewMessageOpen]);
+
+  if (!isNewMessageOpen) return null;
+
+  const toggleUser = (user) => {
+    setSelected((current) =>
+      current.some((item) => item._id === user._id)
+        ? current.filter((item) => item._id !== user._id)
+        : [...current, user]
+    );
+    setQuery("");
+    inputRef.current?.focus();
+  };
