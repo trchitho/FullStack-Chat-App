@@ -4,6 +4,7 @@ import messageRoutes from "./routes/message.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
+import friendshipRoutes from "./routes/friendship.route.js";
 
 import cors from "cors";
 
@@ -57,6 +58,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/conversations", conversationRoutes);
+app.use("/api/friends", friendshipRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
