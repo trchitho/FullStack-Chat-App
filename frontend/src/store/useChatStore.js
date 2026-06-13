@@ -106,6 +106,20 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
+  downloadAttachment: async (message) => {
+    const response = await axiosInstance.get(`/messages/attachments/${message._id}/download`, {
+      responseType: "blob",
+    });
+    const url = URL.createObjectURL(response.data);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = message.attachment?.name || "download";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  },
+
   sendCallEvent: async (userId, call) => {
     const res = await axiosInstance.post(`/messages/send/${userId}`, { call });
     const { selectedUser } = get();
