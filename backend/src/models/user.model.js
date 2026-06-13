@@ -21,6 +21,13 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        username: {
+            type: String,
+            unique: true,
+            sparse: true,
+            lowercase: true,
+            trim: true,
+        },
         password: {
             type: String,
             required: true,
@@ -30,6 +37,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        coverPhoto: { type: String, default: "" },
+        bio: { type: String, default: "", maxlength: 240 },
+        introText: { type: String, default: "", maxlength: 500 },
+        isSeedUser: { type: Boolean, default: false, index: true },
         conversationSettings: { type: [conversationSettingSchema], default: [] },
     },
     {timestamps: true}
