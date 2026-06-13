@@ -40,7 +40,14 @@ const messageSchema = new mongoose.Schema(
         receiverId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true
+            required: function requiredReceiver() {
+                return !this.conversationId;
+            }
+        },
+        conversationId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Conversation",
+            default: null,
         },
         text: {
             type: String,
