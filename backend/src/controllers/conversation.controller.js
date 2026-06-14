@@ -93,7 +93,6 @@ export const sendGroupMessage = async (req, res) => {
                 senderId: req.user._id,
                 messageId: message._id,
                 conversationId: conversation._id,
-                preview: message.text || "Tin nhắn nhóm mới",
             });
             io.to(`user:${recipientId}`).emit("newGroupMessage", { conversationId: conversation._id, message });
             io.to(`user:${recipientId}`).emit("newNotification", {
