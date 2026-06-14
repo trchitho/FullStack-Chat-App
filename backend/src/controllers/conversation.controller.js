@@ -131,8 +131,11 @@ export const markGroupConversationSeen = async (req, res) => {
             { $push: { seenBy: { user: req.user._id, at: seenAt } } }
         );
         for (const participantId of conversation.participants) {
-            const socketId = getReceiverSocketId(participantId);
-            if (socketId) io.to(socketId).emit("groupSeenUpdate", { conversationId: conversation._id, userId: req.user._id, seenAt });
+            io.to(`user:${participantId}`).emit("groupSeenUpdate", {
+                conversationId: conversation._id,
+                userId: req.user._id,
+                seenAt,
+            });
         }
         res.status(200).json({ success: true, seenAt });
     } catch {
