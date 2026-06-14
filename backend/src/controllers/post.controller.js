@@ -73,8 +73,8 @@ export const getUserPosts = async (req, res) => {
 };
 
 export const reactToPost = async (req, res) => {
-    const post = await Post.findById(req.params.postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
     const allowed = ["like", "love", "haha", "wow", "sad", "angry"];
     const type = req.body.type;
     if (type && !allowed.includes(type)) return res.status(400).json({ message: "Invalid reaction" });
@@ -89,8 +89,8 @@ export const reactToPost = async (req, res) => {
 export const addComment = async (req, res) => {
     const content = req.body.content?.trim();
     if (!content) return res.status(400).json({ message: "Comment is required" });
-    const post = await Post.findById(req.params.postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
     post.comments.push({ author: req.user._id, content });
     await post.save();
     await post.populate("comments.author", "fullName profilePic");
