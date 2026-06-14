@@ -100,8 +100,8 @@ export const addComment = async (req, res) => {
 export const addCommentReply = async (req, res) => {
     const content = req.body.content?.trim();
     if (!content) return res.status(400).json({ message: "Reply is required" });
-    const post = await Post.findById(req.params.postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
     const comment = post.comments.id(req.params.commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
     comment.replies.push({ author: req.user._id, content });
@@ -118,8 +118,8 @@ export const deletePost = async (req, res) => {
 };
 
 export const reactToComment = async (req, res) => {
-    const post = await Post.findById(req.params.postId);
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
     const comment = post.comments.id(req.params.commentId);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
     const type = req.body.type;
