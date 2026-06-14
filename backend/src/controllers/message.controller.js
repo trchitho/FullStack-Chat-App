@@ -54,6 +54,7 @@ export const getUsersForSidebar = async (req, res) => {
         ]);
         const latestByUser = new Map(latestMessages.map((item) => [String(item._id), item]));
         const sortedUsers = filteredUsers
+            .filter((user) => latestByUser.has(String(user._id)))
             .map((user) => ({
                 ...user,
                 ...latestByUser.get(String(user._id)),
