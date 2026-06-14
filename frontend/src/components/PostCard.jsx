@@ -96,7 +96,22 @@ const PostCard = ({ post }) => {
           ))}
         </div>
       </div>
-      <div className="space-y-3 p-4">
+      {showComments && (
+        <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/60 p-3" onMouseDown={() => setShowComments(false)}>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-label="Bình luận bài viết"
+            className="flex max-h-[calc(100dvh-24px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-base-100 shadow-2xl"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="flex shrink-0 items-center justify-between border-b border-base-300 p-4">
+              <h2 className="text-lg font-bold">Bình luận bài viết</h2>
+              <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={() => setShowComments(false)} aria-label="Đóng">
+                <X className="size-5" />
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {post.comments?.map((item) => (
           <div key={item._id} className="flex gap-2">
             <img src={item.author?.profilePic || "/avatar.png"} alt="" className="size-9 rounded-full object-cover" />
