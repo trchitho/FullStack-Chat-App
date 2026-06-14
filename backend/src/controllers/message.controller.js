@@ -21,14 +21,6 @@ const normalizeCall = (call) => {
     return { type, status, duration };
 };
 
-const buildMessagePreview = ({ text, attachment, call }) => {
-    if (text) return text.slice(0, 120);
-    if (call) return call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại";
-    if (attachment?.type?.startsWith("audio/")) return "Tin nhắn thoại";
-    if (attachment) return `Tệp: ${attachment.name || "Đính kèm"}`;
-    return "Tin nhắn mới";
-};
-
 const directKeyFor = (firstId, secondId) =>
     [String(firstId), String(secondId)].sort().join(":");
 
