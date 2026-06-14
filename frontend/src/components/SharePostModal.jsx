@@ -49,3 +49,23 @@ const SharePostModal = ({ post, open, onClose }) => {
             <X className="size-5" />
           </button>
         </header>
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+          <textarea
+            className="textarea textarea-bordered min-h-28 w-full resize-none"
+            placeholder="Hãy nói gì đó về nội dung này..."
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            aria-label="Nội dung chia sẻ"
+          />
+          <label className="form-control">
+            <span className="label-text mb-2 font-semibold">Đối tượng</span>
+            <select
+              className="select select-bordered w-full"
+              value={audience}
+              onChange={(event) => setAudience(event.target.value)}
+            >
+              <option value="public">Công khai</option>
+              <option value="friends">Bạn bè</option>
+              <option value="private">Chỉ mình tôi</option>
+            </select>
+          </label>
