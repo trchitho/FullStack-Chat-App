@@ -116,3 +116,32 @@ const QuickAction = ({ icon: Icon, label, onClick }) => (
     <span className="line-clamp-2">{label}</span>
   </button>
 );
+
+const Accordion = ({ title, id, expanded, setExpanded, children }) => {
+  const open = expanded === id;
+  return (
+    <section className="border-b border-base-300 py-1">
+      <button
+        type="button"
+        className="flex min-h-11 w-full items-center justify-between gap-3 py-2 text-left font-bold"
+        onClick={() => setExpanded(open ? null : id)}
+        aria-expanded={open}
+      >
+        {title}
+        <span aria-hidden="true">{open ? "−" : "+"}</span>
+      </button>
+      {open && <div className="pb-3">{children}</div>}
+    </section>
+  );
+};
+
+const InfoRow = ({ label, danger = false }) => (
+  <button
+    type="button"
+    className={`flex min-h-11 w-full items-center rounded-lg px-2 text-left text-sm hover:bg-base-200 ${danger ? "text-error" : ""}`}
+  >
+    {label}
+  </button>
+);
+
+export default ChatInfoPanel;
