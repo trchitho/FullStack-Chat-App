@@ -155,6 +155,28 @@ export const sendMessage = async (req, res) => {
     }
 }
 
+export const searchUsers = async (req, res) => {
+    try {
+        const query = req.query.q?.trim();
+        const filter = { _id: { $ne: req.user._id } };
+        if (query) {
+            filter.$or = [
+                { fullName: { $regex: query, $options: "i" } },
+                { username: { $regex: query, $options: "i" } },
+                { email: { $regex: query, $options: "i" } },
+            ];
+        }
+        const users = await User.find(filter)
+            .select("fullName username email profilePic bio")
+            .sort({ fullName: 1 })
+            .limit(50)
+            .lean();
+        res.status(200).json(users);
+    } catch {
+        res.status(500).json({ message: "Could not search users" });
+    }
+};
+
 export const uploadMessageAttachment = async (req, res) => {
     try {
         if (!req.file) {
