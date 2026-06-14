@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useSocialStore } from "../store/useSocialStore";
 import ReactionListModal from "./ReactionListModal";
+import SharePostModal from "./SharePostModal";
 
 const reactionOptions = [
   ["like", "👍"], ["love", "❤️"], ["haha", "😂"],
@@ -33,6 +34,7 @@ const PostCard = ({ post }) => {
   const [reply, setReply] = useState("");
   const [showComments, setShowComments] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [reactionUsers, setReactionUsers] = useState([]);
   const AudienceIcon = audienceIcons[post.audience] || Users;
 
