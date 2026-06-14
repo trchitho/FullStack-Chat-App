@@ -116,3 +116,30 @@ const PostCard = ({ post }) => {
             </div>
           </div>
         ))}
+        <form
+          className="flex items-center gap-2"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            if (!comment.trim()) return;
+            await addComment(post._id, comment.trim());
+            setComment("");
+          }}
+        >
+          <img src={authUser.profilePic || "/avatar.png"} alt="" className="size-9 rounded-full object-cover" />
+          <input
+            className="input input-bordered min-w-0 flex-1 rounded-full"
+            placeholder="Viết bình luận..."
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            aria-label="Viết bình luận"
+          />
+          <button type="submit" className="btn btn-circle btn-primary" aria-label="Gửi bình luận" disabled={!comment.trim()}>
+            <Send className="size-5" />
+          </button>
+        </form>
+      </div>
+    </article>
+  );
+};
+
+export default PostCard;
