@@ -173,6 +173,26 @@ const seedDatabase = async () => {
       }
     }
     if (friendshipWrites.length) await Friendship.bulkWrite(friendshipWrites);
+    const postWrites = seededUsers.map((user, index) => ({
+      updateOne: {
+        filter: { author: user._id, "media.key": `seed-post-${index}` },
+        update: {
+          $setOnInsert: {
+            author: user._id,
+            content: `Một ngày nhiều năng lượng cùng ${user.fullName}. Chúc mọi người luôn vui vẻ!`,
+            audience: "friends",
+            media: [{
+              key: `seed-post-${index}`,
+              url: `https://picsum.photos/seed/pingme-post-${index}/1000/760`,
+              type: "image",
+              mimeType: "image/jpeg",
+            }],
+          },
+        },
+        upsert: true,
+      },
+    }));
+    await Post.bulkWrite(postWrites);
     console.log(`Seeded ${seededUsers.length} PingMe users`);
   } catch (error) {
     console.error("Error seeding database:", error);
