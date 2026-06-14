@@ -94,3 +94,25 @@ const ChatInfoPanel = ({ open, onClose }) => {
                 </a>
               ))}
             </Accordion>
+            <Accordion title={isVi ? "Quyền riêng tư và hỗ trợ" : "Privacy and support"} id="privacy" expanded={expanded} setExpanded={setExpanded}>
+              <InfoRow label={isVi ? "Quyền nhắn tin" : "Messaging permissions"} />
+              <InfoRow label={isVi ? "Tin nhắn tự hủy" : "Disappearing messages"} />
+              <InfoRow label={isVi ? "Thông báo đã đọc: Bật" : "Read receipts: On"} />
+              <InfoRow label={isVi ? "Xác minh mã hóa đầu cuối" : "Verify encryption"} />
+              <InfoRow label={isVi ? "Hạn chế" : "Restrict"} />
+              <InfoRow label={isVi ? "Chặn" : "Block"} danger />
+              <InfoRow label={isVi ? "Báo cáo" : "Report"} danger />
+            </Accordion>
+          </div>
+        </div>
+      </aside>
+    </div>
+  );
+};
+
+const QuickAction = ({ icon: Icon, label, onClick }) => (
+  <button type="button" className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl bg-base-200 p-2 text-xs font-semibold hover:bg-base-300" onClick={onClick}>
+    <Icon className="size-5" />
+    <span className="line-clamp-2">{label}</span>
+  </button>
+);
