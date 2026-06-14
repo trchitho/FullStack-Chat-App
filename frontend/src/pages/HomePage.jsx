@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
@@ -10,13 +11,15 @@ import NewMessageComposer from "../components/NewMessageComposer";
 
 const HomePage = () => {
   const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+  const socket = useAuthStore((state) => state.socket);
   const [activePanel, setActivePanel] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    subscribeToMessages();
+    if (!socket) return undefined;
+    subscribeToMessages(socket);
     return () => unsubscribeFromMessages();
-  }, [subscribeToMessages, unsubscribeFromMessages]);
+  }, [socket, subscribeToMessages, unsubscribeFromMessages]);
 
   const openPanel = (panel) => {
     if (panel === "requests") {
