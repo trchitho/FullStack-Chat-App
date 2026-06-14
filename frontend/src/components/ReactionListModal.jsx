@@ -54,3 +54,27 @@ const ReactionListModal = ({ open, reactions, onClose }) => {
             </button>
           ))}
         </div>
+        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+          {visible.map((reaction) => (
+            <div key={`${reaction.user?._id}-${reaction.type}`} className="flex items-center gap-3 rounded-xl p-3 hover:bg-base-200">
+              <img src={reaction.user?.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
+              <span className="min-w-0 flex-1 truncate font-semibold">
+                {reaction.user?.fullName || "Người dùng PingMe"}
+              </span>
+              <span className="text-xl">
+                {filters.find(([id]) => id === reaction.type)?.[1]}
+              </span>
+            </div>
+          ))}
+          {visible.length === 0 && (
+            <p className="p-8 text-center text-sm text-base-content/60">
+              Chưa có lượt bày tỏ cảm xúc phù hợp.
+            </p>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default ReactionListModal;
