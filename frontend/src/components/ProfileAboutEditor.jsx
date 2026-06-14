@@ -60,3 +60,18 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
               </button>
             ))}
           </nav>
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
+            {active === "intro" && (
+              <>
+                <Field label="Tiểu sử" value={draft.bio} onChange={(value) => update("bio", value)} />
+                <Field label="Giới thiệu" value={draft.introText} multiline onChange={(value) => update("introText", value)} />
+              </>
+            )}
+            {active === "personal" && (
+              <>
+                <Field label="Thành phố hiện tại" value={draft.currentCity} onChange={(value) => update("currentCity", value)} />
+                <Field label="Quê quán" value={draft.hometown} onChange={(value) => update("hometown", value)} />
+                <Field label="Tình trạng quan hệ" value={draft.relationshipStatus} onChange={(value) => update("relationshipStatus", value)} />
+                <Field label="Giới tính" value={draft.gender} onChange={(value) => update("gender", value)} />
+              </>
+            )}
