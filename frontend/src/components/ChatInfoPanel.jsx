@@ -71,3 +71,26 @@ const ChatInfoPanel = ({ open, onClose }) => {
             <Accordion title={isVi ? "Thông tin về đoạn chat" : "Chat details"} id="details" expanded={expanded} setExpanded={setExpanded}>
               <p className="text-sm text-base-content/70">{selectedUser.bio || (isVi ? "Chưa có thông tin bổ sung." : "No additional details.")}</p>
             </Accordion>
+            <Accordion title={isVi ? "Tùy chỉnh đoạn chat" : "Customize chat"} id="customize" expanded={expanded} setExpanded={setExpanded}>
+              <InfoRow label={isVi ? "Đổi biệt danh" : "Nicknames"} />
+              <InfoRow label={isVi ? "Đổi chủ đề" : "Theme"} />
+              <InfoRow label={isVi ? "Đổi biểu tượng cảm xúc" : "Quick emoji"} />
+            </Accordion>
+            <Accordion title={isVi ? "File phương tiện và file" : "Media and files"} id="media" expanded={expanded} setExpanded={setExpanded}>
+              {attachments.length === 0 ? (
+                <p className="py-3 text-sm text-base-content/60">
+                  {isVi ? "Chưa có file trong đoạn chat." : "No files in this chat."}
+                </p>
+              ) : attachments.slice(0, 12).map((message) => (
+                <a
+                  key={message._id}
+                  href={message.image || message.attachment.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 rounded-xl p-2 hover:bg-base-200"
+                >
+                  {message.attachment?.type?.startsWith("image/") || message.image ? <Image className="size-5" /> : <FileText className="size-5" />}
+                  <span className="truncate text-sm">{message.attachment?.name || (isVi ? "Hình ảnh" : "Image")}</span>
+                </a>
+              ))}
+            </Accordion>
