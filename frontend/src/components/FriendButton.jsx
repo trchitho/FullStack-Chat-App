@@ -26,3 +26,17 @@ const FriendButton = ({ profile }) => {
       </button>
     );
   }
+
+  return (
+    <button
+      type="button"
+      className="btn btn-primary min-h-11"
+      onClick={() => sendFriendRequest(profile._id)}
+    >
+      <UserPlus className="size-5" />
+      Thêm bạn bè
+    </button>
+  );
+};
+
+export default FriendButton;
