@@ -15,6 +15,7 @@ const ChatInfoPanel = ({ open, onClose }) => {
     () => messages.filter((message) => message.image || message.attachment?.url),
     [messages]
   );
+  const isMuted = selectedUser?.mutedUntil && new Date(selectedUser.mutedUntil) > new Date();
 
   useEffect(() => {
     if (!open) return undefined;
@@ -56,9 +57,9 @@ const ChatInfoPanel = ({ open, onClose }) => {
             />
             <QuickAction
               icon={BellOff}
-              label={isVi ? "Tắt thông báo" : "Mute"}
+              label={isMuted ? (isVi ? "Bật thông báo" : "Unmute") : (isVi ? "Tắt thông báo" : "Mute")}
               onClick={() => updateConversationSetting(selectedUser._id, {
-                mutedUntil: "9999-12-31T23:59:59.999Z",
+                mutedUntil: isMuted ? null : "9999-12-31T23:59:59.999Z",
               })}
             />
             <QuickAction
