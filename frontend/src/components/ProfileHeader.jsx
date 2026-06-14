@@ -46,3 +46,24 @@ const ProfileHeader = ({ profile, onEditMedia }) => {
             <p className="mt-1 text-base-content/65">{profile.friendCount || 0} người bạn</p>
             {profile.bio && <p className="mt-2 max-w-2xl">{profile.bio}</p>}
           </div>
+          <div className="flex flex-wrap gap-2">
+            {profile.isOwner ? (
+              <button type="button" className="btn btn-primary min-h-11">
+                <Pencil className="size-5" /> Chỉnh sửa trang cá nhân
+              </button>
+            ) : (
+              <>
+                <FriendButton profile={profile} />
+                <button type="button" className="btn min-h-11" onClick={openChat}>
+                  <MessageCircle className="size-5" /> Nhắn tin
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProfileHeader;
