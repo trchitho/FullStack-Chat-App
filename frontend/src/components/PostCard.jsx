@@ -30,6 +30,7 @@ const PostCard = ({ post }) => {
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [reply, setReply] = useState("");
+  const AudienceIcon = audienceIcons[post.audience] || Users;
   const ownReaction = post.reactions?.find((item) =>
     String(item.user?._id || item.user) === authUser._id
   )?.type;
@@ -40,7 +41,10 @@ const PostCard = ({ post }) => {
         <img src={post.author.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
         <div className="min-w-0 flex-1">
           <div className="truncate font-bold">{post.author.fullName}</div>
-          <time className="text-sm text-base-content/55">{new Date(post.createdAt).toLocaleString("vi-VN")}</time>
+          <div className="flex items-center gap-1.5 text-sm text-base-content/55">
+            <time>{formatPostTime(post.createdAt)}</time>
+            <AudienceIcon className="size-3.5" aria-label={post.audience} />
+          </div>
         </div>
       </header>
       {post.content && <p className="whitespace-pre-wrap break-words px-4 pb-4">{post.content}</p>}
