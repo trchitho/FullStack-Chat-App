@@ -47,6 +47,19 @@ const handleMenuArrowKeys = (event) => {
   items[nextIndex].focus();
 };
 
+const getPopoverPosition = (rect, width, height) => {
+  const viewportPadding = 8;
+  const canOpenBelow = rect.bottom + height + viewportPadding <= window.innerHeight;
+  const top = canOpenBelow
+    ? rect.bottom + 6
+    : Math.max(viewportPadding, rect.top - height - 6);
+  const left = Math.min(
+    Math.max(viewportPadding, rect.right - width),
+    window.innerWidth - width - viewportPadding
+  );
+  return { top, left };
+};
+
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const {
     getUsers, users, selectedUser, setSelectedUser, isUsersLoading,
