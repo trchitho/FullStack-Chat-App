@@ -37,10 +37,21 @@ export const signup = async (req, res) => {
             // generate jwt token
             generateToken(newUser._id, res);
             await newUser.save();
+            const seedUsers = await User.find({ isSeedUser: true }).select("_id").lean();
+            if (seedUsers.length) {
+                await Friendship.bulkWrite(seedUsers.map((seedUser) => ({
+                    updateOne: {
+                        filter: { requester: seedUser._id, recipient: newUser._id },
+                        update: { $setOnInsert: { status: "accepted" } },
+                        upsert: true,
+                    },
+                })));
+            }
             return res.status(201).json({
                 _id: newUser._id,
                 email: newUser.email,
                 fullName: newUser.fullName,
+                username: newUser.username,
             });
         }
         else{
