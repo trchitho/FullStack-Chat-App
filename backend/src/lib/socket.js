@@ -37,11 +37,14 @@ const publishOnlineUsers = () => {
 io.on('connection', (socket) => {
     console.log('A user connected');
 
-    const userId = socket.handshake.query.userId;
-    if(userId) userSocketMap[userId] = socket.id;
-
-    // io.emit is used to send events to all connected clients..(send online users to all clients)
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    const userId = String(socket.handshake.query.userId || "");
+    if (userId) {
+        const sockets = userSocketMap.get(userId) || new Set();
+        sockets.add(socket.id);
+        userSocketMap.set(userId, sockets);
+        socket.join(`user:${userId}`);
+    }
+    publishOnlineUsers();
 
     socket.on("messageDelivered", async ({ messageId }) => {
         const existingMessage = await Message.findById(messageId).lean();
@@ -75,8 +78,10 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected');
-        delete userSocketMap[userId];
-        io.emit('getOnlineUsers', Object.keys(userSocketMap));
+        const sockets = userSocketMap.get(userId);
+        sockets?.delete(socket.id);
+        if (sockets?.size === 0) userSocketMap.delete(userId);
+        publishOnlineUsers();
     })
     
 })
