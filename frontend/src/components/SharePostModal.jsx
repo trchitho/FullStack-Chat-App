@@ -69,3 +69,22 @@ const SharePostModal = ({ post, open, onClose }) => {
               <option value="private">Chỉ mình tôi</option>
             </select>
           </label>
+          <div className="rounded-xl border border-base-300 p-3">
+            <div className="font-semibold">{post.author?.fullName}</div>
+            <p className="mt-1 line-clamp-3 text-sm text-base-content/70">
+              {post.content || "Bài viết có nội dung đa phương tiện"}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary w-full"
+            onClick={submit}
+            disabled={submitting}
+          >
+            {submitting && <span className="loading loading-spinner loading-sm" />}
+            Chia sẻ ngay
+          </button>
+          {!!friends.length && (
+            <div>
+              <h3 className="mb-2 font-bold">Gửi qua tin nhắn</h3>
+              <div className="flex gap-3 overflow-x-auto pb-2">
