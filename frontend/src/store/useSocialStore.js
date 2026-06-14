@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const useSocialStore = create((set, get) => ({
   profile: null,
@@ -147,6 +148,22 @@ export const useSocialStore = create((set, get) => ({
         ),
       }),
     });
+  },
+
+  subscribeToTimeline: (activeSocket) => {
+    const socket = activeSocket || useAuthStore.getState().socket;
+    if (!socket) return;
+    socket.off("post:new");
+    socket.on("post:new", (post) => {
+      set({
+        posts: [post, ...get().posts.filter((item) => item._id !== post._id)],
+      });
+    });
+  },
+
+  unsubscribeFromTimeline: (activeSocket) => {
+    const socket = activeSocket || useAuthStore.getState().socket;
+    socket?.off("post:new");
   },
 
   getMessageRequests: async () => {
