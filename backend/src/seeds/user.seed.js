@@ -135,6 +135,7 @@ const seedUsers = [
 
 const buildSeedProfile = (user, index) => ({
   ...user,
+  email: user.email.toLowerCase(),
   username: user.email.split("@")[0].toLowerCase(),
   isSeedUser: true,
   coverPhoto: `https://picsum.photos/seed/pingme-cover-${index}/1400/480`,
