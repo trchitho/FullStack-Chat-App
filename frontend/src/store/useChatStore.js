@@ -177,6 +177,12 @@ export const useChatStore = create((set, get) => ({
     const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
 
+    socket.off("newMessage");
+    socket.off("newGroupMessage");
+    socket.off("messageDeliveredUpdate");
+    socket.off("conversationSeenUpdate");
+    socket.off("groupSeenUpdate");
+
     socket.on("newMessage", (newMessage) => {
       socket.emit("messageDelivered", { messageId: newMessage._id });
       const activeUser = get().selectedUser;
