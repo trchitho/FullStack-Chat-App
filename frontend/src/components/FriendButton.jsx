@@ -2,7 +2,9 @@ import { Check, UserMinus, UserPlus } from "lucide-react";
 import { useSocialStore } from "../store/useSocialStore";
 
 const FriendButton = ({ profile }) => {
-  const { relationship, sendFriendRequest, removeFriendship } = useSocialStore();
+  const {
+    relationship, sendFriendRequest, removeFriendship, respondToFriendRequest,
+  } = useSocialStore();
   if (profile.isOwner) return null;
 
   if (relationship.status === "accepted") {
@@ -19,10 +21,18 @@ const FriendButton = ({ profile }) => {
   }
 
   if (relationship.status === "pending") {
+    if (relationship.direction === "incoming") {
+      return (
+        <button type="button" className="btn btn-primary min-h-11" onClick={() => respondToFriendRequest(relationship._id, "accept")}>
+          <Check className="size-5" />
+          Chấp nhận lời mời
+        </button>
+      );
+    }
     return (
       <button type="button" className="btn min-h-11" disabled>
         <Check className="size-5" />
-        {relationship.direction === "outgoing" ? "Đã gửi lời mời" : "Đang chờ phản hồi"}
+        Đã gửi lời mời
       </button>
     );
   }
