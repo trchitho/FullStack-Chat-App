@@ -126,8 +126,11 @@ const NotificationDropdown = ({ language, notifications, onReadAll, onOpen }) =>
         <button key={item._id} type="button" className={`flex w-full gap-3 rounded-xl p-3 text-left hover:bg-base-200 ${item.readAt ? "" : "bg-primary/10"}`} onClick={() => onOpen(item)}>
           <img src={item.senderId?.profilePic || "/avatar.png"} alt="" className="size-10 rounded-full object-cover" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate font-bold">{item.senderId?.fullName || "PingMe"}</span>
-            <span className="block truncate text-sm text-base-content/70">{item.preview}</span>
+            <span className="block text-sm font-semibold">
+              {language === "vi"
+                ? `Bạn có tin nhắn mới từ ${item.senderId?.fullName || "một người dùng"}`
+                : `You have a new message from ${item.senderId?.fullName || "a user"}`}
+            </span>
             <time className="text-xs text-base-content/50">{new Date(item.createdAt).toLocaleString(language === "vi" ? "vi-VN" : "en-US")}</time>
           </span>
         </button>
