@@ -19,12 +19,19 @@ const io = new Server(httpServer, {
     }
 });
 
-export function getReceiverSocketId(userId) {
-    return userSocketMap[userId];
+const userSocketMap = new Map();
+
+export function getReceiverSocketIds(userId) {
+    return [...(userSocketMap.get(String(userId)) || [])];
 }
 
-// used to store online users
-const userSocketMap = {}  // {userId: socketId}
+export function getReceiverSocketId(userId) {
+    return getReceiverSocketIds(userId)[0];
+}
+
+const publishOnlineUsers = () => {
+    io.emit("getOnlineUsers", [...userSocketMap.keys()]);
+};
 
 
 io.on('connection', (socket) => {
