@@ -2,7 +2,7 @@ import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
-import { getReceiverSocketId, io } from "../lib/socket.js";
+import { io } from "../lib/socket.js";
 
 const ensureParticipant = (conversation, userId) =>
     conversation.participants.some((participant) => String(participant._id || participant) === String(userId));
@@ -88,7 +88,6 @@ export const sendGroupMessage = async (req, res) => {
         await message.populate("senderId", "fullName profilePic");
         const recipients = conversation.participants.filter((id) => String(id) !== String(req.user._id));
         for (const recipientId of recipients) {
-            const socketId = getReceiverSocketId(recipientId);
             const notification = await Notification.create({
                 ownerId: recipientId,
                 senderId: req.user._id,
@@ -96,13 +95,11 @@ export const sendGroupMessage = async (req, res) => {
                 conversationId: conversation._id,
                 preview: message.text || "Tin nhắn nhóm mới",
             });
-            if (socketId) {
-                io.to(socketId).emit("newGroupMessage", { conversationId: conversation._id, message });
-                io.to(socketId).emit("newNotification", {
+            io.to(`user:${recipientId}`).emit("newGroupMessage", { conversationId: conversation._id, message });
+            io.to(`user:${recipientId}`).emit("newNotification", {
                     ...notification.toObject(),
                     senderId: { _id: req.user._id, fullName: req.user.fullName, profilePic: req.user.profilePic },
-                });
-            }
+            });
         }
         res.status(201).json(message);
     } catch {
