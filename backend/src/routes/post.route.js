@@ -5,6 +5,7 @@ import {
     createPost,
     deletePost,
     getTimeline,
+    getPostReactions,
     getUserPosts,
     reactToComment,
     reactToPost,
@@ -20,6 +21,7 @@ router.get("/timeline", handle(getTimeline));
 router.get("/user/:userId", handle(getUserPosts));
 router.post("/", handle(createPost));
 router.patch("/:postId/reaction", handle(reactToPost));
+router.get("/:postId/reactions", handle(getPostReactions));
 router.post("/:postId/comments", handle(addComment));
 router.patch("/:postId/comments/:commentId/reaction", handle(reactToComment));
 router.post("/:postId/comments/:commentId/replies", handle(addCommentReply));
