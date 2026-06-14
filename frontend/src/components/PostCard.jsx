@@ -28,7 +28,14 @@ const audienceIcons = {
 
 const PostCard = ({ post }) => {
   const authUser = useAuthStore((state) => state.authUser);
-  const { reactToPost, reactToComment, addComment, addReply, getPostReactions } = useSocialStore();
+  const {
+    reactToPost,
+    reactToComment,
+    reactToReply,
+    addComment,
+    addReply,
+    getPostReactions,
+  } = useSocialStore();
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [reply, setReply] = useState("");
