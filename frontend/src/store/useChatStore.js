@@ -73,6 +73,7 @@ export const useChatStore = create((set, get) => ({
       });
     } catch (error) {
       toast.error(error.response?.data?.message || "Không gửi được tin nhắn");
+      throw error;
     }
   },
 
