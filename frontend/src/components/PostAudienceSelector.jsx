@@ -58,3 +58,26 @@ const PostAudienceSelector = ({ open, value, onChange, onClose }) => {
                 onClose();
               }}
             >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-base-300">
+                <Icon className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-bold">{label}</span>
+                <span className="block text-sm text-base-content/60">{description}</span>
+              </span>
+              <input
+                type="radio"
+                className="radio radio-primary"
+                checked={value === id}
+                readOnly
+                tabIndex={-1}
+              />
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default PostAudienceSelector;
