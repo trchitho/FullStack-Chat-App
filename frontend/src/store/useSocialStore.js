@@ -124,6 +124,21 @@ export const useSocialStore = create((set, get) => ({
     });
   },
 
+  reactToComment: async (postId, commentId, type) => {
+    const { data } = await axiosInstance.patch(
+      `/posts/${postId}/comments/${commentId}/reaction`,
+      { type }
+    );
+    set({
+      posts: get().posts.map((post) => post._id !== postId ? post : {
+        ...post,
+        comments: post.comments.map((comment) =>
+          comment._id === commentId ? { ...comment, reactions: data } : comment
+        ),
+      }),
+    });
+  },
+
   getMessageRequests: async () => {
     const { data } = await axiosInstance.get("/conversations/requests");
     set({ messageRequests: data });
