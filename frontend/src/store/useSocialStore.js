@@ -166,9 +166,15 @@ export const useSocialStore = create((set, get) => ({
     const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("post:new");
+    socket.off("post:updated");
     socket.on("post:new", (post) => {
       set({
         posts: [post, ...get().posts.filter((item) => item._id !== post._id)],
+      });
+    });
+    socket.on("post:updated", (post) => {
+      set({
+        posts: get().posts.map((item) => item._id === post._id ? post : item),
       });
     });
   },
@@ -176,6 +182,7 @@ export const useSocialStore = create((set, get) => ({
   unsubscribeFromTimeline: (activeSocket) => {
     const socket = activeSocket || useAuthStore.getState().socket;
     socket?.off("post:new");
+    socket?.off("post:updated");
   },
 
   getMessageRequests: async () => {
