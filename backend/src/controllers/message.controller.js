@@ -113,6 +113,24 @@ export const sendMessage = async (req, res) => {
         if (!receiverExists) {
             return res.status(404).json({ message: "Recipient not found" });
         }
+        const friendshipExists = Boolean(await areFriends(senderId, receiverId));
+        const directKey = directKeyFor(senderId, receiverId);
+        const conversation = await Conversation.findOneAndUpdate(
+            { directKey },
+            {
+                $setOnInsert: {
+                    type: "direct",
+                    directKey,
+                    participants: [senderId, receiverId],
+                    createdBy: senderId,
+                    requestedBy: friendshipExists ? null : senderId,
+                },
+                $set: friendshipExists
+                    ? { requestStatus: "accepted", acceptedAt: new Date() }
+                    : {},
+            },
+            { upsert: true, new: true }
+        );
         const normalizedAttachment = normalizeAttachment(attachment);
         const normalizedCall = normalizeCall(call);
 
@@ -127,6 +145,7 @@ export const sendMessage = async (req, res) => {
         const newMessage = new Message({
             senderId,
             receiverId,
+            conversationId: conversation._id,
             text,
             image: imageUrl,
             attachment: normalizedAttachment,
