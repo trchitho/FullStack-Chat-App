@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const conversationSchema = new mongoose.Schema(
     {
         type: { type: String, enum: ["direct", "group"], default: "group" },
+        directKey: { type: String, unique: true, sparse: true },
         name: { type: String, trim: true, maxlength: 120 },
         participants: [{
             type: mongoose.Schema.Types.ObjectId,
