@@ -65,8 +65,17 @@ export const getUsersForSidebar = async (req, res) => {
             { $group: { _id: "$chatUserId", lastMessageAt: { $first: "$createdAt" }, lastMessageText: { $first: "$text" } } },
         ]);
         const latestByUser = new Map(latestMessages.map((item) => [String(item._id), item]));
+        const incomingRequests = await Conversation.find({
+            type: "direct",
+            participants: loggedInUserId,
+            requestStatus: "pending",
+            requestedBy: { $ne: loggedInUserId },
+        }).select("requestedBy").lean();
+        const requestedByIds = new Set(incomingRequests.map((item) => String(item.requestedBy)));
         const sortedUsers = filteredUsers
-            .filter((user) => latestByUser.has(String(user._id)))
+            .filter((user) =>
+                latestByUser.has(String(user._id)) && !requestedByIds.has(String(user._id))
+            )
             .map((user) => ({
                 ...user,
                 ...latestByUser.get(String(user._id)),
