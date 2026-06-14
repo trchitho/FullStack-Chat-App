@@ -154,6 +154,8 @@ export const sendMessage = async (req, res) => {
         });
 
         await newMessage.save();
+        conversation.lastMessageAt = newMessage.createdAt;
+        await conversation.save();
 
         const receiver = await User.findById(receiverId).select("conversationSettings").lean();
         const setting = receiver?.conversationSettings?.find((item) => String(item.peerId) === String(senderId));
