@@ -162,6 +162,24 @@ export const useSocialStore = create((set, get) => ({
     });
   },
 
+  reactToReply: async (postId, commentId, replyId, type) => {
+    const { data } = await axiosInstance.patch(
+      `/posts/${postId}/comments/${commentId}/replies/${replyId}/reaction`,
+      { type }
+    );
+    set({
+      posts: get().posts.map((post) => post._id !== postId ? post : {
+        ...post,
+        comments: post.comments.map((comment) => comment._id !== commentId ? comment : {
+          ...comment,
+          replies: comment.replies.map((reply) =>
+            reply._id === replyId ? { ...reply, reactions: data } : reply
+          ),
+        }),
+      }),
+    });
+  },
+
   subscribeToTimeline: (activeSocket) => {
     const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
