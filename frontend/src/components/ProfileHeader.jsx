@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
 import FriendButton from "./FriendButton";
 
-const ProfileHeader = ({ profile, onEditMedia }) => {
+const ProfileHeader = ({ profile, onEdit, onEditMedia }) => {
   const navigate = useNavigate();
   const setSelectedUser = useChatStore((state) => state.setSelectedUser);
   const openChat = () => {
@@ -48,7 +48,7 @@ const ProfileHeader = ({ profile, onEditMedia }) => {
           </div>
           <div className="flex flex-wrap gap-2">
             {profile.isOwner ? (
-              <button type="button" className="btn btn-primary min-h-11">
+              <button type="button" className="btn btn-primary min-h-11" onClick={onEdit}>
                 <Pencil className="size-5" /> Chỉnh sửa trang cá nhân
               </button>
             ) : (

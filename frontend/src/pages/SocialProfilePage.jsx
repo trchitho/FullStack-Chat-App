@@ -51,7 +51,7 @@ const SocialProfilePage = () => {
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-base-200 pt-16">
-      <ProfileHeader profile={profile} onEditMedia={handleMedia} />
+      <ProfileHeader profile={profile} onEdit={() => setEditorOpen(true)} onEditMedia={handleMedia} />
       <nav className="sticky top-16 z-20 overflow-x-auto border-b border-base-300 bg-base-100">
         <div className="mx-auto flex max-w-6xl gap-1 px-4">
           {["Tất cả", "Giới thiệu", "Bạn bè", "Ảnh", "Video"].map((tab) => (
