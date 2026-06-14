@@ -211,7 +211,19 @@ export const sendMessage = async (req, res) => {
 export const searchUsers = async (req, res) => {
     try {
         const query = req.query.q?.trim();
-        const filter = { _id: { $ne: req.user._id } };
+        const excludedIds = [req.user._id];
+        if (req.query.excludeExistingConversations === "true") {
+            const conversations = await Conversation.find({
+                type: "direct",
+                participants: req.user._id,
+                lastMessageAt: { $ne: null },
+                requestStatus: { $ne: "deleted" },
+            }).select("participants").lean();
+            conversations.forEach((conversation) => {
+                conversation.participants.forEach((id) => excludedIds.push(id));
+            });
+        }
+        const filter = { _id: { $nin: excludedIds } };
         if (query) {
             filter.$or = [
                 { fullName: { $regex: query, $options: "i" } },
