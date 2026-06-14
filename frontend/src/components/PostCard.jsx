@@ -26,6 +26,25 @@ const audienceIcons = {
   private: Lock,
 };
 
+const InlineReactionPicker = ({ onSelect }) => (
+  <span className="group/reaction relative inline-flex">
+    <button type="button" className="btn btn-ghost btn-xs">Bày tỏ cảm xúc</button>
+    <span className="absolute bottom-full left-0 z-20 hidden gap-1 rounded-full border border-base-300 bg-base-100 p-1 shadow-xl group-hover/reaction:flex group-focus-within/reaction:flex">
+      {reactionOptions.map(([type, emoji]) => (
+        <button
+          key={type}
+          type="button"
+          className="rounded-full p-1 text-lg hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+          onClick={() => onSelect(type)}
+          aria-label={`Bày tỏ ${type}`}
+        >
+          {emoji}
+        </button>
+      ))}
+    </span>
+  </span>
+);
+
 const PostCard = ({ post }) => {
   const authUser = useAuthStore((state) => state.authUser);
   const {
