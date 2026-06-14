@@ -113,6 +113,25 @@ export const getPostReactions = async (req, res) => {
     })));
 };
 
+export const sharePost = async (req, res) => {
+    const original = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!original) return res.status(404).json({ message: "Post not found or unavailable" });
+    const audience = ["public", "friends", "private"].includes(req.body.audience)
+        ? req.body.audience
+        : "friends";
+    const shared = await Post.create({
+        author: req.user._id,
+        content: req.body.content?.trim() || "",
+        audience,
+        originalPost: original._id,
+    });
+    original.shareCount += 1;
+    await original.save();
+    const populated = await populatePost(Post.findById(shared._id));
+    await publishPost(populated, req.user._id);
+    res.status(201).json(populated);
+};
+
 export const addComment = async (req, res) => {
     const content = req.body.content?.trim();
     if (!content) return res.status(400).json({ message: "Comment is required" });
