@@ -20,8 +20,8 @@ const SocialProfilePage = () => {
   const { userId } = useParams();
   const authUser = useAuthStore((state) => state.authUser);
   const {
-    profile, posts, friends, isLoading, getProfile, getUserPosts,
-    getRelationship, getFriends, updateProfile, updateProfileMedia,
+    profile, posts, profileFriends, isLoading, getProfile, getUserPosts,
+    getRelationship, getProfileFriends, updateProfile, updateProfileMedia,
   } = useSocialStore();
   const [editorOpen, setEditorOpen] = useState(false);
   const profileId = userId || "me";
@@ -29,9 +29,9 @@ const SocialProfilePage = () => {
   useEffect(() => {
     getProfile(profileId);
     getUserPosts(profileId);
-    getFriends();
+    getProfileFriends(profileId);
     if (userId) getRelationship(userId);
-  }, [getFriends, getProfile, getRelationship, getUserPosts, profileId, userId]);
+  }, [getProfile, getProfileFriends, getRelationship, getUserPosts, profileId, userId]);
 
   const handleMedia = async (field, file) => {
     if (!file) return;
@@ -72,7 +72,7 @@ const SocialProfilePage = () => {
               </div>
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2">
-              {friends.slice(0, 9).map((friend) => (
+              {profileFriends.slice(0, 9).map((friend) => (
                 <Link key={friend._id} to={`/profile/${friend._id}`} className="min-w-0">
                   <img src={friend.profilePic || "/avatar.png"} alt="" className="aspect-square w-full rounded-lg object-cover" />
                   <span className="mt-1 block truncate text-sm font-semibold">{friend.fullName}</span>
