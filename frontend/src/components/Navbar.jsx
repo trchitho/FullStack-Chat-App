@@ -52,15 +52,15 @@ const Navbar = () => {
         <div className="relative flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
           {authUser && (
             <>
-              <Link to="/contacts" className="btn btn-circle btn-sm border-none bg-base-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" aria-label={language === "vi" ? "Danh bạ" : "Contacts"}>
+              <Link to="/contacts" className="btn btn-circle size-11 min-h-11 border-none bg-base-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" aria-label={language === "vi" ? "Danh bạ" : "Contacts"}>
                 <Users className="size-5" />
               </Link>
-              <Link to="/timeline" className="btn btn-circle btn-sm border-none bg-base-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" aria-label={language === "vi" ? "Nhật ký" : "Timeline"}>
+              <Link to="/timeline" className="btn btn-circle size-11 min-h-11 border-none bg-base-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" aria-label={language === "vi" ? "Nhật ký" : "Timeline"}>
                 <Newspaper className="size-5" />
               </Link>
             </>
           )}
-          <Link to="/settings" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Cài đặt" : "Settings"}>
+          <Link to="/settings" className="btn btn-circle size-11 min-h-11 border-none bg-base-300" aria-label={language === "vi" ? "Cài đặt" : "Settings"}>
             <Settings className="size-5" />
           </Link>
           {authUser && (
