@@ -55,3 +55,26 @@ const PostComposer = ({ authUser }) => {
         <img src={authUser.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
         <span className="flex-1 rounded-full bg-base-200 px-4 py-3 text-base-content/60">Bạn đang nghĩ gì?</span>
       </button>
+      {open && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 sm:p-4" onMouseDown={() => setOpen(false)}>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="post-composer-title"
+            className="flex h-dvh w-full flex-col bg-base-100 sm:h-auto sm:max-h-[90dvh] sm:max-w-2xl sm:rounded-2xl"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="flex items-center justify-between border-b border-base-300 p-4">
+              <button type="button" className="btn btn-circle btn-ghost btn-sm sm:order-2" onClick={() => setOpen(false)} aria-label="Đóng">
+                <X className="size-5" />
+              </button>
+              <h2 id="post-composer-title" className="text-xl font-bold">Tạo bài viết</h2>
+              <button type="button" className="btn btn-primary btn-sm min-h-10" onClick={submit} disabled={submitting || (!content.trim() && !files.length)}>
+                <Send className="size-4" /> Đăng
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+              <div className="flex items-center gap-3">
+                <img src={authUser.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
+                <div>
+                  <div className="font-bold">{authUser.fullName}</div>
