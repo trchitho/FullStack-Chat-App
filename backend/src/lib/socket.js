@@ -1,6 +1,7 @@
 import {Server} from 'socket.io';
 import {createServer} from 'http';
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import Conversation from '../models/conversation.model.js';
 import Message from '../models/message.model.js';
 
@@ -33,11 +34,29 @@ const publishOnlineUsers = () => {
     io.emit("getOnlineUsers", [...userSocketMap.keys()]);
 };
 
+io.use((socket, next) => {
+    try {
+        const cookies = Object.fromEntries(
+            (socket.request.headers.cookie || "").split(";").filter(Boolean).map((entry) => {
+                const separator = entry.indexOf("=");
+                return [
+                    decodeURIComponent(entry.slice(0, separator).trim()),
+                    decodeURIComponent(entry.slice(separator + 1).trim()),
+                ];
+            })
+        );
+        const decoded = jwt.verify(cookies.jwt, process.env.JWT_SECRET);
+        socket.data.userId = String(decoded.userId);
+        next();
+    } catch {
+        next(new Error("Unauthorized"));
+    }
+});
 
 io.on('connection', (socket) => {
     console.log('A user connected');
 
-    const userId = String(socket.handshake.query.userId || "");
+    const userId = socket.data.userId;
     if (userId) {
         const sockets = userSocketMap.get(userId) || new Set();
         sockets.add(socket.id);
