@@ -16,6 +16,25 @@ const getFriendIds = async (userId) => {
     );
 };
 
+const canViewPost = async (post, viewerId) => {
+    if (String(post.author) === String(viewerId)) return true;
+    if (post.audience === "public") return true;
+    if (post.audience === "private") return false;
+    return Boolean(await Friendship.exists({
+        status: "accepted",
+        $or: [
+            { requester: viewerId, recipient: post.author },
+            { requester: post.author, recipient: viewerId },
+        ],
+    }));
+};
+
+const findAccessiblePost = async (postId, viewerId) => {
+    const post = await Post.findById(postId);
+    if (!post || !await canViewPost(post, viewerId)) return null;
+    return post;
+};
+
 export const createPost = async (req, res) => {
     const { content = "", media = [], audience = "friends" } = req.body;
     if (!content.trim() && !media.length) {
