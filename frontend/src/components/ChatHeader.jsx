@@ -5,7 +5,7 @@ import { useLanguageStore } from "../store/useLanguageStore";
 import { t } from "../lib/i18n";
 import { useNavigate } from "react-router-dom";
 
-const ChatHeader = () => {
+const ChatHeader = ({ onOpenInfo }) => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { language } = useLanguageStore();
@@ -40,7 +40,7 @@ const ChatHeader = () => {
         <div className="flex shrink-0 items-center gap-0.5 text-primary sm:gap-1">
           <button type="button" className="btn btn-circle btn-ghost btn-sm" title={t(language, "voiceCall")} aria-label={t(language, "voiceCall")}><Phone className="size-5" /></button>
           <button type="button" className="btn btn-circle btn-ghost btn-sm" title={t(language, "videoChat")} aria-label={t(language, "videoChat")}><Video className="size-5" /></button>
-          <button type="button" className="btn btn-circle btn-ghost btn-sm" title={t(language, "chatInfo")} aria-label={t(language, "chatInfo")}><Info className="size-5" /></button>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" title={t(language, "chatInfo")} aria-label={t(language, "chatInfo")} onClick={onOpenInfo}><Info className="size-5" /></button>
           <button type="button" className="btn btn-circle btn-ghost btn-sm text-base-content/70" title={t(language, "closeChat")} onClick={() => setSelectedUser(null)} aria-label={t(language, "closeChat")}>
             <X className="size-5" />
           </button>
