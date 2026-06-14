@@ -176,7 +176,10 @@ const PostCard = ({ post }) => {
             <Send className="size-5" />
           </button>
         </form>
-      </div>
+            </div>
+          </section>
+        </div>
+      )}
     </article>
   );
 };
