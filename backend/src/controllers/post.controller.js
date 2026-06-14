@@ -50,6 +50,7 @@ export const getTimeline = async (req, res) => {
     const posts = await populatePost(Post.find({
         $or: [
             { author: req.user._id },
+            { audience: "public" },
             { author: { $in: friendIds }, audience: { $in: ["public", "friends"] } },
         ],
     }).sort({ isPinned: -1, createdAt: -1 }).limit(100)).lean();
