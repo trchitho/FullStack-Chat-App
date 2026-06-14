@@ -1,11 +1,14 @@
 import { Send, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
 
 const SharePostModal = ({ post, open, onClose }) => {
   const sharePost = useSocialStore((state) => state.sharePost);
   const friends = useSocialStore((state) => state.friends);
   const getFriends = useSocialStore((state) => state.getFriends);
+  const sendMessageTo = useChatStore((state) => state.sendMessageTo);
   const [content, setContent] = useState("");
   const [audience, setAudience] = useState("friends");
   const [submitting, setSubmitting] = useState(false);
@@ -29,6 +32,14 @@ const SharePostModal = ({ post, open, onClose }) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const sendToFriend = async (friend) => {
+    const excerpt = post.content?.trim().slice(0, 120) || "Bài viết đa phương tiện";
+    await sendMessageTo(friend._id, {
+      text: `Đã chia sẻ một bài viết: ${excerpt}`,
+    });
+    toast.success(`Đã gửi cho ${friend.fullName}`);
   };
 
   return (
