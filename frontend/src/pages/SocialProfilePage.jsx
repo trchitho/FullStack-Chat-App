@@ -81,3 +81,28 @@ const SocialProfilePage = () => {
             </div>
           </section>
         </aside>
+        <section className="min-w-0 space-y-4">
+          {profile.isOwner && <PostComposer authUser={authUser} />}
+          {posts.length ? posts.map((post) => (
+            <PostCard key={post._id} post={post} />
+          )) : (
+            <div className="rounded-xl border border-base-300 bg-base-100 p-10 text-center text-base-content/55">
+              Chưa có bài viết nào.
+            </div>
+          )}
+        </section>
+      </div>
+      <ProfileAboutEditor
+        profile={profile}
+        open={editorOpen}
+        onClose={() => setEditorOpen(false)}
+        onSave={async (draft) => {
+          await updateProfile(draft);
+          toast.success("Đã lưu thông tin cá nhân");
+        }}
+      />
+    </main>
+  );
+};
+
+export default SocialProfilePage;
