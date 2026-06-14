@@ -73,10 +73,12 @@ const SocialProfilePage = () => {
           ))}
         </div>
       </nav>
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 py-5 lg:grid-cols-[22rem_minmax(0,1fr)] lg:px-4">
-        <aside className="space-y-4">
+      <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 py-5 lg:px-4 ${
+        ["Tất cả", "Giới thiệu"].includes(activeTab) ? "lg:grid-cols-[22rem_minmax(0,1fr)]" : ""
+      }`}>
+        {["Tất cả", "Giới thiệu"].includes(activeTab) && <aside className="space-y-4">
           <ProfileIntroCard profile={profile} onEdit={() => setEditorOpen(true)} />
-          <section className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+          {activeTab === "Tất cả" && <section className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold">Bạn bè</h2>
@@ -91,9 +93,9 @@ const SocialProfilePage = () => {
                 </Link>
               ))}
             </div>
-          </section>
-        </aside>
-        <section className="min-w-0 space-y-4">
+          </section>}
+        </aside>}
+        {activeTab === "Tất cả" && <section className="min-w-0 space-y-4">
           {profile.isOwner && <PostComposer authUser={authUser} />}
           {posts.length ? posts.map((post) => (
             <PostCard key={post._id} post={post} />
@@ -102,7 +104,7 @@ const SocialProfilePage = () => {
               Chưa có bài viết nào.
             </div>
           )}
-        </section>
+        </section>}
       </div>
       <ProfileAboutEditor
         profile={profile}
