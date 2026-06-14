@@ -11,6 +11,17 @@ const categories = [
   ["details", "Chi tiết về bạn"],
 ];
 
+const Field = ({ label, value, onChange, multiline = false }) => (
+  <label className="form-control gap-2">
+    <span className="font-semibold">{label}</span>
+    {multiline ? (
+      <textarea className="textarea textarea-bordered min-h-28" value={value || ""} onChange={(event) => onChange(event.target.value)} />
+    ) : (
+      <input className="input input-bordered" value={value || ""} onChange={(event) => onChange(event.target.value)} />
+    )}
+  </label>
+);
+
 const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
   const [active, setActive] = useState("intro");
   const [draft, setDraft] = useState(profile);
