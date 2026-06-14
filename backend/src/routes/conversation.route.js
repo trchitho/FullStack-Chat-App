@@ -8,7 +8,7 @@ import {
     respondToMessageRequest,
     sendGroupMessage,
 } from "../controllers/conversation.controller.js";
-import { protectRoute } from "../middleware/auth.middleware.js";
+import { protectRoute } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 const handle = (controller) => (req, res, next) =>
