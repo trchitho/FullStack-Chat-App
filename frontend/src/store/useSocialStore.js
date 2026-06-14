@@ -93,4 +93,34 @@ export const useSocialStore = create((set, get) => ({
     toast.success("Đã đăng bài viết");
     return data;
   },
+
+  reactToPost: async (postId, type) => {
+    const { data } = await axiosInstance.patch(`/posts/${postId}/reaction`, { type });
+    set({
+      posts: get().posts.map((post) =>
+        post._id === postId ? { ...post, reactions: data } : post
+      ),
+    });
+  },
+
+  addComment: async (postId, content) => {
+    const { data } = await axiosInstance.post(`/posts/${postId}/comments`, { content });
+    set({
+      posts: get().posts.map((post) =>
+        post._id === postId ? { ...post, comments: [...post.comments, data] } : post
+      ),
+    });
+  },
+
+  addReply: async (postId, commentId, content) => {
+    const { data } = await axiosInstance.post(`/posts/${postId}/comments/${commentId}/replies`, { content });
+    set({
+      posts: get().posts.map((post) => post._id !== postId ? post : {
+        ...post,
+        comments: post.comments.map((comment) =>
+          comment._id === commentId ? { ...comment, replies: [...comment.replies, data] } : comment
+        ),
+      }),
+    });
+  },
 }));
