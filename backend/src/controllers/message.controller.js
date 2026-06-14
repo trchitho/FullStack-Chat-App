@@ -21,6 +21,12 @@ const normalizeCall = (call) => {
     return { type, status, duration };
 };
 
+const cloudinaryResourceType = (mimeType = "") => {
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) return "video";
+    return "raw";
+};
+
 const directKeyFor = (firstId, secondId) =>
     [String(firstId), String(secondId)].sort().join(":");
 
@@ -246,8 +252,10 @@ export const uploadMessageAttachment = async (req, res) => {
         } catch (storageError) {
             const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
             const uploaded = await cloudinary.uploader.upload(dataUri, {
-                resource_type: "auto",
+                resource_type: cloudinaryResourceType(req.file.mimetype),
                 folder: "pingme/attachments",
+                use_filename: true,
+                unique_filename: true,
             });
             attachment = {
                 key: uploaded.public_id,
