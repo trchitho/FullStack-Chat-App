@@ -160,6 +160,19 @@ const seedDatabase = async () => {
       );
       seededUsers.push(user);
     }
+    const friendshipWrites = [];
+    for (let first = 0; first < seededUsers.length; first += 1) {
+      for (let second = first + 1; second < seededUsers.length; second += 1) {
+        friendshipWrites.push({
+          updateOne: {
+            filter: { requester: seededUsers[first]._id, recipient: seededUsers[second]._id },
+            update: { $setOnInsert: { status: "accepted" } },
+            upsert: true,
+          },
+        });
+      }
+    }
+    if (friendshipWrites.length) await Friendship.bulkWrite(friendshipWrites);
     console.log(`Seeded ${seededUsers.length} PingMe users`);
   } catch (error) {
     console.error("Error seeding database:", error);
