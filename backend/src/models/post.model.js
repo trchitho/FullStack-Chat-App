@@ -56,6 +56,9 @@ const postSchema = new mongoose.Schema(
         reactions: { type: [reactionSchema], default: [] },
         comments: { type: [commentSchema], default: [] },
         isPinned: { type: Boolean, default: false },
+        originalPost: { type: mongoose.Schema.Types.ObjectId, ref: "Post", default: null },
+        shareComment: { type: String, trim: true, maxlength: 5000, default: "" },
+        shareCount: { type: Number, default: 0 },
     },
     { timestamps: true }
 );
