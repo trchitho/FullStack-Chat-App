@@ -71,3 +71,31 @@ const ContactsPage = () => {
             </div>
           </section>
         )}
+        <section className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
+          <div className="border-b border-base-300 p-4">
+            <h2 className="text-xl font-bold">Tất cả bạn bè</h2>
+          </div>
+          <div className="divide-y divide-base-300">
+            {filtered.map((friend) => (
+              <div key={friend._id} className="flex min-w-0 items-center gap-3 p-4 hover:bg-base-200">
+                <Link to={`/profile/${friend._id}`} className="shrink-0">
+                  <img src={friend.profilePic || "/avatar.png"} alt="" className="size-14 rounded-full object-cover" />
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <Link to={`/profile/${friend._id}`} className="block truncate font-bold hover:underline">{friend.fullName}</Link>
+                  <p className="truncate text-sm text-base-content/55">{friend.bio || `@${friend.username || "pingme"}`}</p>
+                </div>
+                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11" onClick={() => openChat(friend)} aria-label={`Nhắn tin cho ${friend.fullName}`}>
+                  <MessageCircle className="size-5" />
+                </button>
+              </div>
+            ))}
+            {!filtered.length && <div className="p-10 text-center text-base-content/55">Không tìm thấy bạn bè.</div>}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default ContactsPage;
