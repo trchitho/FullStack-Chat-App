@@ -122,3 +122,22 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
             )}
           </div>
         </div>
+        <footer className="flex justify-end gap-2 border-t border-base-300 p-4">
+          <button type="button" className="btn btn-ghost" onClick={onClose}>Hủy</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={async () => {
+              await onSave(draft);
+              onClose();
+            }}
+          >
+            Lưu thay đổi
+          </button>
+        </footer>
+      </section>
+    </div>
+  );
+};
+
+export default ProfileAboutEditor;
