@@ -31,7 +31,7 @@ export const createGroupConversation = async (req, res) => {
 
 export const getGroupConversations = async (req, res) => {
     try {
-        const groups = await Conversation.find({ participants: req.user._id })
+        const groups = await Conversation.find({ participants: req.user._id, type: "group" })
             .sort({ lastMessageAt: -1 })
             .populate("participants", "fullName profilePic email")
             .lean();
