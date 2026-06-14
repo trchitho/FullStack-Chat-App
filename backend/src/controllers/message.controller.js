@@ -3,6 +3,7 @@ import { getReceiverSocketId } from "../lib/socket.js";
 import {io} from "../lib/socket.js";
 import { uploadFileToR2 } from "../lib/r2.js";
 import Conversation from "../models/conversation.model.js";
+import Friendship from "../models/friendship.model.js";
 import Message from "../models/message.model.js";
 import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
@@ -28,6 +29,17 @@ const buildMessagePreview = ({ text, attachment, call }) => {
     if (attachment) return `Tệp: ${attachment.name || "Đính kèm"}`;
     return "Tin nhắn mới";
 };
+
+const directKeyFor = (firstId, secondId) =>
+    [String(firstId), String(secondId)].sort().join(":");
+
+const areFriends = (firstId, secondId) => Friendship.exists({
+    status: "accepted",
+    $or: [
+        { requester: firstId, recipient: secondId },
+        { requester: secondId, recipient: firstId },
+    ],
+});
 
 export const getUsersForSidebar = async (req, res) => {
     try {
