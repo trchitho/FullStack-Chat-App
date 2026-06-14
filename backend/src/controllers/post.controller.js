@@ -94,6 +94,17 @@ export const reactToPost = async (req, res) => {
     res.status(200).json(post.reactions);
 };
 
+export const getPostReactions = async (req, res) => {
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
+    await post.populate("reactions.user", "fullName profilePic");
+    res.status(200).json(post.reactions.map((reaction) => ({
+        user: reaction.user,
+        type: reaction.type,
+        createdAt: reaction.createdAt,
+    })));
+};
+
 export const addComment = async (req, res) => {
     const content = req.body.content?.trim();
     if (!content) return res.status(400).json({ message: "Comment is required" });
