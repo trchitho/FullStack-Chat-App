@@ -149,9 +149,18 @@ const buildSeedProfile = (user, index) => ({
 const seedDatabase = async () => {
   try {
     await connectDB();
-
-    await User.insertMany(seedUsers);
-    console.log("Database seeded successfully");
+    const seededUsers = [];
+    for (const [index, rawUser] of seedUsers.entries()) {
+      const profile = buildSeedProfile(rawUser, index);
+      const password = await bcrypt.hash(String(rawUser.password).padEnd(6, "0"), 10);
+      const user = await User.findOneAndUpdate(
+        { email: rawUser.email.toLowerCase() },
+        { $set: { ...profile, password } },
+        { upsert: true, new: true, runValidators: true }
+      );
+      seededUsers.push(user);
+    }
+    console.log(`Seeded ${seededUsers.length} PingMe users`);
   } catch (error) {
     console.error("Error seeding database:", error);
   }
