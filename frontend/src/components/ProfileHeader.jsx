@@ -27,3 +27,22 @@ const ProfileHeader = ({ profile, onEditMedia }) => {
             <input type="file" accept="image/*" className="sr-only" onChange={(event) => onEditMedia("coverPhoto", event.target.files?.[0])} />
           </label>
         )}
+        <div className="flex flex-col gap-4 px-4 pb-5 sm:flex-row sm:items-end sm:px-8">
+          <div className="relative -mt-16 shrink-0">
+            <img
+              src={profile.profilePic || "/avatar.png"}
+              alt={profile.fullName}
+              className="size-32 rounded-full border-4 border-base-100 object-cover sm:size-40"
+            />
+            {profile.isOwner && (
+              <label className="btn btn-circle btn-sm absolute bottom-2 right-1 cursor-pointer" aria-label="Đổi ảnh đại diện">
+                <Camera className="size-4" />
+                <input type="file" accept="image/*" className="sr-only" onChange={(event) => onEditMedia("profilePic", event.target.files?.[0])} />
+              </label>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="break-words text-3xl font-bold sm:text-4xl">{profile.fullName}</h1>
+            <p className="mt-1 text-base-content/65">{profile.friendCount || 0} người bạn</p>
+            {profile.bio && <p className="mt-2 max-w-2xl">{profile.bio}</p>}
+          </div>
