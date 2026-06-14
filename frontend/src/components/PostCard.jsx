@@ -61,6 +61,23 @@ const PostCard = ({ post }) => {
         </div>
       </header>
       {post.content && <p className="whitespace-pre-wrap break-words px-4 pb-4">{post.content}</p>}
+      {post.originalPost && (
+        <div className="mx-4 mb-4 overflow-hidden rounded-xl border border-base-300">
+          {!!post.originalPost.media?.[0] && (
+            <img
+              src={post.originalPost.media[0].url}
+              alt="Nội dung bài viết được chia sẻ"
+              className="max-h-72 w-full object-cover"
+            />
+          )}
+          <div className="p-3">
+            <div className="font-bold">{post.originalPost.author?.fullName}</div>
+            <p className="mt-1 line-clamp-4 whitespace-pre-wrap text-sm">
+              {post.originalPost.content || "Bài viết đa phương tiện"}
+            </p>
+          </div>
+        </div>
+      )}
       {!!post.media?.length && (
         <div className={`grid gap-1 ${post.media.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
           {post.media.map((media, index) => (
