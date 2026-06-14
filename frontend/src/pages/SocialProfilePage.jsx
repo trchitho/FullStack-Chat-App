@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import ProfileAboutEditor from "../components/ProfileAboutEditor";
 import ProfileHeader from "../components/ProfileHeader";
@@ -73,10 +73,10 @@ const SocialProfilePage = () => {
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2">
               {friends.slice(0, 9).map((friend) => (
-                <a key={friend._id} href={`/profile/${friend._id}`} className="min-w-0">
+                <Link key={friend._id} to={`/profile/${friend._id}`} className="min-w-0">
                   <img src={friend.profilePic || "/avatar.png"} alt="" className="aspect-square w-full rounded-lg object-cover" />
                   <span className="mt-1 block truncate text-sm font-semibold">{friend.fullName}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </section>
