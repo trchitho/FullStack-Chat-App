@@ -4,6 +4,10 @@ import { io } from "../lib/socket.js";
 
 const populatePost = (query) => query
     .populate("author", "fullName username profilePic")
+    .populate({
+        path: "originalPost",
+        populate: { path: "author", select: "fullName username profilePic" },
+    })
     .populate("comments.author", "fullName profilePic")
     .populate("comments.replies.author", "fullName profilePic");
 
