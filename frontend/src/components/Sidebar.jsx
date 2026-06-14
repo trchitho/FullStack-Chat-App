@@ -234,7 +234,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               <button
                 type="button"
                 onClick={() => setSelectedUser(user)}
-                className={`flex w-full min-w-0 items-center gap-3 rounded-xl p-3 text-left transition ${
+                className={`flex w-full min-w-0 items-center gap-3 rounded-xl py-3 pl-3 pr-24 text-left transition ${
                   isSelected ? "bg-primary/15" : "hover:bg-base-300"
                 }`}
               >
@@ -250,14 +250,16 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                     {user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
                 </div>
+              </button>
+              <div className="pointer-events-none absolute right-12 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
                 {isMuted && <BellOff className="size-4 shrink-0 text-base-content/50" />}
                 {isMarkedUnread && <span className="flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-content">{user.unreadCount || 1}</span>}
-              </button>
+              </div>
 
               <button
                 type="button"
                 data-pingme-menu-trigger
-                className="absolute right-3 top-5 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-base-300 p-2 opacity-80 shadow transition hover:opacity-100"
                 onClick={(event) => {
                   const rect = event.currentTarget.getBoundingClientRect();
                   const shouldOpen = openUserMenu !== user._id;
