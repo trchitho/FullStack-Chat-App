@@ -99,3 +99,30 @@ const SharePostModal = ({ post, open, onClose }) => {
             <div>
               <h3 className="mb-2 font-bold">Gửi qua tin nhắn</h3>
               <div className="flex gap-3 overflow-x-auto pb-2">
+                {friends.map((friend) => (
+                  <button
+                    key={friend._id}
+                    type="button"
+                    className="flex w-20 shrink-0 flex-col items-center gap-1 rounded-xl p-2 text-center hover:bg-base-200"
+                    onClick={() => sendToFriend(friend)}
+                    aria-label={`Gửi cho ${friend.fullName}`}
+                  >
+                    <img
+                      src={friend.profilePic || "/avatar.png"}
+                      alt=""
+                      className="size-12 rounded-full object-cover"
+                    />
+                    <span className="line-clamp-2 text-xs">{friend.fullName}</span>
+                    <Send className="size-4" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default SharePostModal;
