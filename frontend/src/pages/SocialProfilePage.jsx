@@ -50,6 +50,10 @@ const SocialProfilePage = () => {
     return <div className="flex min-h-dvh items-center justify-center pt-16"><span className="loading loading-spinner loading-lg" /></div>;
   }
   if (!profile) return <div className="p-24 text-center">Không tìm thấy trang cá nhân.</div>;
+  const visibleMedia = posts.flatMap((post) => post.media || []);
+  const tabMedia = visibleMedia.filter((media) =>
+    activeTab === "Video" ? media.type === "video" : media.type === "image"
+  );
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-base-200 pt-16">
