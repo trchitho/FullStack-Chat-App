@@ -32,11 +32,13 @@ const NewMessageComposer = () => {
   useEffect(() => {
     if (!isNewMessageOpen) return undefined;
     const timeout = setTimeout(async () => {
-      const { data } = await axiosInstance.get("/messages/search", { params: { q: query } });
+      const { data } = await axiosInstance.get("/messages/search", {
+        params: { q: query, excludeExistingConversations: selected.length < 2 },
+      });
       setRecipientOptions(data);
     }, 200);
     return () => clearTimeout(timeout);
-  }, [isNewMessageOpen, query]);
+  }, [isNewMessageOpen, query, selected.length]);
 
   useEffect(() => {
     if (!isNewMessageOpen) return undefined;
@@ -136,6 +138,11 @@ const NewMessageComposer = () => {
                 </button>
               );
             })}
+            {visibleUsers.length === 0 && (
+              <p className="p-6 text-center text-sm text-base-content/60">
+                {isVi ? "Không còn người dùng mới để nhắn tin." : "No new people are available to message."}
+              </p>
+            )}
           </div>
           <div className="flex shrink-0 items-center gap-2 border-t border-base-300 p-3">
             <input
