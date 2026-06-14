@@ -119,6 +119,13 @@ export const useSocialStore = create((set, get) => ({
     return data;
   },
 
+  sharePost: async (postId, payload) => {
+    const { data } = await axiosInstance.post(`/posts/${postId}/share`, payload);
+    set({ posts: [data, ...get().posts.filter((post) => post._id !== data._id)] });
+    toast.success("Đã chia sẻ bài viết");
+    return data;
+  },
+
   addComment: async (postId, content) => {
     const { data } = await axiosInstance.post(`/posts/${postId}/comments`, { content });
     set({
