@@ -21,6 +21,15 @@ const getFriendIds = async (userId) => {
     );
 };
 
+const publishPost = async (post, authorId) => {
+    if (post.audience === "public") {
+        io.emit("post:new", post);
+    } else if (post.audience === "friends") {
+        const friendIds = await getFriendIds(authorId);
+        friendIds.forEach((friendId) => io.to(`user:${friendId}`).emit("post:new", post));
+    }
+};
+
 const canViewPost = async (post, viewerId) => {
     if (String(post.author) === String(viewerId)) return true;
     if (post.audience === "public") return true;
@@ -47,12 +56,7 @@ export const createPost = async (req, res) => {
     }
     const post = await Post.create({ author: req.user._id, content: content.trim(), media, audience });
     await post.populate("author", "fullName username profilePic");
-    if (post.audience === "public") {
-        io.emit("post:new", post);
-    } else if (post.audience === "friends") {
-        const friendIds = await getFriendIds(req.user._id);
-        friendIds.forEach((friendId) => io.to(`user:${friendId}`).emit("post:new", post));
-    }
+    await publishPost(post, req.user._id);
     res.status(201).json(post);
 };
 
