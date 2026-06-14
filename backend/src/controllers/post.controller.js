@@ -158,6 +158,7 @@ export const addComment = async (req, res) => {
     post.comments.push({ author: req.user._id, content });
     await post.save();
     await post.populate("comments.author", "fullName profilePic");
+    await publishPostUpdate(post);
     res.status(201).json(post.comments.at(-1));
 };
 
@@ -171,6 +172,7 @@ export const addCommentReply = async (req, res) => {
     comment.replies.push({ author: req.user._id, content });
     await post.save();
     await post.populate("comments.replies.author", "fullName profilePic");
+    await publishPostUpdate(post);
     res.status(201).json(comment.replies.at(-1));
 };
 
@@ -194,5 +196,6 @@ export const reactToComment = async (req, res) => {
     else if (index >= 0) comment.reactions[index].type = type;
     else if (type) comment.reactions.push({ user: req.user._id, type });
     await post.save();
+    await publishPostUpdate(post);
     res.status(200).json(comment.reactions);
 };
