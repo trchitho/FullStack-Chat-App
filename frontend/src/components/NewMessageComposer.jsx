@@ -33,7 +33,7 @@ const NewMessageComposer = () => {
     if (!isNewMessageOpen) return undefined;
     const timeout = setTimeout(async () => {
       const { data } = await axiosInstance.get("/messages/search", {
-        params: { q: query, excludeExistingConversations: selected.length < 2 },
+        params: { q: query, excludeExistingConversations: selected.length === 0 },
       });
       setRecipientOptions(data);
     }, 200);
