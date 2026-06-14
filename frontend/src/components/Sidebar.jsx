@@ -185,10 +185,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                 const rect = event.currentTarget.getBoundingClientRect();
                 const shouldOpen = !showMainMenu;
                 closeFloatingMenus();
-                setMainMenuPosition({
-                  top: rect.bottom + 10,
-                  left: Math.min(rect.left, window.innerWidth - 360),
-                });
+                setMainMenuPosition(getPopoverPosition(rect, 256, 300));
                 setShowMainMenu(shouldOpen);
               }}
               aria-label="Mở tùy chọn đoạn chat"
@@ -277,10 +274,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
                   const rect = event.currentTarget.getBoundingClientRect();
                   const shouldOpen = openUserMenu !== user._id;
                   closeFloatingMenus();
-                  setUserMenuPosition({
-                    top: Math.min(rect.bottom + 6, window.innerHeight - 306),
-                    left: Math.min(rect.left - 150, window.innerWidth - 242),
-                  });
+                  setUserMenuPosition(getPopoverPosition(rect, 224, 352));
                   setOpenUserMenu(shouldOpen ? user._id : null);
                 }}
                 aria-label={`Mở tùy chọn ${user.fullName}`}
