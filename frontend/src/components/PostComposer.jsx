@@ -1,5 +1,6 @@
 import { ImagePlus, Send, Video, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
 
@@ -44,6 +45,8 @@ const PostComposer = ({ authUser }) => {
       setContent("");
       setFiles([]);
       setOpen(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Không thể đăng bài viết");
     } finally {
       setSubmitting(false);
     }
