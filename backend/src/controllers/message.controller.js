@@ -1,5 +1,4 @@
 import cloudinary from "../lib/cloudinary.js";
-import { getReceiverSocketId } from "../lib/socket.js";
 import {io} from "../lib/socket.js";
 import { uploadFileToR2 } from "../lib/r2.js";
 import Conversation from "../models/conversation.model.js";
@@ -190,10 +189,9 @@ export const sendMessage = async (req, res) => {
             });
 
         // real-time messaging using socket.io
-        const receiverSocketId = getReceiverSocketId(receiverId);
-        if(receiverSocketId) {
-            io.to(receiverSocketId).emit('newMessage', newMessage);
-            if (notification) io.to(receiverSocketId).emit("newNotification", {
+        io.to(`user:${receiverId}`).emit("newMessage", newMessage);
+        if (notification) {
+            io.to(`user:${receiverId}`).emit("newNotification", {
                 ...notification.toObject(),
                 senderId: {
                     _id: req.user._id,
