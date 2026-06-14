@@ -11,8 +11,8 @@ const handle = (controller) => (req, res, next) =>
     Promise.resolve(controller(req, res, next)).catch(next);
 
 router.use(protectRoute);
-router.get("/:userId", handle(getProfile));
 router.patch("/me/details", handle(updateMyProfile));
 router.patch("/me/media/:field", handle(updateProfileMedia));
+router.get("/:userId", handle(getProfile));
 
 export default router;
