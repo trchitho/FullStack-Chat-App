@@ -176,6 +176,20 @@ const PostCard = ({ post }) => {
                   <div className="rounded-2xl bg-base-200 px-3 py-2 text-sm">
                     <div className="font-bold">{replyItem.author?.fullName}</div>
                     <p>{replyItem.content}</p>
+                    <button
+                      type="button"
+                      className="mt-1 text-xs font-semibold text-base-content/60 hover:underline"
+                      onClick={() => reactToReply(
+                        post._id,
+                        item._id,
+                        replyItem._id,
+                        replyItem.reactions?.some((reaction) =>
+                          String(reaction.user?._id || reaction.user) === authUser._id
+                        ) ? null : "like"
+                      )}
+                    >
+                      👍 {replyItem.reactions?.length || "Thích"}
+                    </button>
                   </div>
                 </div>
               ))}
