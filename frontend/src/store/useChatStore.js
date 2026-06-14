@@ -186,11 +186,13 @@ export const useChatStore = create((set, get) => ({
     socket.on("newMessage", (newMessage) => {
       socket.emit("messageDelivered", { messageId: newMessage._id });
       const activeUser = get().selectedUser;
-      const isActiveConversation = activeUser?._id === newMessage.senderId;
+      const senderId = String(newMessage.senderId?._id || newMessage.senderId);
+      const isActiveConversation = activeUser?._id === senderId;
+      const hasConversation = get().users.some((user) => user._id === senderId);
       set({
         messages: isActiveConversation ? [...get().messages, newMessage] : get().messages,
         users: sortUsersByLatestMessage(get().users.map((user) =>
-          user._id === newMessage.senderId
+          user._id === senderId
             ? {
                 ...user,
                 lastMessageAt: newMessage.createdAt,
@@ -200,7 +202,8 @@ export const useChatStore = create((set, get) => ({
             : user
         )),
       });
-      if (isActiveConversation) get().markConversationSeen(newMessage.senderId);
+      if (!hasConversation) get().getUsers();
+      if (isActiveConversation) get().markConversationSeen(senderId);
     });
     socket.on("newGroupMessage", ({ conversationId, message }) => {
       const activeConversation = get().selectedUser;
