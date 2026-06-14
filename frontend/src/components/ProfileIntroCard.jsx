@@ -20,3 +20,26 @@ const ProfileIntroCard = ({ profile, onEdit }) => {
         )}
       </div>
       {profile.introText && <p className="mt-3 whitespace-pre-wrap text-center">{profile.introText}</p>}
+      <div className="mt-4 space-y-3">
+        {items.map(([Icon, value]) => (
+          <div key={value} className="flex items-start gap-3">
+            <Icon className="mt-0.5 size-5 shrink-0 text-base-content/60" />
+            <span>{value}</span>
+          </div>
+        ))}
+        {!items.length && !profile.introText && (
+          <p className="text-sm text-base-content/55">Chưa có thông tin giới thiệu.</p>
+        )}
+      </div>
+      {!!profile.hobbies?.length && (
+        <div className="mt-5 flex flex-wrap gap-2">
+          {profile.hobbies.map((hobby) => (
+            <span key={hobby} className="badge badge-lg bg-base-200">{hobby}</span>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default ProfileIntroCard;
