@@ -51,4 +51,22 @@ export const useSocialStore = create((set, get) => ({
     set({ relationship: data });
     return data;
   },
+
+  sendFriendRequest: async (userId) => {
+    const { data } = await axiosInstance.post(`/friends/request/${userId}`);
+    set({ relationship: { ...data, direction: "outgoing" } });
+  },
+
+  respondToFriendRequest: async (requestId, action) => {
+    await axiosInstance.patch(`/friends/requests/${requestId}`, { action });
+    await Promise.all([get().getFriendRequests(), get().getFriends()]);
+  },
+
+  removeFriendship: async (userId) => {
+    await axiosInstance.delete(`/friends/${userId}`);
+    set({
+      relationship: { status: "none" },
+      friends: get().friends.filter((friend) => friend._id !== userId),
+    });
+  },
 }));
