@@ -103,3 +103,33 @@ const PostComposer = ({ authUser }) => {
                   <input type="file" accept="video/*" multiple className="sr-only" onChange={addFiles} />
                 </label>
               </div>
+              {!!files.length && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {files.map((file, index) => (
+                    <div key={`${file.name}-${index}`} className="relative overflow-hidden rounded-xl bg-base-200">
+                      {file.type.startsWith("video/") ? (
+                        <video src={URL.createObjectURL(file)} className="aspect-square h-full w-full object-cover" muted />
+                      ) : (
+                        <img src={URL.createObjectURL(file)} alt={file.name} className="aspect-square h-full w-full object-cover" />
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-circle btn-sm absolute right-2 top-2"
+                        onClick={() => setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))}
+                        aria-label={`Xóa ${file.name}`}
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default PostComposer;
