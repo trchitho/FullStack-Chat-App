@@ -32,7 +32,7 @@ const SocialProfilePage = () => {
     getProfile(profileId);
     getUserPosts(profileId);
     getProfileFriends(profileId);
-    if (userId) getRelationship(userId);
+    if (userId && userId !== "me") getRelationship(userId);
   }, [getProfile, getProfileFriends, getRelationship, getUserPosts, profileId, userId]);
 
   const handleMedia = async (field, file) => {
