@@ -106,7 +106,10 @@ const PostCard = ({ post }) => {
         }}>
           {post.reactions?.length || 0} lượt bày tỏ cảm xúc
         </button>
-        <span>{post.comments?.length || 0} bình luận</span>
+        <div className="flex gap-3">
+          <span>{post.comments?.length || 0} bình luận</span>
+          <span>{post.shareCount || 0} lượt chia sẻ</span>
+        </div>
       </div>
       <div className="group relative grid grid-cols-3 border-b border-base-300 p-1">
         <button
@@ -119,7 +122,7 @@ const PostCard = ({ post }) => {
         <button type="button" className="btn btn-ghost min-h-11" onClick={() => setShowComments(true)}>
           <MessageCircle className="size-5" /> Bình luận
         </button>
-        <button type="button" className="btn btn-ghost min-h-11">
+        <button type="button" className="btn btn-ghost min-h-11" onClick={() => setShowShare(true)}>
           <Share2 className="size-5" /> Chia sẻ
         </button>
         <div className="absolute bottom-full left-2 hidden gap-1 rounded-full border border-base-300 bg-base-100 p-1 shadow-xl group-hover:flex group-focus-within:flex">
