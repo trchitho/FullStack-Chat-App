@@ -6,11 +6,18 @@ import { useSocialStore } from "../store/useSocialStore";
 
 const TimelinePage = () => {
   const authUser = useAuthStore((state) => state.authUser);
-  const { posts, isLoading, getTimeline } = useSocialStore();
+  const socket = useAuthStore((state) => state.socket);
+  const { posts, isLoading, getTimeline, subscribeToTimeline, unsubscribeFromTimeline } = useSocialStore();
 
   useEffect(() => {
     getTimeline();
   }, [getTimeline]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+    subscribeToTimeline(socket);
+    return () => unsubscribeFromTimeline(socket);
+  }, [socket, subscribeToTimeline, unsubscribeFromTimeline]);
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-base-200 px-3 pb-10 pt-20 sm:px-6">
