@@ -152,7 +152,7 @@ const seedDatabase = async () => {
     const seededUsers = [];
     for (const [index, rawUser] of seedUsers.entries()) {
       const profile = buildSeedProfile(rawUser, index);
-      const password = await bcrypt.hash(String(rawUser.password).padEnd(6, "0"), 10);
+      const password = await bcrypt.hash(String(rawUser.password), 10);
       const user = await User.findOneAndUpdate(
         { email: rawUser.email.toLowerCase() },
         { $set: { ...profile, password } },
