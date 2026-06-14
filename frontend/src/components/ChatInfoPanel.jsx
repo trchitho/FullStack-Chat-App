@@ -48,3 +48,26 @@ const ChatInfoPanel = ({ open, onClose }) => {
               {isVi ? "Được mã hóa đầu cuối" : "End-to-end encrypted"}
             </span>
           </div>
+          <div className="mt-5 grid grid-cols-3 gap-2">
+            <QuickAction
+              icon={User}
+              label={isVi ? "Trang cá nhân" : "Profile"}
+              onClick={() => navigate(`/profile/${selectedUser._id}`)}
+            />
+            <QuickAction
+              icon={BellOff}
+              label={isVi ? "Tắt thông báo" : "Mute"}
+              onClick={() => updateConversationSetting(selectedUser._id, {
+                mutedUntil: "9999-12-31T23:59:59.999Z",
+              })}
+            />
+            <QuickAction
+              icon={Search}
+              label={isVi ? "Tìm kiếm" : "Search"}
+              onClick={() => document.querySelector('[aria-label*="Tìm kiếm"]')?.focus()}
+            />
+          </div>
+          <div className="mt-6 space-y-2">
+            <Accordion title={isVi ? "Thông tin về đoạn chat" : "Chat details"} id="details" expanded={expanded} setExpanded={setExpanded}>
+              <p className="text-sm text-base-content/70">{selectedUser.bio || (isVi ? "Chưa có thông tin bổ sung." : "No additional details.")}</p>
+            </Accordion>
