@@ -30,6 +30,22 @@ const publishPost = async (post, authorId) => {
     }
 };
 
+const publishPostUpdate = async (post) => {
+    const populated = await populatePost(Post.findById(post._id)).lean();
+    if (populated.audience === "public") {
+        io.emit("post:updated", populated);
+    } else if (populated.audience === "friends") {
+        const friendIds = await getFriendIds(populated.author._id);
+        friendIds.forEach((friendId) =>
+            io.to(`user:${friendId}`).emit("post:updated", populated)
+        );
+        io.to(`user:${populated.author._id}`).emit("post:updated", populated);
+    } else {
+        io.to(`user:${populated.author._id}`).emit("post:updated", populated);
+    }
+    return populated;
+};
+
 const canViewPost = async (post, viewerId) => {
     if (String(post.author) === String(viewerId)) return true;
     if (post.audience === "public") return true;
