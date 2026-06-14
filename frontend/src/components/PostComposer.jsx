@@ -78,3 +78,28 @@ const PostComposer = ({ authUser }) => {
                 <img src={authUser.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
                 <div>
                   <div className="font-bold">{authUser.fullName}</div>
+                  <select className="select select-bordered select-xs" value={audience} onChange={(event) => setAudience(event.target.value)} aria-label="Đối tượng xem bài viết">
+                    <option value="friends">Bạn bè</option>
+                    <option value="public">Công khai</option>
+                    <option value="private">Chỉ mình tôi</option>
+                  </select>
+                </div>
+              </div>
+              <textarea
+                autoFocus
+                className="textarea mt-4 min-h-44 w-full resize-none border-none bg-transparent text-xl focus:outline-none"
+                placeholder="Bạn đang nghĩ gì?"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                maxLength={10000}
+              />
+              <div className="flex flex-wrap gap-2 border-y border-base-300 py-3">
+                <label className="btn btn-ghost min-h-11 cursor-pointer">
+                  <ImagePlus className="size-5 text-success" /> Ảnh
+                  <input type="file" accept="image/*" multiple className="sr-only" onChange={addFiles} />
+                </label>
+                <label className="btn btn-ghost min-h-11 cursor-pointer">
+                  <Video className="size-5 text-secondary" /> Video
+                  <input type="file" accept="video/*" multiple className="sr-only" onChange={addFiles} />
+                </label>
+              </div>
