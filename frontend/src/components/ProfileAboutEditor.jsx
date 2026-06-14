@@ -93,3 +93,19 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
                 <Field label="Bằng cấp" value={draft.education?.degree} onChange={(value) => updateNested("education", "degree", value)} />
               </>
             )}
+            {active === "interests" && (
+              <>
+                <Field label="Sở thích, phân cách bằng dấu phẩy" value={draft.hobbies?.join(", ")} onChange={(value) => update("hobbies", value.split(",").map((item) => item.trim()).filter(Boolean))} />
+                <Field label="Mối quan tâm" value={draft.interests?.join(", ")} onChange={(value) => update("interests", value.split(",").map((item) => item.trim()).filter(Boolean))} />
+                <Field label="Nơi đã đi qua" value={draft.placesVisited?.join(", ")} onChange={(value) => update("placesVisited", value.split(",").map((item) => item.trim()).filter(Boolean))} />
+                <Field label="Điểm đến yêu thích" value={draft.favoriteDestination} onChange={(value) => update("favoriteDestination", value)} />
+              </>
+            )}
+            {active === "links" && (
+              <>
+                <Field label="Website" value={draft.links?.website} onChange={(value) => updateNested("links", "website", value)} />
+                <Field label="GitHub" value={draft.links?.github} onChange={(value) => updateNested("links", "github", value)} />
+                <Field label="LinkedIn" value={draft.links?.linkedin} onChange={(value) => updateNested("links", "linkedin", value)} />
+                <Field label="Số điện thoại" value={draft.phone} onChange={(value) => update("phone", value)} />
+              </>
+            )}
