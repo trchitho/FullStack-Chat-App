@@ -7,6 +7,7 @@ import {
     downloadMessageAttachment,
     markConversationSeen,
     markMessageDelivered,
+    searchUsers,
     sendMessage,
     updateConversationSetting,
     uploadMessageAttachment,
@@ -20,6 +21,7 @@ const upload = multer({
 
 // get users for sidebar
 router.get('/users',protectRoute, getUsersForSidebar);
+router.get('/search', protectRoute, searchUsers);
 
 // get messages between two users
 router.get('/:id', protectRoute, getMessages);
