@@ -12,6 +12,7 @@ import { useLanguageStore } from '../store/useLanguageStore';
 import MessageStatusIndicator from './MessageStatusIndicator';
 import FileMessage from './FileMessage';
 import { useNavigate } from 'react-router-dom';
+import ChatInfoPanel from './ChatInfoPanel';
 
 const ChatContainer = () => {
   const {messages, getMessages, isMessagesLoading, selectedUser, downloadAttachment} = useChatStore();
@@ -30,6 +31,7 @@ const ChatContainer = () => {
   const [revokedMessageIds, setRevokedMessageIds] = useState([]);
   const [pinnedMessage, setPinnedMessage] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
+  const [showChatInfo, setShowChatInfo] = useState(false);
   const reactionEmojis = ["❤️", "😂", "😮", "😢", "😡", "👍"];
   const getSenderId = (message) => String(message.senderId?._id || message.senderId);
   const getMessagePreview = (message) => {
@@ -106,7 +108,7 @@ const ChatContainer = () => {
   
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
-      <ChatHeader />
+      <ChatHeader onOpenInfo={() => setShowChatInfo(true)} />
       {pinnedMessage && (
         <div className="shrink-0 border-b border-base-300 bg-base-200 px-6 py-3">
           <div className="flex items-center justify-between gap-3 rounded-xl bg-base-100 px-4 py-2">
@@ -402,6 +404,7 @@ const ChatContainer = () => {
           <img src={lightboxImage} alt={isVi ? "Ảnh toàn màn hình" : "Attachment full screen"} className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
+      <ChatInfoPanel open={showChatInfo} onClose={() => setShowChatInfo(false)} />
     </div>
   )
 }
