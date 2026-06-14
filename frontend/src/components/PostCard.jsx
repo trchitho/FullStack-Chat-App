@@ -195,6 +195,11 @@ const PostCard = ({ post }) => {
           </section>
         </div>
       )}
+      <ReactionListModal
+        open={showReactions}
+        reactions={reactionUsers}
+        onClose={() => setShowReactions(false)}
+      />
     </article>
   );
 };
