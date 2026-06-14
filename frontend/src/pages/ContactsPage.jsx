@@ -1,4 +1,4 @@
-import { MessageCircle, Search, UserCheck, Users } from "lucide-react";
+import { MessageCircle, Phone, Search, UserCheck, Users, Video } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
@@ -6,7 +6,7 @@ import { useSocialStore } from "../store/useSocialStore";
 
 const ContactsPage = () => {
   const navigate = useNavigate();
-  const { setSelectedUser } = useChatStore();
+  const { sendCallEvent, setSelectedUser } = useChatStore();
   const {
     friends, friendRequests, getFriends, getFriendRequests, respondToFriendRequest,
   } = useSocialStore();
@@ -26,6 +26,12 @@ const ContactsPage = () => {
 
   const openChat = (friend) => {
     setSelectedUser(friend);
+    navigate("/");
+  };
+
+  const startCall = async (friend, type) => {
+    setSelectedUser(friend);
+    await sendCallEvent(friend._id, type, "completed", 0);
     navigate("/");
   };
 
