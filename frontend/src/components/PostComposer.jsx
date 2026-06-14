@@ -4,6 +4,21 @@ import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
 
+const LocalMediaPreview = ({ file }) => {
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  if (!url) return null;
+  return file.type.startsWith("video/")
+    ? <video src={url} className="aspect-square h-full w-full object-cover" muted />
+    : <img src={url} alt={file.name} className="aspect-square h-full w-full object-cover" />;
+};
+
 const PostComposer = ({ authUser }) => {
   const createPost = useSocialStore((state) => state.createPost);
   const uploadAttachment = useChatStore((state) => state.uploadAttachment);
