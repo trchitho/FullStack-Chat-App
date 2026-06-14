@@ -79,3 +79,17 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
                 <Field label="Giới tính" value={draft.gender} onChange={(value) => update("gender", value)} />
               </>
             )}
+            {active === "work" && (
+              <>
+                <Field label="Công ty" value={draft.work?.company} onChange={(value) => updateNested("work", "company", value)} />
+                <Field label="Vị trí" value={draft.work?.position} onChange={(value) => updateNested("work", "position", value)} />
+                <Field label="Mô tả công việc" value={draft.work?.description} multiline onChange={(value) => updateNested("work", "description", value)} />
+              </>
+            )}
+            {active === "education" && (
+              <>
+                <Field label="Trường học" value={draft.education?.school} onChange={(value) => updateNested("education", "school", value)} />
+                <Field label="Chuyên ngành" value={draft.education?.major} onChange={(value) => updateNested("education", "major", value)} />
+                <Field label="Bằng cấp" value={draft.education?.degree} onChange={(value) => updateNested("education", "degree", value)} />
+              </>
+            )}
