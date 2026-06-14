@@ -12,6 +12,7 @@ import AdminPage from './pages/AdminPage'
 import ContactsPage from './pages/ContactsPage'
 import SocialProfilePage from './pages/SocialProfilePage'
 import TimelinePage from './pages/TimelinePage'
+import MessageRequestsPage from './pages/MessageRequestsPage'
 import { useAuthStore } from './store/useAuthStore' 
 import {Loader} from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
@@ -51,6 +52,7 @@ const App = () => {
         <Route path="/profile/:userId" element={authUser ? <SocialProfilePage /> : <Navigate to='/login' />} />
         <Route path="/contacts" element={authUser ? <ContactsPage /> : <Navigate to='/login' />} />
         <Route path="/timeline" element={authUser ? <TimelinePage /> : <Navigate to='/login' />} />
+        <Route path="/message-requests" element={authUser ? <MessageRequestsPage /> : <Navigate to='/login' />} />
         <Route path="/help" element={<Navigate to="/help/messages-app/" />} />
         <Route path="/help/messages-app/" element={<HelpCenterPage />} />
         <Route path="/policies_center" element={<PoliciesCenterPage />} />
