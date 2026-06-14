@@ -11,12 +11,14 @@ import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents
 import { useLanguageStore } from '../store/useLanguageStore';
 import MessageStatusIndicator from './MessageStatusIndicator';
 import FileMessage from './FileMessage';
+import { useNavigate } from 'react-router-dom';
 
 const ChatContainer = () => {
   const {messages, getMessages, isMessagesLoading, selectedUser, downloadAttachment} = useChatStore();
 
   const {authUser} = useAuthStore();
   const { language } = useLanguageStore();
+  const navigate = useNavigate();
   const isVi = language === "vi";
   const messagesContainerRef = useRef(null);
   const [reactionPickerFor, setReactionPickerFor] = useState(null);
@@ -133,7 +135,12 @@ const ChatContainer = () => {
             key={message._id}
             className={`chat group relative min-w-0 ${isOwnMessage ? "chat-end" : "chat-start"}`}
           >
-            <div className=" chat-image avatar">
+            <button
+              type="button"
+              className="chat-image avatar rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              onClick={() => navigate(isOwnMessage ? "/profile/me" : `/profile/${selectedUser._id}`)}
+              aria-label={isVi ? "Mở trang cá nhân người gửi" : "Open sender profile"}
+            >
               <div className="size-10 rounded-full border">
                 <img
                   src={
@@ -144,7 +151,7 @@ const ChatContainer = () => {
                   alt="profile pic"
                 />
               </div>
-            </div>
+            </button>
             <div className="chat-header mb-1 px-1">
               <time className="text-xs text-base-content/50">
                 {formatMessageTime(message.createdAt)}
