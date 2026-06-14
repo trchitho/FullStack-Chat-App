@@ -36,6 +36,10 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
 
   if (!open) return null;
   const update = (field, value) => setDraft((current) => ({ ...current, [field]: value }));
+  const updateNested = (section, field, value) => setDraft((current) => ({
+    ...current,
+    [section]: { ...(current[section] || {}), [field]: value },
+  }));
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
