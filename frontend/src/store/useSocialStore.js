@@ -100,7 +100,7 @@ export const useSocialStore = create((set, get) => ({
 
   createPost: async (payload) => {
     const { data } = await axiosInstance.post("/posts", payload);
-    set({ posts: [data, ...get().posts] });
+    set({ posts: [data, ...get().posts.filter((post) => post._id !== data._id)] });
     toast.success("Đã đăng bài viết");
     return data;
   },
