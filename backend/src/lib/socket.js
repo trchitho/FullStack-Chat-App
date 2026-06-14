@@ -58,8 +58,9 @@ io.on('connection', (socket) => {
             { $push: { deliveredTo: { user: userId, at: new Date() } } },
             { new: true }
         );
-        const senderSocketId = message && getReceiverSocketId(message.senderId);
-        if (senderSocketId) io.to(senderSocketId).emit("messageDeliveredUpdate", message);
+        if (message) {
+            io.to(`user:${message.senderId}`).emit("messageDeliveredUpdate", message);
+        }
     });
 
     socket.on("conversationSeen", async ({ peerId }) => {
@@ -72,8 +73,7 @@ io.on('connection', (socket) => {
             { senderId: peerId, receiverId: userId, "seenBy.user": { $ne: userId } },
             { $push: { seenBy: { user: userId, at: seenAt } } }
         );
-        const peerSocketId = getReceiverSocketId(peerId);
-        if (peerSocketId) io.to(peerSocketId).emit("conversationSeenUpdate", { userId, seenAt });
+        io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId, seenAt });
     });
 
     socket.on('disconnect', () => {
