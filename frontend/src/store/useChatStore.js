@@ -160,7 +160,7 @@ export const useChatStore = create((set, get) => ({
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   },
 
   sendCallEvent: async (userId, call) => {
