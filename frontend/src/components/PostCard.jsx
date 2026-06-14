@@ -53,3 +53,25 @@ const PostCard = ({ post }) => {
         <span>{post.reactions?.length || 0} lượt bày tỏ cảm xúc</span>
         <span>{post.comments?.length || 0} bình luận</span>
       </div>
+      <div className="group relative grid grid-cols-3 border-b border-base-300 p-1">
+        <button
+          type="button"
+          className={`btn btn-ghost min-h-11 ${ownReaction ? "text-primary" : ""}`}
+          onClick={() => reactToPost(post._id, ownReaction ? null : "like")}
+        >
+          <ThumbsUp className="size-5" /> {ownReaction || "Thích"}
+        </button>
+        <button type="button" className="btn btn-ghost min-h-11">
+          <MessageCircle className="size-5" /> Bình luận
+        </button>
+        <button type="button" className="btn btn-ghost min-h-11">
+          <Share2 className="size-5" /> Chia sẻ
+        </button>
+        <div className="absolute bottom-full left-2 hidden gap-1 rounded-full border border-base-300 bg-base-100 p-1 shadow-xl group-hover:flex group-focus-within:flex">
+          {reactionOptions.map(([type, emoji]) => (
+            <button key={type} type="button" className="rounded-full p-2 text-xl hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" onClick={() => reactToPost(post._id, type)} aria-label={`Bày tỏ ${type}`}>
+              {emoji}
+            </button>
+          ))}
+        </div>
+      </div>
