@@ -69,4 +69,28 @@ export const useSocialStore = create((set, get) => ({
       friends: get().friends.filter((friend) => friend._id !== userId),
     });
   },
+
+  getTimeline: async () => {
+    set({ isLoading: true });
+    try {
+      const { data } = await axiosInstance.get("/posts/timeline");
+      set({ posts: data });
+      return data;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  getUserPosts: async (userId) => {
+    const { data } = await axiosInstance.get(`/posts/user/${userId}`);
+    set({ posts: data });
+    return data;
+  },
+
+  createPost: async (payload) => {
+    const { data } = await axiosInstance.post("/posts", payload);
+    set({ posts: [data, ...get().posts] });
+    toast.success("Đã đăng bài viết");
+    return data;
+  },
 }));
