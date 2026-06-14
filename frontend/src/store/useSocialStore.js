@@ -27,4 +27,28 @@ export const useSocialStore = create((set, get) => ({
     set({ profile: { ...get().profile, ...data } });
     return data;
   },
+
+  updateProfileMedia: async (field, image) => {
+    const { data } = await axiosInstance.patch(`/profiles/me/media/${field}`, { image });
+    set({ profile: { ...get().profile, ...data } });
+    return data;
+  },
+
+  getFriends: async () => {
+    const { data } = await axiosInstance.get("/friends");
+    set({ friends: data });
+    return data;
+  },
+
+  getFriendRequests: async () => {
+    const { data } = await axiosInstance.get("/friends/requests");
+    set({ friendRequests: data });
+    return data;
+  },
+
+  getRelationship: async (userId) => {
+    const { data } = await axiosInstance.get(`/friends/relationship/${userId}`);
+    set({ relationship: data });
+    return data;
+  },
 }));
