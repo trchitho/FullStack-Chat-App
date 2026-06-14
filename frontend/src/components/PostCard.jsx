@@ -186,9 +186,14 @@ const PostCard = ({ post }) => {
               <button type="button" className="btn btn-ghost btn-xs mt-1" onClick={() => setReplyingTo(item._id)}>
                 Trả lời
               </button>
-              <button type="button" className="btn btn-ghost btn-xs mt-1" onClick={() => reactToComment(post._id, item._id, "like")}>
-                👍 {item.reactions?.length || ""}
-              </button>
+              <InlineReactionPicker
+                onSelect={(type) => reactToComment(post._id, item._id, type)}
+              />
+              {!!item.reactions?.length && (
+                <span className="ml-1 text-xs text-base-content/60">
+                  {item.reactions.length} cảm xúc
+                </span>
+              )}
               {item.replies?.map((replyItem) => (
                 <div key={replyItem._id} className="ml-4 mt-2 flex gap-2">
                   <img src={replyItem.author?.profilePic || "/avatar.png"} alt="" className="size-7 rounded-full object-cover" />
