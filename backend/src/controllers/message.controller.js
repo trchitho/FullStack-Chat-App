@@ -341,9 +341,10 @@ export const downloadMessageAttachment = async (req, res) => {
         if (!upstream.ok) return res.status(502).json({ message: "Attachment storage unavailable" });
         const buffer = Buffer.from(await upstream.arrayBuffer());
         const safeName = (message.attachment.name || "download").replace(/[\r\n"]/g, "_");
+        const asciiName = safeName.normalize("NFD").replace(/[^\x20-\x7E]/g, "_");
         res.setHeader("Content-Type", message.attachment.type || "application/octet-stream");
         res.setHeader("Content-Length", String(buffer.length));
-        res.setHeader("Content-Disposition", `attachment; filename="${safeName}"; filename*=UTF-8''${encodeURIComponent(safeName)}`);
+        res.setHeader("Content-Disposition", `attachment; filename="${asciiName}"; filename*=UTF-8''${encodeURIComponent(safeName)}`);
         res.status(200).send(buffer);
     } catch (error) {
         res.status(500).json({ message: "Could not download attachment" });
