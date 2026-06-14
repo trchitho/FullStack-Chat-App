@@ -123,4 +123,17 @@ export const useSocialStore = create((set, get) => ({
       }),
     });
   },
+
+  getMessageRequests: async () => {
+    const { data } = await axiosInstance.get("/conversations/requests");
+    set({ messageRequests: data });
+    return data;
+  },
+
+  respondToMessageRequest: async (conversationId, action) => {
+    await axiosInstance.patch(`/conversations/requests/${conversationId}`, { action });
+    set({
+      messageRequests: get().messageRequests.filter((item) => item._id !== conversationId),
+    });
+  },
 }));
