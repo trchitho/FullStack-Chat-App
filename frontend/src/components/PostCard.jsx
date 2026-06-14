@@ -10,7 +10,7 @@ const reactionOptions = [
 
 const PostCard = ({ post }) => {
   const authUser = useAuthStore((state) => state.authUser);
-  const { reactToPost, addComment, addReply } = useSocialStore();
+  const { reactToPost, reactToComment, addComment, addReply } = useSocialStore();
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [reply, setReply] = useState("");
@@ -86,6 +86,9 @@ const PostCard = ({ post }) => {
               </div>
               <button type="button" className="btn btn-ghost btn-xs mt-1" onClick={() => setReplyingTo(item._id)}>
                 Trả lời
+              </button>
+              <button type="button" className="btn btn-ghost btn-xs mt-1" onClick={() => reactToComment(post._id, item._id, "like")}>
+                👍 {item.reactions?.length || ""}
               </button>
               {item.replies?.map((replyItem) => (
                 <div key={replyItem._id} className="ml-4 mt-2 flex gap-2">
