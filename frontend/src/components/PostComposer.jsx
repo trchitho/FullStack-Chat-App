@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
+import PostAudienceSelector from "./PostAudienceSelector";
 
 const LocalMediaPreview = ({ file }) => {
   const [url, setUrl] = useState("");
@@ -27,6 +28,7 @@ const PostComposer = ({ authUser }) => {
   const [audience, setAudience] = useState("friends");
   const [files, setFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [showAudience, setShowAudience] = useState(false);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -96,11 +98,9 @@ const PostComposer = ({ authUser }) => {
                 <img src={authUser.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
                 <div>
                   <div className="font-bold">{authUser.fullName}</div>
-                  <select className="select select-bordered select-xs" value={audience} onChange={(event) => setAudience(event.target.value)} aria-label="Đối tượng xem bài viết">
-                    <option value="friends">Bạn bè</option>
-                    <option value="public">Công khai</option>
-                    <option value="private">Chỉ mình tôi</option>
-                  </select>
+                  <button type="button" className="btn btn-xs bg-base-300" onClick={() => setShowAudience(true)}>
+                    {audience === "public" ? "Công khai" : audience === "private" ? "Chỉ mình tôi" : "Bạn bè"}
+                  </button>
                 </div>
               </div>
               <textarea
@@ -140,6 +140,12 @@ const PostComposer = ({ authUser }) => {
               )}
             </div>
           </section>
+          <PostAudienceSelector
+            open={showAudience}
+            value={audience}
+            onChange={setAudience}
+            onClose={() => setShowAudience(false)}
+          />
         </div>
       )}
     </>
