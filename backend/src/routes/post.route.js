@@ -9,6 +9,7 @@ import {
     getUserPosts,
     reactToComment,
     reactToPost,
+    sharePost,
 } from "../controllers/post.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
@@ -22,6 +23,7 @@ router.get("/user/:userId", handle(getUserPosts));
 router.post("/", handle(createPost));
 router.patch("/:postId/reaction", handle(reactToPost));
 router.get("/:postId/reactions", handle(getPostReactions));
+router.post("/:postId/share", handle(sharePost));
 router.post("/:postId/comments", handle(addComment));
 router.patch("/:postId/comments/:commentId/reaction", handle(reactToComment));
 router.post("/:postId/comments/:commentId/replies", handle(addCommentReply));
