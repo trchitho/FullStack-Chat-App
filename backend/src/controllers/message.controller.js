@@ -185,7 +185,7 @@ export const sendMessage = async (req, res) => {
                 ownerId: receiverId,
                 senderId,
                 messageId: newMessage._id,
-                preview: buildMessagePreview(newMessage),
+                conversationId: conversation._id,
             });
 
         // real-time messaging using socket.io
