@@ -67,7 +67,7 @@ const Navbar = () => {
             <>
             <button
               type="button"
-              className="btn btn-circle btn-sm relative border-none bg-base-300"
+              className="btn btn-circle relative size-11 min-h-11 border-none bg-base-300"
               onClick={() => setShowNotifications((value) => !value)}
               aria-label={language === "vi" ? "Thông báo" : "Notifications"}
               aria-expanded={showNotifications}
@@ -80,10 +80,10 @@ const Navbar = () => {
                 </span>
               )}
             </button>
-            <Link to="/profile/me" className="btn btn-circle btn-sm border-none bg-base-300" aria-label={language === "vi" ? "Trang cá nhân" : "Profile"}>
+            <Link to="/profile/me" className="btn btn-circle size-11 min-h-11 border-none bg-base-300" aria-label={language === "vi" ? "Trang cá nhân" : "Profile"}>
               {authUser.profilePic ? <img src={authUser.profilePic} alt="" className="size-8 rounded-full object-cover" /> : <User className="size-5" />}
             </Link>
-            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={logout} aria-label={language === "vi" ? "Đăng xuất" : "Log out"}>
+            <button type="button" className="btn btn-circle size-11 min-h-11 border-none bg-base-300" onClick={logout} aria-label={language === "vi" ? "Đăng xuất" : "Log out"}>
               <LogOut className="size-5" />
             </button>
             </>
