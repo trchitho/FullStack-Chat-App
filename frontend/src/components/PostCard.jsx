@@ -222,6 +222,11 @@ const PostCard = ({ post }) => {
         reactions={reactionUsers}
         onClose={() => setShowReactions(false)}
       />
+      <SharePostModal
+        post={post}
+        open={showShare}
+        onClose={() => setShowShare(false)}
+      />
     </article>
   );
 };
