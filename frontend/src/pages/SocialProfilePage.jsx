@@ -119,6 +119,19 @@ const SocialProfilePage = () => {
             </div>
           </section>
         )}
+        {["Ảnh", "Video"].includes(activeTab) && (
+          <section className="rounded-xl border border-base-300 bg-base-100 p-5">
+            <h2 className="text-2xl font-bold">{activeTab}</h2>
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+              {tabMedia.map((media) => media.type === "video" ? (
+                <video key={media.key || media.url} src={media.url} controls className="aspect-square w-full rounded-lg bg-black object-cover" />
+              ) : (
+                <img key={media.key || media.url} src={media.url} alt="Nội dung bài viết" className="aspect-square w-full rounded-lg object-cover" />
+              ))}
+            </div>
+            {!tabMedia.length && <p className="py-12 text-center text-base-content/55">Chưa có nội dung.</p>}
+          </section>
+        )}
       </div>
       <ProfileAboutEditor
         profile={profile}
