@@ -1,5 +1,6 @@
 import Friendship from "../models/friendship.model.js";
 import Post from "../models/post.model.js";
+import { io } from "../lib/socket.js";
 
 const populatePost = (query) => query
     .populate("author", "fullName username profilePic")
@@ -42,6 +43,12 @@ export const createPost = async (req, res) => {
     }
     const post = await Post.create({ author: req.user._id, content: content.trim(), media, audience });
     await post.populate("author", "fullName username profilePic");
+    if (post.audience === "public") {
+        io.emit("post:new", post);
+    } else if (post.audience === "friends") {
+        const friendIds = await getFriendIds(req.user._id);
+        friendIds.forEach((friendId) => io.to(`user:${friendId}`).emit("post:new", post));
+    }
     res.status(201).json(post);
 };
 
