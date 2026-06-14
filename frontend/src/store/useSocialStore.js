@@ -114,6 +114,11 @@ export const useSocialStore = create((set, get) => ({
     });
   },
 
+  getPostReactions: async (postId) => {
+    const { data } = await axiosInstance.get(`/posts/${postId}/reactions`);
+    return data;
+  },
+
   addComment: async (postId, content) => {
     const { data } = await axiosInstance.post(`/posts/${postId}/comments`, { content });
     set({
