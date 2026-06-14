@@ -199,3 +199,20 @@ export const reactToComment = async (req, res) => {
     await publishPostUpdate(post);
     res.status(200).json(comment.reactions);
 };
+
+export const reactToReply = async (req, res) => {
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
+    const reply = post.comments.id(req.params.commentId)?.replies.id(req.params.replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+    const allowed = ["like", "love", "haha", "wow", "sad", "angry"];
+    const { type } = req.body;
+    if (type && !allowed.includes(type)) return res.status(400).json({ message: "Invalid reaction" });
+    const index = reply.reactions.findIndex((item) => String(item.user) === String(req.user._id));
+    if (!type && index >= 0) reply.reactions.splice(index, 1);
+    else if (index >= 0) reply.reactions[index].type = type;
+    else if (type) reply.reactions.push({ user: req.user._id, type });
+    await post.save();
+    await publishPostUpdate(post);
+    res.status(200).json(reply.reactions);
+};
