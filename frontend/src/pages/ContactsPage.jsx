@@ -91,6 +91,12 @@ const ContactsPage = () => {
                   <Link to={`/profile/${friend._id}`} className="block truncate font-bold hover:underline">{friend.fullName}</Link>
                   <p className="truncate text-sm text-base-content/55">{friend.bio || `@${friend.username || "pingme"}`}</p>
                 </div>
+                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startCall(friend, "voice")} aria-label={`Gọi thoại cho ${friend.fullName}`}>
+                  <Phone className="size-5" />
+                </button>
+                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startCall(friend, "video")} aria-label={`Gọi video cho ${friend.fullName}`}>
+                  <Video className="size-5" />
+                </button>
                 <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11" onClick={() => openChat(friend)} aria-label={`Nhắn tin cho ${friend.fullName}`}>
                   <MessageCircle className="size-5" />
                 </button>
