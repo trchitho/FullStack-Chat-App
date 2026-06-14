@@ -65,7 +65,10 @@ export const useSocialStore = create((set, get) => ({
   },
 
   respondToFriendRequest: async (requestId, action) => {
-    await axiosInstance.patch(`/friends/requests/${requestId}`, { action });
+    const { data } = await axiosInstance.patch(`/friends/requests/${requestId}`, { action });
+    if (get().relationship?._id === requestId) {
+      set({ relationship: action === "accept" ? data : { status: "none" } });
+    }
     await Promise.all([get().getFriendRequests(), get().getFriends()]);
   },
 
