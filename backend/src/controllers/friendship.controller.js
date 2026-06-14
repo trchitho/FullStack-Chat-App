@@ -75,6 +75,25 @@ export const listFriends = async (req, res) => {
     res.status(200).json(friends);
 };
 
+export const listUserFriends = async (req, res) => {
+    const userId = req.params.userId === "me" ? req.user._id : req.params.userId;
+    if (!await User.exists({ _id: userId })) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const relationships = await Friendship.find({
+        status: "accepted",
+        $or: [{ requester: userId }, { recipient: userId }],
+    }).lean();
+    const friendIds = relationships.map((item) =>
+        String(item.requester) === String(userId) ? item.recipient : item.requester
+    );
+    const friends = await User.find({ _id: { $in: friendIds } })
+        .select("fullName username profilePic bio currentCity")
+        .sort({ fullName: 1 })
+        .lean();
+    res.status(200).json(friends);
+};
+
 export const listFriendRequests = async (req, res) => {
     const [incoming, outgoing] = await Promise.all([
         Friendship.find({ recipient: req.user._id, status: "pending" })
