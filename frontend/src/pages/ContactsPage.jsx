@@ -50,3 +50,24 @@ const ContactsPage = () => {
             <span><strong className="block">Bạn bè</strong>{friends.length} người</span>
           </div>
         </div>
+        {!!friendRequests.incoming.length && (
+          <section id="friend-requests" className="mb-5 rounded-xl border border-base-300 bg-base-100 p-4">
+            <h2 className="text-xl font-bold">Lời mời kết bạn</h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {friendRequests.incoming.map((request) => (
+                <div key={request._id} className="flex items-center gap-3 rounded-xl bg-base-200 p-3">
+                  <img src={request.requester.profilePic || "/avatar.png"} alt="" className="size-12 rounded-full object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <Link to={`/profile/${request.requester._id}`} className="block truncate font-bold hover:underline">
+                      {request.requester.fullName}
+                    </Link>
+                    <div className="mt-2 flex gap-2">
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => respondToFriendRequest(request._id, "accept")}>Chấp nhận</button>
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => respondToFriendRequest(request._id, "decline")}>Xóa</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
