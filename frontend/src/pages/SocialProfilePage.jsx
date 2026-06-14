@@ -105,6 +105,20 @@ const SocialProfilePage = () => {
             </div>
           )}
         </section>}
+        {activeTab === "Bạn bè" && (
+          <section className="rounded-xl border border-base-300 bg-base-100 p-5">
+            <h2 className="text-2xl font-bold">Bạn bè</h2>
+            <p className="text-base-content/55">{profileFriends.length} người bạn</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {profileFriends.map((friend) => (
+                <Link key={friend._id} to={`/profile/${friend._id}`} className="min-w-0 rounded-xl p-2 hover:bg-base-200">
+                  <img src={friend.profilePic || "/avatar.png"} alt="" className="aspect-square w-full rounded-lg object-cover" />
+                  <span className="mt-2 block truncate font-semibold">{friend.fullName}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
       <ProfileAboutEditor
         profile={profile}
