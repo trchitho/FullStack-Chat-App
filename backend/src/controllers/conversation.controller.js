@@ -165,3 +165,26 @@ export const getMessageRequests = async (req, res) => {
         preview: previewMap.get(String(item._id)),
     })));
 };
+
+export const respondToMessageRequest = async (req, res) => {
+    const conversation = await Conversation.findOne({
+        _id: req.params.id,
+        type: "direct",
+        participants: req.user._id,
+        requestedBy: { $ne: req.user._id },
+        requestStatus: "pending",
+    });
+    if (!conversation) return res.status(404).json({ message: "Message request not found" });
+    if (req.body.action === "accept") {
+        conversation.requestStatus = "accepted";
+        conversation.acceptedAt = new Date();
+        await conversation.save();
+        return res.status(200).json(conversation);
+    }
+    if (req.body.action === "delete") {
+        conversation.requestStatus = "deleted";
+        await conversation.save();
+        return res.status(200).json({ success: true });
+    }
+    res.status(400).json({ message: "Invalid message request action" });
+};
