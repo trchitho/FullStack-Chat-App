@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { connectDB } from "../lib/db.js";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 import Friendship from "../models/friendship.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
@@ -197,6 +198,9 @@ const seedDatabase = async () => {
     console.log(`Seeded ${seededUsers.length} PingMe users`);
   } catch (error) {
     console.error("Error seeding database:", error);
+    process.exitCode = 1;
+  } finally {
+    await mongoose.disconnect();
   }
 };
 
