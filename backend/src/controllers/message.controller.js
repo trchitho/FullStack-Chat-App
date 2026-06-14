@@ -95,6 +95,19 @@ export const getMessages = async (req, res) => {
     try {
         const { id:userToChatId } = req.params;
         const myId = req.user._id;
+        const conversation = await Conversation.findOne({
+            directKey: directKeyFor(myId, userToChatId),
+        }).select("requestStatus requestedBy").lean();
+        if (conversation?.requestStatus === "deleted") {
+            return res.status(404).json({ message: "Conversation not found" });
+        }
+        const isIncomingRequest = conversation?.requestStatus === "pending"
+            && String(conversation.requestedBy) !== String(myId);
+        if (isIncomingRequest) {
+            return res.status(403).json({
+                message: "Accept this message request before opening the conversation",
+            });
+        }
 
         const messages = await Message.find({
             $or: [
