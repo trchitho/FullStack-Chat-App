@@ -115,6 +115,7 @@ export const reactToPost = async (req, res) => {
     else if (existingIndex >= 0) post.reactions[existingIndex].type = type;
     else if (type) post.reactions.push({ user: req.user._id, type });
     await post.save();
+    await publishPostUpdate(post);
     res.status(200).json(post.reactions);
 };
 
@@ -143,6 +144,7 @@ export const sharePost = async (req, res) => {
     });
     original.shareCount += 1;
     await original.save();
+    await publishPostUpdate(original);
     const populated = await populatePost(Post.findById(shared._id));
     await publishPost(populated, req.user._id);
     res.status(201).json(populated);
