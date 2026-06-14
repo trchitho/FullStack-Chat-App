@@ -38,6 +38,31 @@ const MessageRequestsPage = () => {
           </label>
         </header>
         <section className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
+          {filtered.map((request) => (
+            <article key={request._id} className="flex min-w-0 flex-col gap-3 border-b border-base-300 p-4 last:border-0 sm:flex-row sm:items-center">
+              <img src={request.requestedBy?.profilePic || "/avatar.png"} alt="" className="size-14 shrink-0 rounded-full object-cover" />
+              <div className="min-w-0 flex-1">
+                <h2 className="truncate font-bold">{request.requestedBy?.fullName}</h2>
+                <p className="truncate text-sm text-base-content/65">
+                  {request.preview?.text || "Đã gửi một tin nhắn cho bạn"}
+                </p>
+                {request.preview?.createdAt && (
+                  <time className="text-xs text-base-content/45">
+                    {new Date(request.preview.createdAt).toLocaleString("vi-VN")}
+                  </time>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button type="button" className="btn btn-primary btn-sm flex-1 sm:flex-none" onClick={() => respondToMessageRequest(request._id, "accept")}>
+                  Chấp nhận
+                </button>
+                <button type="button" className="btn btn-ghost btn-sm flex-1 sm:flex-none" onClick={() => respondToMessageRequest(request._id, "delete")}>
+                  Xóa
+                </button>
+              </div>
+            </article>
+          ))}
+          {!filtered.length && <div className="p-12 text-center text-base-content/55">Không có tin nhắn đang chờ.</div>}
         </section>
       </div>
     </main>
