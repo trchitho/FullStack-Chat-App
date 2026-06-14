@@ -18,7 +18,7 @@ const HomePage = () => {
   useEffect(() => {
     if (!socket) return undefined;
     subscribeToMessages(socket);
-    return () => unsubscribeFromMessages();
+    return () => unsubscribeFromMessages(socket);
   }, [socket, subscribeToMessages, unsubscribeFromMessages]);
 
   const openPanel = (panel) => {

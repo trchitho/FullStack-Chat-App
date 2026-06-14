@@ -173,8 +173,8 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  subscribeToMessages: () => {
-    const socket = useAuthStore.getState().socket;
+  subscribeToMessages: (activeSocket) => {
+    const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
 
     socket.on("newMessage", (newMessage) => {
@@ -237,8 +237,8 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  unsubscribeFromMessages: () => {
-    const socket = useAuthStore.getState().socket;
+  unsubscribeFromMessages: (activeSocket) => {
+    const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
 
     socket.off("newMessage");
