@@ -2,6 +2,7 @@ import { Globe2, Lock, MessageCircle, Send, Share2, ThumbsUp, Users, X } from "l
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useSocialStore } from "../store/useSocialStore";
+import ReactionListModal from "./ReactionListModal";
 
 const reactionOptions = [
   ["like", "👍"], ["love", "❤️"], ["haha", "😂"],
@@ -26,11 +27,13 @@ const audienceIcons = {
 
 const PostCard = ({ post }) => {
   const authUser = useAuthStore((state) => state.authUser);
-  const { reactToPost, reactToComment, addComment, addReply } = useSocialStore();
+  const { reactToPost, reactToComment, addComment, addReply, getPostReactions } = useSocialStore();
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [reply, setReply] = useState("");
   const [showComments, setShowComments] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
+  const [reactionUsers, setReactionUsers] = useState([]);
   const AudienceIcon = audienceIcons[post.audience] || Users;
 
   useEffect(() => {
@@ -78,7 +81,12 @@ const PostCard = ({ post }) => {
         </div>
       )}
       <div className="flex items-center justify-between border-b border-base-300 px-4 py-3 text-sm text-base-content/60">
-        <span>{post.reactions?.length || 0} lượt bày tỏ cảm xúc</span>
+        <button type="button" className="hover:underline" onClick={async () => {
+          setReactionUsers(await getPostReactions(post._id));
+          setShowReactions(true);
+        }}>
+          {post.reactions?.length || 0} lượt bày tỏ cảm xúc
+        </button>
         <span>{post.comments?.length || 0} bình luận</span>
       </div>
       <div className="group relative grid grid-cols-3 border-b border-base-300 p-1">
