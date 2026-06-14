@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
+import Friendship from "../models/friendship.model.js";
 import bcrypt from 'bcryptjs';
 
 export const signup = async (req, res) => {
@@ -21,11 +22,15 @@ export const signup = async (req, res) => {
         // hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
+        const usernameBase = email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "");
+        let username = usernameBase || `user${Date.now()}`;
+        if (await User.exists({ username })) username = `${username}${Date.now().toString().slice(-5)}`;
 
         const newUser = new User({
             email,
             fullName,
-            password: hashedPassword
+            password: hashedPassword,
+            username,
         });
 
         if(newUser){
