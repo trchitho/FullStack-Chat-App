@@ -3,6 +3,7 @@ import {
     getRelationship,
     listFriendRequests,
     listFriends,
+    listUserFriends,
     removeFriendship,
     respondToFriendRequest,
     sendFriendRequest,
@@ -16,6 +17,7 @@ router.use(protectRoute);
 
 router.get("/", handle(listFriends));
 router.get("/requests", handle(listFriendRequests));
+router.get("/user/:userId", handle(listUserFriends));
 router.get("/relationship/:userId", handle(getRelationship));
 router.post("/request/:userId", handle(sendFriendRequest));
 router.patch("/requests/:requestId", handle(respondToFriendRequest));
