@@ -20,7 +20,7 @@ const Navbar = () => {
   const { language } = useLanguageStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications, getNotifications, markAllRead } = useNotificationStore();
-  const { users, setSelectedUser } = useChatStore();
+  const { users, getUsers, setSelectedUser } = useChatStore();
   const unreadCount = notifications.filter((item) => !item.readAt).length;
 
   useEffect(() => {
@@ -93,9 +93,13 @@ const Navbar = () => {
               language={language}
               notifications={notifications}
               onReadAll={markAllRead}
-              onOpen={(notification) => {
+              onOpen={async (notification) => {
                 const senderId = notification.senderId?._id || notification.senderId;
-                const user = users.find((item) => item._id === senderId);
+                let user = users.find((item) => item._id === senderId);
+                if (!user) {
+                  await getUsers();
+                  user = useChatStore.getState().users.find((item) => item._id === senderId);
+                }
                 if (user) setSelectedUser(user);
                 setShowNotifications(false);
               }}
