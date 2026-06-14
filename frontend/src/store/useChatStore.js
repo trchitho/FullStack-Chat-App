@@ -57,14 +57,14 @@ export const useChatStore = create((set, get) => ({
   },
 
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get();
+    const { selectedUser } = get();
     try {
       const endpoint = selectedUser.isGroup
         ? `/conversations/${selectedUser._id}/messages`
         : `/messages/send/${selectedUser._id}`;
       const res = await axiosInstance.post(endpoint, messageData);
       set({
-        messages: [...messages, res.data],
+        messages: [...get().messages, res.data],
         users: sortUsersByLatestMessage(get().users.map((user) =>
           user._id === selectedUser._id
             ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data) }
