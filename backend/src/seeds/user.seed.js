@@ -1,5 +1,8 @@
 import { config } from "dotenv";
 import { connectDB } from "../lib/db.js";
+import bcrypt from "bcryptjs";
+import Friendship from "../models/friendship.model.js";
+import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 config();
@@ -129,6 +132,19 @@ const seedUsers = [
     profilePic: "https://randomuser.me/api/portraits/men/19.jpg",
   },
 ];
+
+const buildSeedProfile = (user, index) => ({
+  ...user,
+  username: user.email.split("@")[0].toLowerCase(),
+  isSeedUser: true,
+  coverPhoto: `https://picsum.photos/seed/pingme-cover-${index}/1400/480`,
+  bio: "Yêu kết nối, chia sẻ những khoảnh khắc tích cực trên PingMe.",
+  currentCity: index % 2 ? "Đà Nẵng" : "Hội An",
+  hometown: "Quảng Nam",
+  hobbies: ["Âm nhạc", "Du lịch", "Công nghệ"],
+  interests: ["Bạn bè", "Nhiếp ảnh"],
+  skills: ["Giao tiếp", "Làm việc nhóm"],
+});
 
 const seedDatabase = async () => {
   try {
