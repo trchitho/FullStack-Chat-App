@@ -269,8 +269,7 @@ export const markMessageDelivered = async (req, res) => {
             { new: true }
         );
         if (!message) return res.status(404).json({ message: "Message not found" });
-        const senderSocketId = getReceiverSocketId(message.senderId);
-        if (senderSocketId) io.to(senderSocketId).emit("messageDeliveredUpdate", message);
+        io.to(`user:${message.senderId}`).emit("messageDeliveredUpdate", message);
         res.status(200).json(message);
     } catch (error) {
         res.status(500).json({ message: "Could not mark message delivered" });
@@ -293,8 +292,7 @@ export const markConversationSeen = async (req, res) => {
             { _id: req.user._id, "conversationSettings.peerId": peerId },
             { $set: { "conversationSettings.$.manuallyUnread": false } }
         );
-        const senderSocketId = getReceiverSocketId(peerId);
-        if (senderSocketId) io.to(senderSocketId).emit("conversationSeenUpdate", { userId: req.user._id, seenAt });
+        io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId: req.user._id, seenAt });
         res.status(200).json({ success: true, seenAt });
     } catch (error) {
         res.status(500).json({ message: "Could not mark conversation seen" });
