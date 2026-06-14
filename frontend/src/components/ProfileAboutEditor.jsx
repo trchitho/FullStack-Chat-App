@@ -109,3 +109,16 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
                 <Field label="Số điện thoại" value={draft.phone} onChange={(value) => update("phone", value)} />
               </>
             )}
+            {active === "details" && (
+              <>
+                <Field label="Tên hiển thị" value={draft.fullName} onChange={(value) => update("fullName", value)} />
+                <Field label="Tên người dùng" value={draft.username} onChange={(value) => update("username", value)} />
+                <Field label="Biệt danh" value={draft.nickname} onChange={(value) => update("nickname", value)} />
+                <Field label="Câu nói yêu thích" value={draft.quote} onChange={(value) => update("quote", value)} />
+                <Field label="Chi tiết về bạn" value={draft.aboutMe} multiline onChange={(value) => update("aboutMe", value)} />
+                <Field label="Ngôn ngữ" value={draft.languages?.join(", ")} onChange={(value) => update("languages", value.split(",").map((item) => item.trim()).filter(Boolean))} />
+                <Field label="Kỹ năng" value={draft.skills?.join(", ")} onChange={(value) => update("skills", value.split(",").map((item) => item.trim()).filter(Boolean))} />
+              </>
+            )}
+          </div>
+        </div>
