@@ -61,3 +61,23 @@ const SocialProfilePage = () => {
           ))}
         </div>
       </nav>
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 py-5 lg:grid-cols-[22rem_minmax(0,1fr)] lg:px-4">
+        <aside className="space-y-4">
+          <ProfileIntroCard profile={profile} onEdit={() => setEditorOpen(true)} />
+          <section className="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold">Bạn bè</h2>
+                <p className="text-base-content/55">{profile.friendCount || 0} người bạn</p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {friends.slice(0, 9).map((friend) => (
+                <a key={friend._id} href={`/profile/${friend._id}`} className="min-w-0">
+                  <img src={friend.profilePic || "/avatar.png"} alt="" className="aspect-square w-full rounded-lg object-cover" />
+                  <span className="mt-1 block truncate text-sm font-semibold">{friend.fullName}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        </aside>
