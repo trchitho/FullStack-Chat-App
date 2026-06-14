@@ -28,3 +28,28 @@ const PostCard = ({ post }) => {
         </div>
       </header>
       {post.content && <p className="whitespace-pre-wrap break-words px-4 pb-4">{post.content}</p>}
+      {!!post.media?.length && (
+        <div className={`grid gap-1 ${post.media.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
+          {post.media.map((media, index) => (
+            media.type === "video" ? (
+              <video
+                key={media.key || media.url}
+                src={media.url}
+                controls
+                className={`max-h-[36rem] w-full bg-black object-contain ${post.media.length === 3 && index === 0 ? "row-span-2 h-full" : ""}`}
+              />
+            ) : (
+              <img
+                key={media.key || media.url}
+                src={media.url}
+                alt="Nội dung bài viết"
+                className={`max-h-[36rem] w-full object-cover ${post.media.length === 3 && index === 0 ? "row-span-2 h-full" : ""}`}
+              />
+            )
+          ))}
+        </div>
+      )}
+      <div className="flex items-center justify-between border-b border-base-300 px-4 py-3 text-sm text-base-content/60">
+        <span>{post.reactions?.length || 0} lượt bày tỏ cảm xúc</span>
+        <span>{post.comments?.length || 0} bình luận</span>
+      </div>
