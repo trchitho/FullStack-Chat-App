@@ -24,3 +24,27 @@ const ChatInfoPanel = ({ open, onClose }) => {
   }, [onClose, open]);
 
   if (!open || !selectedUser) return null;
+
+  return (
+    <div className="fixed inset-0 z-[125] flex justify-end bg-black/45 md:top-16" onMouseDown={onClose}>
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label={isVi ? "Thông tin đoạn chat" : "Chat information"}
+        className="flex h-dvh w-full max-w-md flex-col overflow-hidden border-l border-base-300 bg-base-100 shadow-2xl md:h-[calc(100dvh-4rem)]"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="flex shrink-0 items-center justify-between border-b border-base-300 p-4">
+          <h2 className="text-lg font-bold">{isVi ? "Thông tin đoạn chat" : "Chat information"}</h2>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose} aria-label={isVi ? "Đóng" : "Close"}>
+            <X className="size-5" />
+          </button>
+        </header>
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <div className="flex flex-col items-center text-center">
+            <img src={selectedUser.profilePic || "/avatar.png"} alt="" className="size-24 rounded-full object-cover" />
+            <h3 className="mt-3 text-xl font-bold">{selectedUser.fullName}</h3>
+            <span className="mt-2 rounded-full bg-base-300 px-3 py-1 text-xs">
+              {isVi ? "Được mã hóa đầu cuối" : "End-to-end encrypted"}
+            </span>
+          </div>
