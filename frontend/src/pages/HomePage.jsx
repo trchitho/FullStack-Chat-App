@@ -18,11 +18,19 @@ const HomePage = () => {
     return () => unsubscribeFromMessages();
   }, [subscribeToMessages, unsubscribeFromMessages]);
 
+  const openPanel = (panel) => {
+    if (panel === "requests") {
+      navigate("/message-requests");
+      return;
+    }
+    setActivePanel(panel);
+  };
+
   return (
     <main className="h-dvh max-w-full overflow-x-hidden bg-base-100 pt-16">
       <div className="relative flex h-[calc(100dvh-4rem)] min-h-0 max-w-full overflow-hidden">
         <div className={`${selectedUser ? "hidden md:flex" : "flex"} min-h-0 w-full shrink-0 md:w-auto`}>
-          <Sidebar onOpenPanel={setActivePanel} />
+          <Sidebar onOpenPanel={openPanel} />
         </div>
 
         <section className={`${selectedUser ? "flex" : "hidden md:flex"} min-w-0 flex-1 bg-base-100`}>
