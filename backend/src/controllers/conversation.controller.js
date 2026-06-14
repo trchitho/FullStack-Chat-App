@@ -142,3 +142,26 @@ export const markGroupConversationSeen = async (req, res) => {
         res.status(500).json({ message: "Could not mark group conversation seen" });
     }
 };
+
+export const getMessageRequests = async (req, res) => {
+    const requests = await Conversation.find({
+        type: "direct",
+        participants: req.user._id,
+        requestedBy: { $ne: req.user._id },
+        requestStatus: "pending",
+    })
+        .populate("requestedBy", "fullName username profilePic bio")
+        .sort({ lastMessageAt: -1 })
+        .lean();
+    const conversationIds = requests.map((item) => item._id);
+    const previews = await Message.aggregate([
+        { $match: { conversationId: { $in: conversationIds } } },
+        { $sort: { createdAt: -1 } },
+        { $group: { _id: "$conversationId", text: { $first: "$text" }, createdAt: { $first: "$createdAt" } } },
+    ]);
+    const previewMap = new Map(previews.map((item) => [String(item._id), item]));
+    res.status(200).json(requests.map((item) => ({
+        ...item,
+        preview: previewMap.get(String(item._id)),
+    })));
+};
