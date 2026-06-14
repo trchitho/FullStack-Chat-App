@@ -75,3 +75,24 @@ const PostCard = ({ post }) => {
           ))}
         </div>
       </div>
+      <div className="space-y-3 p-4">
+        {post.comments?.map((item) => (
+          <div key={item._id} className="flex gap-2">
+            <img src={item.author?.profilePic || "/avatar.png"} alt="" className="size-9 rounded-full object-cover" />
+            <div className="min-w-0 flex-1">
+              <div className="rounded-2xl bg-base-200 px-3 py-2">
+                <div className="font-bold">{item.author?.fullName}</div>
+                <p className="break-words">{item.content}</p>
+              </div>
+              <button type="button" className="btn btn-ghost btn-xs mt-1" onClick={() => setReplyingTo(item._id)}>
+                Trả lời
+              </button>
+              {item.replies?.map((replyItem) => (
+                <div key={replyItem._id} className="ml-4 mt-2 flex gap-2">
+                  <img src={replyItem.author?.profilePic || "/avatar.png"} alt="" className="size-7 rounded-full object-cover" />
+                  <div className="rounded-2xl bg-base-200 px-3 py-2 text-sm">
+                    <div className="font-bold">{replyItem.author?.fullName}</div>
+                    <p>{replyItem.content}</p>
+                  </div>
+                </div>
+              ))}
