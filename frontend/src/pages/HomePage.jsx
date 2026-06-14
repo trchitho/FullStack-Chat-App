@@ -32,7 +32,7 @@ const HomePage = () => {
         <ChatPanel
           panel={activePanel}
           onClose={() => setActivePanel(null)}
-          onOpenProfile={() => navigate("/profile")}
+          onOpenProfile={() => navigate("/profile/me")}
         />
         <NewMessageComposer />
       </div>
