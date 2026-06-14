@@ -1,4 +1,4 @@
-import { Globe2, Lock, MessageCircle, Send, Share2, ThumbsUp, Users } from "lucide-react";
+import { Globe2, Lock, MessageCircle, Send, Share2, ThumbsUp, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useSocialStore } from "../store/useSocialStore";
@@ -30,6 +30,7 @@ const PostCard = ({ post }) => {
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [reply, setReply] = useState("");
+  const [showComments, setShowComments] = useState(false);
   const AudienceIcon = audienceIcons[post.audience] || Users;
   const ownReaction = post.reactions?.find((item) =>
     String(item.user?._id || item.user) === authUser._id
@@ -81,7 +82,7 @@ const PostCard = ({ post }) => {
         >
           <ThumbsUp className="size-5" /> {ownReaction || "Thích"}
         </button>
-        <button type="button" className="btn btn-ghost min-h-11">
+        <button type="button" className="btn btn-ghost min-h-11" onClick={() => setShowComments(true)}>
           <MessageCircle className="size-5" /> Bình luận
         </button>
         <button type="button" className="btn btn-ghost min-h-11">
