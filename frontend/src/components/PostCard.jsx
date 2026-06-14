@@ -96,3 +96,23 @@ const PostCard = ({ post }) => {
                   </div>
                 </div>
               ))}
+              {replyingTo === item._id && (
+                <form
+                  className="mt-2 flex gap-2"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    if (!reply.trim()) return;
+                    await addReply(post._id, item._id, reply.trim());
+                    setReply("");
+                    setReplyingTo(null);
+                  }}
+                >
+                  <input className="input input-bordered input-sm min-w-0 flex-1 rounded-full" value={reply} onChange={(event) => setReply(event.target.value)} aria-label="Nội dung trả lời" autoFocus />
+                  <button type="submit" className="btn btn-circle btn-primary btn-sm" aria-label="Gửi trả lời">
+                    <Send className="size-4" />
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        ))}
