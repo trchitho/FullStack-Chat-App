@@ -21,6 +21,18 @@ const normalizeCall = (call) => {
     return { type, status, duration };
 };
 
+const messagePreview = (message, viewerId) => {
+    const isOwn = String(message.senderId) === String(viewerId);
+    const prefix = isOwn ? "Bạn: " : "";
+    if (message.call?.status === "missed") return `${prefix}Cuộc gọi nhỡ`;
+    if (message.call?.status === "unreachable") return `${prefix}Không liên lạc được`;
+    if (message.call) return `${prefix}${message.call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại"}`;
+    if (message.attachment?.type?.startsWith("audio/")) return `${prefix}Đã gửi tin nhắn thoại`;
+    if (message.image || message.attachment?.type?.startsWith("image/")) return `${prefix}Đã gửi một ảnh`;
+    if (message.attachment) return `${prefix}Đã gửi một tệp`;
+    return `${prefix}${message.text || "Chưa có tin nhắn"}`;
+};
+
 const cloudinaryResourceType = (mimeType = "") => {
     if (mimeType.startsWith("image/")) return "image";
     if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) return "video";
@@ -59,9 +71,12 @@ export const getUsersForSidebar = async (req, res) => {
             { $sort: { createdAt: -1 } },
             { $addFields: { chatUserId: { $cond: [{ $eq: ["$senderId", loggedInUserId] }, "$receiverId", "$senderId"] } } },
             { $match: { chatUserId: { $in: userIds } } },
-            { $group: { _id: "$chatUserId", lastMessageAt: { $first: "$createdAt" }, lastMessageText: { $first: "$text" } } },
+            { $group: { _id: "$chatUserId", lastMessage: { $first: "$$ROOT" }, lastMessageAt: { $first: "$createdAt" } } },
         ]);
-        const latestByUser = new Map(latestMessages.map((item) => [String(item._id), item]));
+        const latestByUser = new Map(latestMessages.map((item) => [String(item._id), {
+            lastMessageAt: item.lastMessageAt,
+            lastMessageText: messagePreview(item.lastMessage, loggedInUserId),
+        }]));
         const incomingRequests = await Conversation.find({
             type: "direct",
             participants: loggedInUserId,
