@@ -20,6 +20,8 @@ const conversationSchema = new mongoose.Schema(
         requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
         acceptedAt: { type: Date, default: null },
         lastMessageAt: { type: Date, default: Date.now },
+        theme: { type: String, default: "", trim: true },
+        quickEmoji: { type: String, default: "👍", trim: true },
     },
     { timestamps: true }
 );
