@@ -157,7 +157,10 @@ export const useCallStore = create((set, get) => ({
   },
 
   handleRemoteEnd: async ({ callId, status, duration }) => {
-    const call = get().activeCall;
+    const { activeCall: call, incomingCall } = get();
+    if (incomingCall?.callId === callId) {
+      set({ incomingCall: null });
+    }
     if (!call || call.callId !== callId) return;
     const peerId = getCallPeerId(call);
     if (peerId && status !== "completed") {
