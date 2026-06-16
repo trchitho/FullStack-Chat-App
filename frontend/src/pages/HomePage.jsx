@@ -8,10 +8,13 @@ import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 import ChatPanel from "../components/ChatPanel";
 import NewMessageComposer from "../components/NewMessageComposer";
+import { Phone, PhoneOff, Video } from "lucide-react";
 
 const HomePage = () => {
   const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
   const socket = useAuthStore((state) => state.socket);
+  const incomingCall = useAuthStore((state) => state.incomingCall);
+  const answerIncomingCall = useAuthStore((state) => state.answerIncomingCall);
   const [activePanel, setActivePanel] = useState(null);
   const navigate = useNavigate();
 
@@ -46,8 +49,39 @@ const HomePage = () => {
           onOpenProfile={() => navigate("/profile/me")}
         />
         <NewMessageComposer />
+        {incomingCall && (
+          <IncomingCallDialog
+            call={incomingCall}
+            onAccept={() => answerIncomingCall(true)}
+            onDecline={() => answerIncomingCall(false)}
+          />
+        )}
       </div>
     </main>
   );
 };
+
+const IncomingCallDialog = ({ call, onAccept, onDecline }) => {
+  const isVideo = call.type === "video";
+  return (
+    <div className="fixed inset-0 z-[180] flex items-center justify-center bg-black/60 p-4">
+      <section role="dialog" aria-modal="true" aria-label="Cuộc gọi đến" className="w-full max-w-sm rounded-3xl border border-base-300 bg-base-100 p-6 text-center shadow-2xl">
+        <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/20 text-primary">
+          {isVideo ? <Video className="size-8" /> : <Phone className="size-8" />}
+        </div>
+        <h2 className="text-xl font-bold">{isVideo ? "Cuộc gọi video đến" : "Cuộc gọi thoại đến"}</h2>
+        <p className="mt-2 text-sm text-base-content/65">Bạn có một cuộc gọi mới trong PingMe.</p>
+        <div className="mt-6 flex justify-center gap-4">
+          <button type="button" className="btn btn-circle btn-error" onClick={onDecline} aria-label="Từ chối cuộc gọi">
+            <PhoneOff className="size-6" />
+          </button>
+          <button type="button" className="btn btn-circle btn-success" onClick={onAccept} aria-label="Chấp nhận cuộc gọi">
+            <Phone className="size-6" />
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
 export default HomePage;
