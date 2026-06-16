@@ -84,4 +84,27 @@ export const useCallStore = create((set, get) => ({
     await peerConnection.setLocalDescription(offer);
     socket?.emit("call:offer", { recipientId: activeCall.recipientId, callId: activeCall.callId, offer });
   },
+
+  receiveIncomingCall: (call) => {
+    if (String(call.callerId) === String(useAuthStore.getState().authUser?._id)) return;
+    set({ incomingCall: call });
+  },
+
+  rejectIncomingCall: () => {
+    const call = get().incomingCall;
+    if (call?.callerId) {
+      useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: false });
+    }
+    set({ incomingCall: null });
+  },
+
+  acceptIncomingCall: async () => {
+    const call = get().incomingCall;
+    if (!call?.callerId) return;
+    const media = await navigator.mediaDevices.getUserMedia({ audio: true, video: call.type === "video" });
+    const pc = get().createPeerConnection(call.callerId, call.callId);
+    media.getTracks().forEach((track) => pc.addTrack(track, media));
+    useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: true });
+    set({ incomingCall: null, localStream: media, activeCall: { ...call, direction: "incoming", peer: call.caller, status: "connecting", startedAt: Date.now() } });
+  },
 }));
