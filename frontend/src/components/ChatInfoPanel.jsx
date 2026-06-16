@@ -83,7 +83,7 @@ const ChatInfoPanel = ({ open, onClose }) => {
               onClick={() => navigate(`/profile/${selectedUser._id}`)}
             />
             <QuickAction
-              icon={BellOff}
+              icon={isMuted ? Bell : BellOff}
               label={isMuted ? (isVi ? "Bật thông báo" : "Unmute") : (isVi ? "Tắt thông báo" : "Mute")}
               onClick={() => updateConversationSetting(selectedUser._id, {
                 mutedUntil: isMuted ? null : "9999-12-31T23:59:59.999Z",
@@ -92,12 +92,13 @@ const ChatInfoPanel = ({ open, onClose }) => {
             <QuickAction
               icon={Search}
               label={isVi ? "Tìm kiếm" : "Search"}
-              onClick={() => document.querySelector('[aria-label*="Tìm kiếm"]')?.focus()}
+              onClick={() => setActiveDialog("search")}
             />
           </div>
           <div className="mt-6 space-y-2">
             <Accordion title={isVi ? "Thông tin về đoạn chat" : "Chat details"} id="details" expanded={expanded} setExpanded={setExpanded}>
-              <p className="text-sm text-base-content/70">{selectedUser.bio || (isVi ? "Chưa có thông tin bổ sung." : "No additional details.")}</p>
+              <InfoRow icon={Pin} label={isVi ? "Xem tin nhắn đã ghim" : "View pinned messages"} onClick={() => setActiveDialog("pinned")} />
+              <p className="px-2 py-2 text-sm text-base-content/70">{selectedUser.bio || (isVi ? "Chưa có thông tin bổ sung." : "No additional details.")}</p>
             </Accordion>
             <Accordion title={isVi ? "Tùy chỉnh đoạn chat" : "Customize chat"} id="customize" expanded={expanded} setExpanded={setExpanded}>
               <InfoRow label={isVi ? "Đổi biệt danh" : "Nicknames"} />
