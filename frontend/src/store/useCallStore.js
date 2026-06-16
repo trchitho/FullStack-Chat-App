@@ -131,4 +131,26 @@ export const useCallStore = create((set, get) => ({
     if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   },
+
+  finishCall: async (status = "completed") => {
+    const call = get().activeCall;
+    if (!call) return;
+    const peerId = getCallPeerId(call);
+    const duration = Math.max(1, Math.round((Date.now() - (call.connectedAt || call.startedAt || Date.now())) / 1000));
+    useAuthStore.getState().socket?.emit("call:end", { recipientId: peerId, callId: call.callId, status, duration });
+    if (peerId) {
+      await useChatStore.getState().sendCallEvent(peerId, { type: call.type, status, duration });
+    }
+    get().cleanupCall();
+  },
+
+  handleRemoteEnd: async ({ callId, status, duration }) => {
+    const call = get().activeCall;
+    if (!call || call.callId !== callId) return;
+    const peerId = getCallPeerId(call);
+    if (peerId && status !== "completed") {
+      await useChatStore.getState().sendCallEvent(peerId, { type: call.type, status, duration });
+    }
+    get().cleanupCall();
+  },
 }));
