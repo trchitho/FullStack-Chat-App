@@ -305,6 +305,35 @@ const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, r
   return <SupportAction type={type} selectedUser={selectedUser} />;
 };
 
+const ToggleRow = ({ label, checked, onChange = () => {}, description }) => (
+  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl bg-base-200 p-4">
+    <span>
+      <span className="block font-semibold">{label}</span>
+      {description && <span className="text-sm text-base-content/60">{description}</span>}
+    </span>
+    <input type="checkbox" className="toggle toggle-primary" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+  </label>
+);
+
+const NicknameRow = ({ name }) => (
+  <div className="flex items-center justify-between rounded-xl bg-base-200 p-3">
+    <span className="font-semibold">{name}</span>
+    <button type="button" className="btn btn-circle btn-ghost btn-sm" aria-label={`Sửa biệt danh ${name}`}>
+      <Edit3 className="size-4" />
+    </button>
+  </div>
+);
+
+const SupportAction = ({ type, selectedUser }) => {
+  const copy = {
+    encryption: `Đoạn chat với ${selectedUser.fullName} được bảo vệ bằng lớp xác minh mã hóa trong PingMe.`,
+    restrict: `Bạn có thể hạn chế ${selectedUser.fullName}; họ sẽ không biết khi bạn online hoặc đã đọc tin nhắn.`,
+    block: `Chặn ${selectedUser.fullName} sẽ ngăn họ tiếp tục liên hệ với bạn trên PingMe.`,
+    report: "Báo cáo này sẽ được gửi tới quản trị viên PingMe để xem xét.",
+  };
+  return <p className="rounded-xl bg-base-200 p-4 text-sm text-base-content/75">{copy[type] || "Tính năng này đang được chuẩn hóa."}</p>;
+};
+
 const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
