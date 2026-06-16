@@ -15,7 +15,14 @@ import { useNavigate } from 'react-router-dom';
 import ChatInfoPanel from './ChatInfoPanel';
 
 const ChatContainer = () => {
-  const {messages, getMessages, isMessagesLoading, selectedUser, downloadAttachment} = useChatStore();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    downloadAttachment,
+    setMessagePinned,
+  } = useChatStore();
 
   const {authUser} = useAuthStore();
   const { language } = useLanguageStore();
@@ -43,6 +50,7 @@ const ChatContainer = () => {
     return isVi ? "[Tin nhắn]" : "[Message]";
   };
   const visibleMessages = messages.filter((message) => !hiddenMessageIds.includes(message._id));
+  const activePinnedMessage = pinnedMessage || visibleMessages.find((message) => message.pinned);
   const lastOwnMessageId = [...visibleMessages]
     .reverse()
     .find((message) => getSenderId(message) === authUser._id)?._id;
@@ -107,16 +115,27 @@ const ChatContainer = () => {
 
   
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
+    <div data-theme={selectedUser?.theme || undefined} className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
       <ChatHeader onOpenInfo={() => setShowChatInfo(true)} />
-      {pinnedMessage && (
+      {activePinnedMessage && (
         <div className="shrink-0 border-b border-base-300 bg-base-200 px-6 py-3">
           <div className="flex items-center justify-between gap-3 rounded-xl bg-base-100 px-4 py-2">
             <div className="min-w-0">
               <div className="text-sm font-bold">Đã ghim</div>
-              <div className="truncate text-sm text-base-content/70">{pinnedMessage.preview}</div>
+              <div className="truncate text-sm text-base-content/70">
+                {activePinnedMessage.preview || getMessagePreview(activePinnedMessage)}
+              </div>
             </div>
-            <button type="button" className="btn btn-ghost btn-xs" onClick={() => setPinnedMessage(null)}>Bỏ ghim</button>
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs"
+              onClick={async () => {
+                await setMessagePinned(activePinnedMessage.id || activePinnedMessage._id, false);
+                setPinnedMessage(null);
+              }}
+            >
+              Bỏ ghim
+            </button>
           </div>
         </div>
       )}
@@ -234,7 +253,7 @@ const ChatContainer = () => {
               )}
               {!isRevoked && message.text && <p>{message.text}</p>}
               {messageReactions[message._id] && (
-                <span className="absolute -bottom-4 right-3 rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
+                <span className="mt-1 self-end rounded-full bg-base-100 px-1.5 py-0.5 text-sm shadow">
                   {messageReactions[message._id]}
                 </span>
               )}
@@ -337,13 +356,14 @@ const ChatContainer = () => {
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-semibold hover:bg-base-300"
-                  onClick={() => {
-                      setPinnedMessage({ id: message._id, preview: getMessagePreview(message) });
+                  onClick={async () => {
+                      const updatedMessage = await setMessagePinned(message._id, !message.pinned);
+                      setPinnedMessage(updatedMessage.pinned ? { id: message._id, preview: getMessagePreview(message) } : null);
                       setActionMenuFor(null);
                     }}
                   >
                     <Pin className="size-4" />
-                    {isVi ? "Ghim" : "Pin"}
+                    {message.pinned ? (isVi ? "Bỏ ghim" : "Unpin") : (isVi ? "Ghim" : "Pin")}
                   </button>
                 </div>
               )}
