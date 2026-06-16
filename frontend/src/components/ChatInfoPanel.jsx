@@ -1,4 +1,18 @@
-import { BellOff, FileText, Image, Search, User, X } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  Edit3,
+  FileText,
+  Image,
+  Link as LinkIcon,
+  Palette,
+  Pin,
+  Search,
+  Shield,
+  Smile,
+  User,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
@@ -9,12 +23,25 @@ const ChatInfoPanel = ({ open, onClose }) => {
   const { language } = useLanguageStore();
   const { messages, selectedUser, updateConversationSetting } = useChatStore();
   const [expanded, setExpanded] = useState("media");
+  const [activeDialog, setActiveDialog] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [quickEmoji, setQuickEmoji] = useState("👍");
+  const [readReceipts, setReadReceipts] = useState(true);
+  const [disappearing, setDisappearing] = useState(false);
   const isVi = language === "vi";
 
   const attachments = useMemo(
     () => messages.filter((message) => message.image || message.attachment?.url),
     [messages]
   );
+  const mediaMessages = attachments.filter((message) =>
+    message.image || message.attachment?.type?.startsWith("image/") || message.attachment?.type?.startsWith("video/")
+  );
+  const fileMessages = attachments.filter((message) =>
+    message.attachment?.url && !message.attachment?.type?.startsWith("image/") && !message.attachment?.type?.startsWith("video/")
+  );
+  const linkMessages = messages.filter((message) => /https?:\/\/\S+/i.test(message.text || ""));
+  const pinnedMessages = messages.filter((message) => message.pinned);
   const isMuted = selectedUser?.mutedUntil && new Date(selectedUser.mutedUntil) > new Date();
 
   useEffect(() => {
