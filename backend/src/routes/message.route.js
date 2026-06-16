@@ -12,6 +12,7 @@ import {
     sendMessage,
     setMessagePinned,
     updateConversationSetting,
+    updateDirectConversationTheme,
     uploadMessageAttachment,
 } from '../controllers/message.controller.js';
 
@@ -39,5 +40,6 @@ router.patch('/receipts/:messageId/delivered', protectRoute, markMessageDelivere
 router.get('/conversations/:userId/pinned', protectRoute, getPinnedDirectMessages);
 router.patch('/conversations/:userId/seen', protectRoute, markConversationSeen);
 router.patch('/conversations/:userId/settings', protectRoute, updateConversationSetting);
+router.patch('/conversations/:userId/theme', protectRoute, updateDirectConversationTheme);
 
 export default router;

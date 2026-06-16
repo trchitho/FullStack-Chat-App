@@ -376,6 +376,24 @@ export const updateConversationSetting = async (req, res) => {
     }
 };
 
+export const updateDirectConversationTheme = async (req, res) => {
+    const directKey = directKeyFor(req.user._id, req.params.userId);
+    const conversation = await Conversation.findOne({ directKey, participants: req.user._id });
+    if (!conversation) return res.status(404).json({ message: "Conversation not found" });
+    conversation.theme = String(req.body.theme || "").trim();
+    conversation.quickEmoji = String(req.body.quickEmoji || conversation.quickEmoji || "👍").trim();
+    await conversation.save();
+    conversation.participants.forEach((participantId) =>
+        io.to(`user:${participantId}`).emit("conversationThemeUpdated", {
+            peerId: String(req.user._id) === String(participantId) ? req.params.userId : req.user._id,
+            conversationId: conversation._id,
+            theme: conversation.theme,
+            quickEmoji: conversation.quickEmoji,
+        })
+    );
+    res.status(200).json({ theme: conversation.theme, quickEmoji: conversation.quickEmoji });
+};
+
 export const downloadMessageAttachment = async (req, res) => {
     try {
         const message = await Message.findById(req.params.messageId).lean();
