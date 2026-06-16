@@ -1,5 +1,7 @@
 import Friendship from "../models/friendship.model.js";
+import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
+import { io } from "../lib/socket.js";
 
 const pairQuery = (firstUserId, secondUserId) => ({
     $or: [
@@ -34,6 +36,19 @@ export const sendFriendRequest = async (req, res) => {
         return res.status(200).json(existing);
     }
     const request = await Friendship.create({ requester: req.user._id, recipient: recipientId });
+    const notification = await Notification.create({
+        ownerId: recipientId,
+        senderId: req.user._id,
+        type: "friend_request",
+    });
+    io.to(`user:${recipientId}`).emit("newNotification", {
+        ...notification.toObject(),
+        senderId: {
+            _id: req.user._id,
+            fullName: req.user.fullName,
+            profilePic: req.user.profilePic,
+        },
+    });
     res.status(201).json(request);
 };
 
