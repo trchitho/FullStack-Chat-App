@@ -67,6 +67,7 @@ export const useChatStore = create((set, get) => ({
 
   sendMessage: async (messageData) => {
     const { selectedUser } = get();
+    const authUserId = useAuthStore.getState().authUser?._id;
     try {
       const endpoint = selectedUser.isGroup
         ? `/conversations/${selectedUser._id}/messages`
@@ -76,7 +77,7 @@ export const useChatStore = create((set, get) => ({
         messages: [...get().messages, res.data],
         users: sortUsersByLatestMessage(get().users.map((user) =>
           user._id === selectedUser._id
-            ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data) }
+            ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data, authUserId) }
             : user
         )),
       });
@@ -124,10 +125,11 @@ export const useChatStore = create((set, get) => ({
 
   sendMessageTo: async (userId, messageData) => {
     const { data } = await axiosInstance.post(`/messages/send/${userId}`, messageData);
+    const authUserId = useAuthStore.getState().authUser?._id;
     set({
       users: sortUsersByLatestMessage(get().users.map((user) =>
         user._id === userId
-          ? { ...user, lastMessageAt: data.createdAt, lastMessageText: messagePreview(data) }
+          ? { ...user, lastMessageAt: data.createdAt, lastMessageText: messagePreview(data, authUserId) }
           : user
       )),
     });
@@ -175,10 +177,11 @@ export const useChatStore = create((set, get) => ({
   sendCallEvent: async (userId, call) => {
     const res = await axiosInstance.post(`/messages/send/${userId}`, { call });
     const { selectedUser } = get();
+    const authUserId = useAuthStore.getState().authUser?._id;
     set({
       messages: selectedUser?._id === userId ? [...get().messages, res.data] : get().messages,
       users: sortUsersByLatestMessage(get().users.map((user) =>
-        user._id === userId ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data) } : user
+        user._id === userId ? { ...user, lastMessageAt: res.data.createdAt, lastMessageText: messagePreview(res.data, authUserId) } : user
       )),
     });
   },
@@ -195,6 +198,7 @@ export const useChatStore = create((set, get) => ({
 
     socket.on("newMessage", (newMessage) => {
       socket.emit("messageDelivered", { messageId: newMessage._id });
+      const authUserId = useAuthStore.getState().authUser?._id;
       const activeUser = get().selectedUser;
       const senderId = String(newMessage.senderId?._id || newMessage.senderId);
       const isActiveConversation = activeUser?._id === senderId;
@@ -206,7 +210,7 @@ export const useChatStore = create((set, get) => ({
             ? {
                 ...user,
                 lastMessageAt: newMessage.createdAt,
-                lastMessageText: messagePreview(newMessage),
+                lastMessageText: messagePreview(newMessage, authUserId),
                 unreadCount: isActiveConversation ? 0 : (user.unreadCount || 0) + 1,
               }
             : user
@@ -228,7 +232,7 @@ export const useChatStore = create((set, get) => ({
             ? {
                 ...conversation,
                 lastMessageAt: message.createdAt,
-                lastMessageText: messagePreview(message),
+                lastMessageText: messagePreview(message, authUserId),
                 unreadCount: isActive || isOwnMessage ? 0 : (conversation.unreadCount || 0) + 1,
               }
             : conversation
