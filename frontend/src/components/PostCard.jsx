@@ -139,15 +139,16 @@ const PostCard = ({ post }) => {
         </div>
       )}
       <div className="flex items-center justify-between border-b border-base-300 px-4 py-3 text-sm text-base-content/60">
-        <button type="button" className="hover:underline" onClick={async () => {
-          setReactionUsers(await getPostReactions(post._id));
-          setShowReactions(true);
-        }}>
+        <button type="button" className="hover:underline" onClick={() => openReactionList(() => getPostReactions(post._id))}>
           {post.reactions?.length || 0} lượt bày tỏ cảm xúc
         </button>
         <div className="flex gap-3">
-          <span>{post.comments?.length || 0} bình luận</span>
-          <span>{post.shareCount || 0} lượt chia sẻ</span>
+          <button type="button" className="hover:underline" onClick={() => setShowComments(true)}>
+            {post.comments?.length || 0} bình luận
+          </button>
+          <button type="button" className="hover:underline" onClick={openShareList}>
+            {post.shareCount || 0} lượt chia sẻ
+          </button>
         </div>
       </div>
       <div className="group relative grid grid-cols-3 border-b border-base-300 p-1">
