@@ -8,21 +8,26 @@ import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 import ChatPanel from "../components/ChatPanel";
 import NewMessageComposer from "../components/NewMessageComposer";
+import CallWindow from "../components/CallWindow";
 import { Phone, PhoneOff, Video } from "lucide-react";
+import { useCallStore } from "../store/useCallStore";
 
 const HomePage = () => {
   const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
   const socket = useAuthStore((state) => state.socket);
-  const incomingCall = useAuthStore((state) => state.incomingCall);
-  const answerIncomingCall = useAuthStore((state) => state.answerIncomingCall);
+  const { incomingCall, acceptIncomingCall, rejectIncomingCall, subscribeToCalls, unsubscribeFromCalls } = useCallStore();
   const [activePanel, setActivePanel] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!socket) return undefined;
     subscribeToMessages(socket);
-    return () => unsubscribeFromMessages(socket);
-  }, [socket, subscribeToMessages, unsubscribeFromMessages]);
+    subscribeToCalls(socket);
+    return () => {
+      unsubscribeFromMessages(socket);
+      unsubscribeFromCalls(socket);
+    };
+  }, [socket, subscribeToMessages, unsubscribeFromMessages, subscribeToCalls, unsubscribeFromCalls]);
 
   const openPanel = (panel) => {
     if (panel === "requests") {
@@ -52,10 +57,11 @@ const HomePage = () => {
         {incomingCall && (
           <IncomingCallDialog
             call={incomingCall}
-            onAccept={() => answerIncomingCall(true)}
-            onDecline={() => answerIncomingCall(false)}
+            onAccept={acceptIncomingCall}
+            onDecline={rejectIncomingCall}
           />
         )}
+        <CallWindow />
       </div>
     </main>
   );
