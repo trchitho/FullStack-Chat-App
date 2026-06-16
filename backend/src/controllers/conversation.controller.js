@@ -84,6 +84,18 @@ export const getGroupMessages = async (req, res) => {
     }
 };
 
+export const getPinnedGroupMessages = async (req, res) => {
+    const conversation = await Conversation.findById(req.params.id);
+    if (!conversation || !ensureParticipant(conversation, req.user._id)) {
+        return res.status(403).json({ message: "Conversation access denied" });
+    }
+    const messages = await Message.find({ conversationId: conversation._id, pinned: true })
+        .sort({ pinnedAt: -1, createdAt: -1 })
+        .populate("senderId", "fullName profilePic")
+        .lean();
+    res.status(200).json(messages);
+};
+
 export const sendGroupMessage = async (req, res) => {
     try {
         const conversation = await Conversation.findById(req.params.id);

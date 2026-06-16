@@ -4,6 +4,7 @@ import {
     getGroupConversations,
     getGroupMessages,
     getMessageRequests,
+    getPinnedGroupMessages,
     markGroupConversationSeen,
     respondToMessageRequest,
     sendGroupMessage,
@@ -20,6 +21,7 @@ router.post("/", createGroupConversation);
 router.get("/requests", handle(getMessageRequests));
 router.patch("/requests/:id", handle(respondToMessageRequest));
 router.get("/:id/messages", getGroupMessages);
+router.get("/:id/pinned", handle(getPinnedGroupMessages));
 router.post("/:id/messages", sendGroupMessage);
 router.patch("/:id/seen", markGroupConversationSeen);
 
