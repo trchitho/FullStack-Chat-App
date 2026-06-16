@@ -4,6 +4,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import Conversation from '../models/conversation.model.js';
 import Message from '../models/message.model.js';
+import User from '../models/user.model.js';
 
 const app = express();
 
@@ -95,15 +96,17 @@ io.on('connection', (socket) => {
         io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId, seenAt });
     });
 
-    socket.on("callInvite", ({ recipientId, type, callId }) => {
+    socket.on("callInvite", async ({ recipientId, type, callId }) => {
         if (!recipientId || !["voice", "video"].includes(type)) return;
         if (!getReceiverSocketIds(recipientId).length) {
             socket.emit("call:offline", { recipientId, type, callId });
             return;
         }
+        const caller = await User.findById(userId).select("fullName profilePic").lean();
         socket.emit("call:ringing", { recipientId, type, callId });
         io.to(`user:${recipientId}`).emit("incomingCall", {
             callerId: userId,
+            caller,
             callId,
             type,
             startedAt: new Date().toISOString(),
