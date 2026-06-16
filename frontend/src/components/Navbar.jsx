@@ -5,7 +5,6 @@ import {
   LogOut,
   MessageCircle,
   Newspaper,
-  Search,
   Settings,
   User,
   Users,
@@ -43,10 +42,6 @@ const Navbar = () => {
           <Link to="/" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-content" aria-label="PingMe">
             <MessageCircle className="size-6" />
           </Link>
-          <label className="input input-sm flex h-10 w-60 items-center gap-2 rounded-full border-none bg-base-300 px-4 max-md:hidden">
-            <Search className="size-4 text-base-content/60" />
-            <input type="search" className="grow" placeholder={language === "vi" ? "Tìm kiếm trên PingMe" : "Search PingMe"} />
-          </label>
         </div>
 
         <div className="relative flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
