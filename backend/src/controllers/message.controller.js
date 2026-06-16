@@ -26,6 +26,9 @@ const messagePreview = (message, viewerId) => {
     const prefix = isOwn ? "Bạn: " : "";
     if (message.call?.status === "missed") return `${prefix}Cuộc gọi nhỡ`;
     if (message.call?.status === "unreachable") return `${prefix}Không liên lạc được`;
+    if (message.call?.status === "no_answer") return `${prefix}Không bắt máy`;
+    if (message.call?.status === "rejected") return `${prefix}Cuộc gọi bị từ chối`;
+    if (message.call?.status === "cancelled") return `${prefix}Đã hủy cuộc gọi`;
     if (message.call) return `${prefix}${message.call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại"}`;
     if (message.attachment?.type?.startsWith("audio/")) return `${prefix}Đã gửi tin nhắn thoại`;
     if (message.image || message.attachment?.type?.startsWith("image/")) return `${prefix}Đã gửi một ảnh`;
