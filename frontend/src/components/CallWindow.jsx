@@ -5,12 +5,19 @@ import { useCallStore } from "../store/useCallStore";
 const CallWindow = () => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const { activeCall, attachVideoRefs, finishCall } = useCallStore();
+  const { activeCall, localStream, attachVideoRefs, finishCall } = useCallStore();
   const [elapsed, setElapsed] = useState(0);
+  const [micMuted, setMicMuted] = useState(false);
+  const [cameraOff, setCameraOff] = useState(false);
 
   useEffect(() => {
     attachVideoRefs(localVideoRef, remoteVideoRef);
   }, [attachVideoRefs, activeCall?.callId]);
+
+  useEffect(() => {
+    setMicMuted(false);
+    setCameraOff(false);
+  }, [activeCall?.callId]);
 
   useEffect(() => {
     if (!activeCall?.connectedAt) {
@@ -28,6 +35,13 @@ const CallWindow = () => {
   const isVideo = activeCall.type === "video";
   const endStatus = activeCall.status === "connected" ? "completed" : "cancelled";
   const durationLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
+  const toggleTrack = (kind, enabled) => {
+    localStream?.getTracks()
+      .filter((track) => track.kind === kind)
+      .forEach((track) => {
+        track.enabled = enabled;
+      });
+  };
 
   return (
     <div className="fixed inset-0 z-[190] flex items-center justify-center bg-black/85 p-4 text-white">
@@ -43,8 +57,8 @@ const CallWindow = () => {
           {isVideo && <video ref={localVideoRef} autoPlay muted playsInline className="absolute bottom-5 right-5 aspect-video w-44 rounded-2xl border border-white/20 bg-black object-cover" />}
         </div>
         <div className="flex items-center justify-center gap-4 p-5">
-          <button type="button" className="btn btn-circle bg-white/10 text-white hover:bg-white/20" aria-label="Tắt mic"><Mic className="size-5" /></button>
-          <button type="button" className="btn btn-circle bg-white/10 text-white hover:bg-white/20" aria-label="Tắt camera" disabled={!isVideo}>{isVideo ? <Video className="size-5" /> : <VideoOff className="size-5" />}</button>
+          <button type="button" className={`btn btn-circle text-white ${micMuted ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => { toggleTrack("audio", micMuted); setMicMuted(!micMuted); }} aria-label={micMuted ? "Bật mic" : "Tắt mic"}><Mic className="size-5" /></button>
+          <button type="button" className={`btn btn-circle text-white ${cameraOff ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => { toggleTrack("video", cameraOff); setCameraOff(!cameraOff); }} aria-label={cameraOff ? "Bật camera" : "Tắt camera"} disabled={!isVideo}>{isVideo && !cameraOff ? <Video className="size-5" /> : <VideoOff className="size-5" />}</button>
           <button type="button" className="btn btn-circle btn-error" onClick={() => finishCall(endStatus)} aria-label="Kết thúc cuộc gọi"><PhoneOff className="size-6" /></button>
         </div>
       </section>
