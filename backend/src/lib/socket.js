@@ -95,22 +95,49 @@ io.on('connection', (socket) => {
         io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId, seenAt });
     });
 
-    socket.on("callInvite", ({ recipientId, type }) => {
+    socket.on("callInvite", ({ recipientId, type, callId }) => {
         if (!recipientId || !["voice", "video"].includes(type)) return;
+        if (!getReceiverSocketIds(recipientId).length) {
+            socket.emit("call:offline", { recipientId, type, callId });
+            return;
+        }
+        socket.emit("call:ringing", { recipientId, type, callId });
         io.to(`user:${recipientId}`).emit("incomingCall", {
             callerId: userId,
+            callId,
             type,
             startedAt: new Date().toISOString(),
         });
     });
 
-    socket.on("callAnswer", ({ callerId, accepted }) => {
+    socket.on("callAnswer", ({ callerId, accepted, callId }) => {
         if (!callerId) return;
         io.to(`user:${callerId}`).emit("callAnswer", {
             responderId: userId,
+            callId,
             accepted: Boolean(accepted),
             answeredAt: new Date().toISOString(),
         });
+    });
+
+    socket.on("call:offer", ({ recipientId, callId, offer }) => {
+        if (!recipientId || !offer) return;
+        io.to(`user:${recipientId}`).emit("call:offer", { callerId: userId, callId, offer });
+    });
+
+    socket.on("call:answer", ({ recipientId, callId, answer }) => {
+        if (!recipientId || !answer) return;
+        io.to(`user:${recipientId}`).emit("call:answer", { responderId: userId, callId, answer });
+    });
+
+    socket.on("call:ice-candidate", ({ recipientId, callId, candidate }) => {
+        if (!recipientId || !candidate) return;
+        io.to(`user:${recipientId}`).emit("call:ice-candidate", { fromUserId: userId, callId, candidate });
+    });
+
+    socket.on("call:end", ({ recipientId, callId, status, duration }) => {
+        if (!recipientId) return;
+        io.to(`user:${recipientId}`).emit("call:end", { fromUserId: userId, callId, status, duration });
     });
 
     socket.on('disconnect', () => {
