@@ -123,6 +123,35 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  getPinnedMessages: async (conversation) => {
+    if (!conversation?._id) return [];
+    const endpoint = conversation.isGroup
+      ? `/conversations/${conversation._id}/pinned`
+      : `/messages/conversations/${conversation._id}/pinned`;
+    const { data } = await axiosInstance.get(endpoint);
+    return data;
+  },
+
+  setMessagePinned: async (messageId, pinned) => {
+    const { data } = await axiosInstance.patch(`/messages/pinned/${messageId}`, { pinned });
+    set({ messages: replaceMessage(get().messages, data) });
+    return data;
+  },
+
+  updateConversationTheme: async (conversation, changes) => {
+    const endpoint = conversation.isGroup
+      ? `/conversations/${conversation._id}/theme`
+      : `/messages/conversations/${conversation._id}/theme`;
+    const { data } = await axiosInstance.patch(endpoint, changes);
+    set({
+      selectedUser: get().selectedUser?._id === conversation._id
+        ? { ...get().selectedUser, ...data }
+        : get().selectedUser,
+      users: get().users.map((user) => user._id === conversation._id ? { ...user, ...data } : user),
+    });
+    return data;
+  },
+
   sendMessageTo: async (userId, messageData) => {
     const { data } = await axiosInstance.post(`/messages/send/${userId}`, messageData);
     const authUserId = useAuthStore.getState().authUser?._id;
