@@ -2,7 +2,10 @@ import Notification from "../models/notification.model.js";
 
 export const getNotifications = async (req, res) => {
     try {
-        const notifications = await Notification.find({ ownerId: req.user._id })
+        const notifications = await Notification.find({
+            ownerId: req.user._id,
+            senderId: { $ne: req.user._id },
+        })
             .sort({ createdAt: -1 })
             .limit(50)
             .populate("senderId", "fullName profilePic")
