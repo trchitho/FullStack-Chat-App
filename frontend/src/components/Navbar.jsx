@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import {
   Bell,
@@ -20,6 +20,7 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications, getNotifications, markAllRead } = useNotificationStore();
   const { users, getUsers, setSelectedUser } = useChatStore();
+  const navigate = useNavigate();
   const unreadCount = notifications.filter((item) => !item.readAt).length;
 
   useEffect(() => {
@@ -89,6 +90,11 @@ const Navbar = () => {
               notifications={notifications}
               onReadAll={markAllRead}
               onOpen={async (notification) => {
+                if (notification.type === "friend_request") {
+                  navigate("/contacts");
+                  setShowNotifications(false);
+                  return;
+                }
                 const senderId = notification.senderId?._id || notification.senderId;
                 let user = users.find((item) => item._id === senderId);
                 if (!user) {
@@ -126,9 +132,7 @@ const NotificationDropdown = ({ language, notifications, onReadAll, onOpen }) =>
           <img src={item.senderId?.profilePic || "/avatar.png"} alt="" className="size-10 rounded-full object-cover" />
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold">
-              {language === "vi"
-                ? `Bạn có tin nhắn mới từ ${item.senderId?.fullName || "một người dùng"}`
-                : `You have a new message from ${item.senderId?.fullName || "a user"}`}
+              {notificationText(item, language)}
             </span>
             <time className="text-xs text-base-content/50">{new Date(item.createdAt).toLocaleString(language === "vi" ? "vi-VN" : "en-US")}</time>
           </span>
@@ -137,5 +141,12 @@ const NotificationDropdown = ({ language, notifications, onReadAll, onOpen }) =>
     </div>
   </div>
 );
+
+const notificationText = (item, language) => {
+  const name = item.senderId?.fullName || (language === "vi" ? "một người dùng" : "a user");
+  if (item.type === "call_missed") return language === "vi" ? `Bạn có cuộc gọi nhỡ từ ${name}` : `You missed a call from ${name}`;
+  if (item.type === "friend_request") return language === "vi" ? `Bạn có lời mời kết bạn từ ${name}` : `You have a friend request from ${name}`;
+  return language === "vi" ? `Bạn có tin nhắn mới từ ${name}` : `You have a new message from ${name}`;
+};
 
 export default Navbar;
