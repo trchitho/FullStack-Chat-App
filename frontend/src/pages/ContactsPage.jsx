@@ -8,14 +8,22 @@ const ContactsPage = () => {
   const navigate = useNavigate();
   const { sendCallEvent, setSelectedUser } = useChatStore();
   const {
-    friends, friendRequests, getFriends, getFriendRequests, respondToFriendRequest,
+    friends,
+    friendRequests,
+    friendSuggestions,
+    getFriends,
+    getFriendRequests,
+    getFriendSuggestions,
+    respondToFriendRequest,
+    sendFriendRequest,
   } = useSocialStore();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     getFriends();
     getFriendRequests();
-  }, [getFriendRequests, getFriends]);
+    getFriendSuggestions();
+  }, [getFriendRequests, getFriendSuggestions, getFriends]);
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -23,6 +31,13 @@ const ContactsPage = () => {
       !search || `${friend.fullName} ${friend.username || ""}`.toLowerCase().includes(search)
     );
   }, [friends, query]);
+
+  const filteredSuggestions = useMemo(() => {
+    const search = query.trim().toLowerCase();
+    return friendSuggestions.filter((user) =>
+      !search || `${user.fullName} ${user.username || ""}`.toLowerCase().includes(search)
+    );
+  }, [friendSuggestions, query]);
 
   const openChat = (friend) => {
     setSelectedUser(friend);
@@ -77,6 +92,22 @@ const ContactsPage = () => {
             </div>
           </section>
         )}
+        <section className="mb-5 overflow-hidden rounded-xl border border-base-300 bg-base-100">
+          <div className="border-b border-base-300 p-4">
+            <h2 className="text-xl font-bold">Gợi ý kết bạn</h2>
+            <p className="text-sm text-base-content/60">Những người bạn có thể biết trên PingMe</p>
+          </div>
+          <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredSuggestions.map((user) => (
+              <SuggestionCard key={user._id} user={user} onAdd={() => sendFriendRequest(user._id)} />
+            ))}
+            {!filteredSuggestions.length && (
+              <div className="col-span-full rounded-xl bg-base-200 p-6 text-center text-base-content/55">
+                Chưa có gợi ý kết bạn phù hợp.
+              </div>
+            )}
+          </div>
+        </section>
         <section className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
           <div className="border-b border-base-300 p-4">
             <h2 className="text-xl font-bold">Tất cả bạn bè</h2>
@@ -109,5 +140,22 @@ const ContactsPage = () => {
     </main>
   );
 };
+
+const SuggestionCard = ({ user, onAdd }) => (
+  <article className="rounded-xl bg-base-200 p-4">
+    <Link to={`/profile/${user._id}`} className="flex items-center gap-3">
+      <img src={user.profilePic || "/avatar.png"} alt="" className="size-14 rounded-full object-cover" />
+      <span className="min-w-0">
+        <span className="block truncate font-bold">{user.fullName}</span>
+        <span className="block text-sm text-base-content/55">
+          {user.mutualFriendsCount ? `${user.mutualFriendsCount} bạn chung` : user.bio || "Người dùng PingMe"}
+        </span>
+      </span>
+    </Link>
+    <button type="button" className="btn btn-primary btn-sm mt-3 w-full" onClick={onAdd} disabled={user.requestPending}>
+      {user.requestPending ? "Đã gửi" : "Thêm bạn bè"}
+    </button>
+  </article>
+);
 
 export default ContactsPage;
