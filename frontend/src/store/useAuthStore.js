@@ -14,7 +14,6 @@ export const useAuthStore = create((set, get) => ({
   isUpdatingProfile: false,
   onlineUsers: [],
   socket: null,
-  incomingCall: null,
   activeStatus: localStorage.getItem("active-status") !== "false",
 
   isCheckingAuth: true,
@@ -114,13 +113,6 @@ export const useAuthStore = create((set, get) => ({
     socket.on("newNotification", (notification) => {
       useNotificationStore.getState().addNotification(notification);
     });
-    socket.on("incomingCall", (call) => {
-      if (String(call.callerId) === String(get().authUser?._id)) return;
-      set({ incomingCall: call });
-    });
-    socket.on("callAnswer", ({ accepted }) => {
-      toast(accepted ? "Cuộc gọi đã được chấp nhận" : "Cuộc gọi đã bị từ chối");
-    });
   },
 
   disconnectSocket: () => {
@@ -129,16 +121,6 @@ export const useAuthStore = create((set, get) => ({
     socket.removeAllListeners();
     socket.disconnect();
     set({ socket: null, onlineUsers: [] });
-  },
-
-  startCallInvite: (recipientId, type) => {
-    get().socket?.emit("callInvite", { recipientId, type });
-  },
-
-  answerIncomingCall: (accepted) => {
-    const call = get().incomingCall;
-    if (call?.callerId) get().socket?.emit("callAnswer", { callerId: call.callerId, accepted });
-    set({ incomingCall: null });
   },
 
   setActiveStatus: (activeStatus) => {
