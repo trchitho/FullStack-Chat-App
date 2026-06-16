@@ -95,6 +95,24 @@ io.on('connection', (socket) => {
         io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId, seenAt });
     });
 
+    socket.on("callInvite", ({ recipientId, type }) => {
+        if (!recipientId || !["voice", "video"].includes(type)) return;
+        io.to(`user:${recipientId}`).emit("incomingCall", {
+            callerId: userId,
+            type,
+            startedAt: new Date().toISOString(),
+        });
+    });
+
+    socket.on("callAnswer", ({ callerId, accepted }) => {
+        if (!callerId) return;
+        io.to(`user:${callerId}`).emit("callAnswer", {
+            responderId: userId,
+            accepted: Boolean(accepted),
+            answeredAt: new Date().toISOString(),
+        });
+    });
+
     socket.on('disconnect', () => {
         console.log('A user disconnected');
         const sockets = userSocketMap.get(userId);
