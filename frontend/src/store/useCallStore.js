@@ -62,7 +62,13 @@ export const useCallStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket?.connected) return toast.error("Không thể kết nối cuộc gọi");
     const callId = createCallId();
-    const media = await navigator.mediaDevices.getUserMedia({ audio: true, video: type === "video" });
+    let media;
+    try {
+      media = await navigator.mediaDevices.getUserMedia({ audio: true, video: type === "video" });
+    } catch {
+      toast.error("Vui lòng cho phép truy cập micrô/camera");
+      return;
+    }
     const pc = get().createPeerConnection(recipient._id, callId);
     media.getTracks().forEach((track) => pc.addTrack(track, media));
     const localVideo = get().localVideoRef?.current;
@@ -101,7 +107,13 @@ export const useCallStore = create((set, get) => ({
   acceptIncomingCall: async () => {
     const call = get().incomingCall;
     if (!call?.callerId) return;
-    const media = await navigator.mediaDevices.getUserMedia({ audio: true, video: call.type === "video" });
+    let media;
+    try {
+      media = await navigator.mediaDevices.getUserMedia({ audio: true, video: call.type === "video" });
+    } catch {
+      toast.error("Vui lòng cho phép truy cập micrô/camera");
+      return;
+    }
     const pc = get().createPeerConnection(call.callerId, call.callId);
     media.getTracks().forEach((track) => pc.addTrack(track, media));
     useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: true });
