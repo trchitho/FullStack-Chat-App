@@ -256,6 +256,33 @@ const MessageResultList = ({ messages, empty }) => (
   </div>
 );
 
+const AttachmentGrid = ({ messages, empty }) => (
+  messages.length === 0 ? <p className="text-sm text-base-content/60">{empty}</p> : (
+    <div className="grid grid-cols-2 gap-2">
+      {messages.map((message) => {
+        const url = message.image || message.attachment?.url;
+        const isVideo = message.attachment?.type?.startsWith("video/");
+        return (
+          <a key={message._id} href={url} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl bg-base-200">
+            {isVideo ? <video src={url} className="aspect-square w-full object-cover" /> : <img src={url} alt="" className="aspect-square w-full object-cover" />}
+          </a>
+        );
+      })}
+    </div>
+  )
+);
+
+const AttachmentList = ({ messages, empty }) => (
+  <div className="space-y-2">
+    {messages.length === 0 ? <p className="text-sm text-base-content/60">{empty}</p> : messages.map((message) => (
+      <a key={message._id} href={message.attachment.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-xl bg-base-200 p-3 hover:bg-base-300">
+        <FileText className="size-5 shrink-0" />
+        <span className="min-w-0 flex-1 truncate">{message.attachment.name || "Tệp đính kèm"}</span>
+      </a>
+    ))}
+  </div>
+);
+
 const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
