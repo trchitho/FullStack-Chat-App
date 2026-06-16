@@ -326,6 +326,34 @@ export const markConversationSeen = async (req, res) => {
     }
 };
 
+export const setMessagePinned = async (req, res) => {
+    const message = await Message.findById(req.params.messageId);
+    if (!message) return res.status(404).json({ message: "Message not found" });
+    const userId = String(req.user._id);
+    const isDirect = [String(message.senderId), String(message.receiverId)].includes(userId);
+    const isGroup = message.conversationId
+        ? await Conversation.exists({ _id: message.conversationId, participants: req.user._id })
+        : false;
+    if (!isDirect && !isGroup) return res.status(403).json({ message: "Message access denied" });
+    message.pinned = Boolean(req.body.pinned);
+    message.pinnedAt = message.pinned ? new Date() : null;
+    message.pinnedBy = message.pinned ? req.user._id : null;
+    await message.save();
+    res.status(200).json(message);
+};
+
+export const getPinnedDirectMessages = async (req, res) => {
+    const peerId = req.params.userId;
+    const messages = await Message.find({
+        pinned: true,
+        $or: [
+            { senderId: req.user._id, receiverId: peerId },
+            { senderId: peerId, receiverId: req.user._id },
+        ],
+    }).sort({ pinnedAt: -1, createdAt: -1 }).populate("senderId", "fullName profilePic").lean();
+    res.status(200).json(messages);
+};
+
 export const updateConversationSetting = async (req, res) => {
     try {
         const peerId = req.params.userId;
