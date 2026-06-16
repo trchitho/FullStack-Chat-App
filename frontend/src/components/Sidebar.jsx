@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCallStore } from "../store/useCallStore";
 import { chatFilters, sidebarMenuItems, userCardActions } from "../constants/chatUi";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from "../lib/menuEvents";
@@ -63,8 +64,9 @@ const getPopoverPosition = (rect, width, height) => {
 const Sidebar = ({ onOpenPanel = () => {} }) => {
   const {
     getUsers, users, selectedUser, setSelectedUser, isUsersLoading,
-    sendCallEvent, updateConversationSetting, markConversationSeen, openNewMessage,
+    updateConversationSetting, markConversationSeen, openNewMessage,
   } = useChatStore();
+  const startCall = useCallStore((state) => state.startCall);
   const { onlineUsers } = useAuthStore();
   const { language } = useLanguageStore();
   const [activeFilter, setActiveFilter] = useState("all");
@@ -75,7 +77,6 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
   const [query, setQuery] = useState("");
   const [userActions, setUserActions] = useState(() => readStoredActions());
   const [profileUser, setProfileUser] = useState(null);
-  const [callState, setCallState] = useState(null);
   const [reportUser, setReportUser] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
   const [muteUser, setMuteUser] = useState(null);
@@ -107,8 +108,8 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       } else setMuteUser(user);
     }
     if (labelKey === "viewProfile") setProfileUser(user);
-    if (labelKey === "voiceCall") setCallState({ user, type: "voice" });
-    if (labelKey === "videoChat") setCallState({ user, type: "video" });
+    if (labelKey === "voiceCall") startCall(user, "voice");
+    if (labelKey === "videoChat") startCall(user, "video");
     if (labelKey === "block") openConfirmAction("block", user);
     if (labelKey === "archiveChat") openConfirmAction("archive", user);
     if (labelKey === "deleteChat") openConfirmAction("delete", user);
@@ -313,7 +314,6 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
       {confirmAction && (
         <ConfirmChatAction action={confirmAction} language={language} onCancel={() => setConfirmAction(null)} onConfirm={confirmSelectedAction} />
       )}
-      {callState && <CallDialog callState={callState} language={language} onClose={() => setCallState(null)} onSave={sendCallEvent} />}
       {reportUser && <ReportDialog user={reportUser} language={language} onClose={() => setReportUser(null)} />}
       {muteUser && (
         <MuteDialog
