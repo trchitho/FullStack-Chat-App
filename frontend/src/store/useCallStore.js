@@ -25,4 +25,36 @@ export const useCallStore = create((set, get) => ({
   timeoutId: null,
   localVideoRef: null,
   remoteVideoRef: null,
+
+  attachVideoRefs: (localVideoRef, remoteVideoRef) => {
+    const { localStream, remoteStream } = get();
+    set({ localVideoRef, remoteVideoRef });
+    if (localVideoRef?.current) localVideoRef.current.srcObject = localStream;
+    if (remoteVideoRef?.current) remoteVideoRef.current.srcObject = remoteStream;
+  },
+
+  cleanupCall: () => {
+    const { peerConnection, localStream, timeoutId } = get();
+    if (timeoutId) window.clearTimeout(timeoutId);
+    peerConnection?.close();
+    stopStream(localStream);
+    set({ activeCall: null, localStream: null, remoteStream: null, peerConnection: null, timeoutId: null });
+  },
+
+  createPeerConnection: (peerId, callId) => {
+    const socket = useAuthStore.getState().socket;
+    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    const remoteStream = new MediaStream();
+    pc.ontrack = (event) => {
+      event.streams[0]?.getTracks().forEach((track) => remoteStream.addTrack(track));
+      const remoteVideo = get().remoteVideoRef?.current;
+      if (remoteVideo) remoteVideo.srcObject = remoteStream;
+      set({ remoteStream });
+    };
+    pc.onicecandidate = (event) => {
+      if (event.candidate) socket?.emit("call:ice-candidate", { recipientId: peerId, callId, candidate: event.candidate });
+    };
+    set({ peerConnection: pc, remoteStream });
+    return pc;
+  },
 }));
