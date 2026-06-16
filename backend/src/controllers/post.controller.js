@@ -145,6 +145,15 @@ export const getCommentReactions = async (req, res) => {
     res.status(200).json(serializeReactions(comment.reactions));
 };
 
+export const getReplyReactions = async (req, res) => {
+    const post = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!post) return res.status(404).json({ message: "Post not found or unavailable" });
+    await post.populate("comments.replies.reactions.user", "fullName profilePic");
+    const reply = post.comments.id(req.params.commentId)?.replies.id(req.params.replyId);
+    if (!reply) return res.status(404).json({ message: "Reply not found" });
+    res.status(200).json(serializeReactions(reply.reactions));
+};
+
 export const sharePost = async (req, res) => {
     const original = await findAccessiblePost(req.params.postId, req.user._id);
     if (!original) return res.status(404).json({ message: "Post not found or unavailable" });
