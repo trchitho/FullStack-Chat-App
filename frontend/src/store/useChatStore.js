@@ -209,20 +209,23 @@ export const useChatStore = create((set, get) => ({
     socket.on("newGroupMessage", ({ conversationId, message }) => {
       const activeConversation = get().selectedUser;
       const isActive = activeConversation?.isGroup && activeConversation._id === conversationId;
+      const authUserId = useAuthStore.getState().authUser?._id;
+      const senderId = String(message.senderId?._id || message.senderId);
+      const isOwnMessage = senderId === String(authUserId);
       set({
-        messages: isActive ? [...get().messages, message] : get().messages,
+        messages: isActive && !isOwnMessage ? [...get().messages, message] : get().messages,
         users: sortUsersByLatestMessage(get().users.map((conversation) =>
           conversation._id === conversationId
             ? {
                 ...conversation,
                 lastMessageAt: message.createdAt,
                 lastMessageText: messagePreview(message),
-                unreadCount: isActive ? 0 : (conversation.unreadCount || 0) + 1,
+                unreadCount: isActive || isOwnMessage ? 0 : (conversation.unreadCount || 0) + 1,
               }
             : conversation
         )),
       });
-      socket.emit("messageDelivered", { messageId: message._id });
+      if (!isOwnMessage) socket.emit("messageDelivered", { messageId: message._id });
     });
     socket.on("messageDeliveredUpdate", (updatedMessage) => {
       set({ messages: replaceMessage(get().messages, updatedMessage) });
