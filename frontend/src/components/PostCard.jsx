@@ -331,6 +331,11 @@ const PostCard = ({ post }) => {
         open={showShare}
         onClose={() => setShowShare(false)}
       />
+      <ShareListModal
+        open={showShares}
+        shares={shareUsers}
+        onClose={() => setShowShares(false)}
+      />
     </article>
   );
 };
