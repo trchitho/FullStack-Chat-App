@@ -204,9 +204,13 @@ const PostCard = ({ post }) => {
                 onSelect={(type) => reactToComment(post._id, item._id, type)}
               />
               {!!item.reactions?.length && (
-                <span className="ml-1 text-xs text-base-content/60">
+                <button
+                  type="button"
+                  className="ml-1 text-xs text-base-content/60 hover:underline"
+                  onClick={() => openReactionList(() => getCommentReactions(post._id, item._id))}
+                >
                   {item.reactions.length} cảm xúc
-                </span>
+                </button>
               )}
               {item.replies?.map((replyItem) => (
                 <div key={replyItem._id} className="ml-4 mt-2 flex gap-2">
