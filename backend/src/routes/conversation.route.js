@@ -8,6 +8,7 @@ import {
     markGroupConversationSeen,
     respondToMessageRequest,
     sendGroupMessage,
+    updateConversationTheme,
 } from "../controllers/conversation.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 
@@ -22,6 +23,7 @@ router.get("/requests", handle(getMessageRequests));
 router.patch("/requests/:id", handle(respondToMessageRequest));
 router.get("/:id/messages", getGroupMessages);
 router.get("/:id/pinned", handle(getPinnedGroupMessages));
+router.patch("/:id/theme", handle(updateConversationTheme));
 router.post("/:id/messages", sendGroupMessage);
 router.patch("/:id/seen", markGroupConversationSeen);
 
