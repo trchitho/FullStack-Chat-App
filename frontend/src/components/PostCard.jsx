@@ -45,6 +45,44 @@ const InlineReactionPicker = ({ onSelect }) => (
   </span>
 );
 
+const ShareListModal = ({ open, shares, onClose }) => {
+  useEffect(() => {
+    if (!open) return undefined;
+    const closeOnEscape = (event) => event.key === "Escape" && onClose();
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onClose, open]);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[175] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
+      <section role="dialog" aria-modal="true" aria-label="Danh sách chia sẻ" className="w-full max-w-md rounded-2xl bg-base-100 shadow-2xl" onMouseDown={(event) => event.stopPropagation()}>
+        <header className="flex items-center justify-between border-b border-base-300 p-4">
+          <h2 className="text-lg font-bold">Lượt chia sẻ</h2>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose} aria-label="Đóng">
+            <X className="size-5" />
+          </button>
+        </header>
+        <div className="max-h-[60dvh] overflow-y-auto p-2">
+          {shares.map((share) => (
+            <div key={share._id} className="flex items-center gap-3 rounded-xl p-3 hover:bg-base-200">
+              <img src={share.author?.profilePic || "/avatar.png"} alt="" className="size-11 rounded-full object-cover" />
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-semibold">{share.author?.fullName || "Người dùng PingMe"}</div>
+                <time className="text-xs text-base-content/55">{formatPostTime(share.createdAt)}</time>
+              </div>
+            </div>
+          ))}
+          {shares.length === 0 && (
+            <p className="p-8 text-center text-sm text-base-content/60">
+              Chưa có ai chia sẻ bài viết này.
+            </p>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const PostCard = ({ post }) => {
   const authUser = useAuthStore((state) => state.authUser);
   const {
