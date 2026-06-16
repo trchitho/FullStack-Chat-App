@@ -57,9 +57,21 @@ export const getGroupConversations = async (req, res) => {
             lastMessageAt: item.lastMessageAt,
             lastMessageText: messagePreview(item.lastMessage, req.user._id),
         }]));
+        const unreadCounts = await Message.aggregate([
+            {
+                $match: {
+                    conversationId: { $in: groupIds },
+                    senderId: { $ne: req.user._id },
+                    "seenBy.user": { $ne: req.user._id },
+                },
+            },
+            { $group: { _id: "$conversationId", unreadCount: { $sum: 1 } } },
+        ]);
+        const unreadByGroup = new Map(unreadCounts.map((item) => [String(item._id), item.unreadCount]));
         res.status(200).json(groups.map((group) => ({
             ...group,
             ...latestByGroup.get(String(group._id)),
+            unreadCount: unreadByGroup.get(String(group._id)) || 0,
             fullName: group.name,
             isGroup: true,
         })));
