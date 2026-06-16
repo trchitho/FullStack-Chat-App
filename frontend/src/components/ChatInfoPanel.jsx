@@ -101,9 +101,9 @@ const ChatInfoPanel = ({ open, onClose }) => {
               <p className="px-2 py-2 text-sm text-base-content/70">{selectedUser.bio || (isVi ? "Chưa có thông tin bổ sung." : "No additional details.")}</p>
             </Accordion>
             <Accordion title={isVi ? "Tùy chỉnh đoạn chat" : "Customize chat"} id="customize" expanded={expanded} setExpanded={setExpanded}>
-              <InfoRow label={isVi ? "Đổi biệt danh" : "Nicknames"} />
-              <InfoRow label={isVi ? "Đổi chủ đề" : "Theme"} />
-              <InfoRow label={isVi ? "Đổi biểu tượng cảm xúc" : "Quick emoji"} />
+              <InfoRow icon={Palette} label={isVi ? "Đổi chủ đề" : "Change theme"} onClick={() => setActiveDialog("theme")} />
+              <InfoRow icon={Smile} label={isVi ? "Thay đổi biểu tượng cảm xúc" : "Change quick emoji"} onClick={() => setActiveDialog("emoji")} />
+              <InfoRow icon={Edit3} label={isVi ? "Chỉnh sửa biệt danh" : "Edit nicknames"} onClick={() => setActiveDialog("nicknames")} />
             </Accordion>
             <Accordion title={isVi ? "File phương tiện và file" : "Media and files"} id="media" expanded={expanded} setExpanded={setExpanded}>
               {attachments.length === 0 ? (
@@ -164,11 +164,13 @@ const Accordion = ({ title, id, expanded, setExpanded, children }) => {
   );
 };
 
-const InfoRow = ({ label, danger = false }) => (
+const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
-    className={`flex min-h-11 w-full items-center rounded-lg px-2 text-left text-sm hover:bg-base-200 ${danger ? "text-error" : ""}`}
+    className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-2 text-left text-sm hover:bg-base-200 ${danger ? "text-error" : ""}`}
+    onClick={onClick}
   >
+    {Icon && <Icon className="size-4 shrink-0" />}
     {label}
   </button>
 );
