@@ -4,8 +4,11 @@ import {
     addCommentReply,
     createPost,
     deletePost,
+    getCommentReactions,
     getTimeline,
     getPostReactions,
+    getPostShares,
+    getReplyReactions,
     getUserPosts,
     reactToComment,
     reactToPost,
@@ -24,9 +27,15 @@ router.get("/user/:userId", handle(getUserPosts));
 router.post("/", handle(createPost));
 router.patch("/:postId/reaction", handle(reactToPost));
 router.get("/:postId/reactions", handle(getPostReactions));
+router.get("/:postId/shares", handle(getPostShares));
 router.post("/:postId/share", handle(sharePost));
 router.post("/:postId/comments", handle(addComment));
+router.get("/:postId/comments/:commentId/reactions", handle(getCommentReactions));
 router.patch("/:postId/comments/:commentId/reaction", handle(reactToComment));
+router.get(
+    "/:postId/comments/:commentId/replies/:replyId/reactions",
+    handle(getReplyReactions)
+);
 router.patch(
     "/:postId/comments/:commentId/replies/:replyId/reaction",
     handle(reactToReply)
