@@ -174,6 +174,15 @@ export const sharePost = async (req, res) => {
     res.status(201).json(populated);
 };
 
+export const getPostShares = async (req, res) => {
+    const original = await findAccessiblePost(req.params.postId, req.user._id);
+    if (!original) return res.status(404).json({ message: "Post not found or unavailable" });
+    const shares = await populatePost(Post.find({ originalPost: original._id })
+        .sort({ createdAt: -1 })
+        .limit(100)).lean();
+    res.status(200).json(shares);
+};
+
 export const addComment = async (req, res) => {
     const content = req.body.content?.trim();
     if (!content) return res.status(400).json({ message: "Comment is required" });
