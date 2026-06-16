@@ -24,13 +24,20 @@ import { useLanguageStore } from "../store/useLanguageStore";
 const ChatInfoPanel = ({ open, onClose }) => {
   const navigate = useNavigate();
   const { language } = useLanguageStore();
-  const { messages, selectedUser, updateConversationSetting } = useChatStore();
+  const {
+    messages,
+    selectedUser,
+    updateConversationSetting,
+    getPinnedMessages,
+    setMessagePinned,
+  } = useChatStore();
   const [expanded, setExpanded] = useState("media");
   const [activeDialog, setActiveDialog] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [quickEmoji, setQuickEmoji] = useState("👍");
   const [readReceipts, setReadReceipts] = useState(true);
   const [disappearing, setDisappearing] = useState(false);
+  const [pinnedMessages, setPinnedMessages] = useState([]);
   const isVi = language === "vi";
 
   const attachments = useMemo(
@@ -44,7 +51,6 @@ const ChatInfoPanel = ({ open, onClose }) => {
     message.attachment?.url && !message.attachment?.type?.startsWith("image/") && !message.attachment?.type?.startsWith("video/")
   );
   const linkMessages = messages.filter((message) => /https?:\/\/\S+/i.test(message.text || ""));
-  const pinnedMessages = messages.filter((message) => message.pinned);
   const searchedMessages = messages.filter((message) => {
     const keyword = searchQuery.trim().toLowerCase();
     if (!keyword) return false;
@@ -62,6 +68,13 @@ const ChatInfoPanel = ({ open, onClose }) => {
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [onClose, open]);
+
+  useEffect(() => {
+    if (!open || !selectedUser) return;
+    getPinnedMessages(selectedUser)
+      .then(setPinnedMessages)
+      .catch(() => setPinnedMessages(messages.filter((message) => message.pinned)));
+  }, [getPinnedMessages, messages, open, selectedUser]);
 
   if (!open || !selectedUser) return null;
 
@@ -143,6 +156,10 @@ const ChatInfoPanel = ({ open, onClose }) => {
         setSearchQuery={setSearchQuery}
         searchedMessages={searchedMessages}
         pinnedMessages={pinnedMessages}
+        onUnpin={async (messageId) => {
+          await setMessagePinned(messageId, false);
+          setPinnedMessages((items) => items.filter((message) => message._id !== messageId));
+        }}
         mediaMessages={mediaMessages}
         fileMessages={fileMessages}
         linkMessages={linkMessages}
@@ -229,7 +246,7 @@ const ChatInfoDialog = ({ type, isVi, onClose, ...props }) => {
   );
 };
 
-const ChatInfoDialogBody = ({ type, searchQuery, setSearchQuery, searchedMessages, pinnedMessages, mediaMessages, fileMessages, linkMessages, ...props }) => {
+const ChatInfoDialogBody = ({ type, searchQuery, setSearchQuery, searchedMessages, pinnedMessages, onUnpin, mediaMessages, fileMessages, linkMessages, ...props }) => {
   if (type === "search") {
     return (
       <div className="space-y-3">
@@ -238,19 +255,26 @@ const ChatInfoDialogBody = ({ type, searchQuery, setSearchQuery, searchedMessage
       </div>
     );
   }
-  if (type === "pinned") return <MessageResultList messages={pinnedMessages} empty="Chưa có tin nhắn đã ghim." />;
+  if (type === "pinned") return <MessageResultList messages={pinnedMessages} empty="Chưa có tin nhắn đã ghim." onUnpin={onUnpin} />;
   if (type === "media") return <AttachmentGrid messages={mediaMessages} empty="Chưa có ảnh hoặc video." />;
   if (type === "files") return <AttachmentList messages={fileMessages} empty="Chưa có tệp tài liệu." />;
   if (type === "links") return <MessageResultList messages={linkMessages} empty="Chưa có liên kết." />;
   return <ChatInfoSettingsBody type={type} {...props} />;
 };
 
-const MessageResultList = ({ messages, empty }) => (
+const MessageResultList = ({ messages, empty, onUnpin }) => (
   <div className="space-y-2">
     {messages.length === 0 ? <p className="text-sm text-base-content/60">{empty}</p> : messages.map((message) => (
-      <div key={message._id} className="rounded-xl bg-base-200 p-3 text-sm">
-        <p className="break-words">{messageLabel(message)}</p>
-        <time className="mt-1 block text-xs text-base-content/50">{new Date(message.createdAt).toLocaleString("vi-VN")}</time>
+      <div key={message._id} className="flex items-start justify-between gap-3 rounded-xl bg-base-200 p-3 text-sm">
+        <div className="min-w-0">
+          <p className="break-words">{messageLabel(message)}</p>
+          <time className="mt-1 block text-xs text-base-content/50">{new Date(message.pinnedAt || message.createdAt).toLocaleString("vi-VN")}</time>
+        </div>
+        {onUnpin && (
+          <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => onUnpin(message._id)}>
+            Bỏ ghim
+          </button>
+        )}
       </div>
     ))}
   </div>
