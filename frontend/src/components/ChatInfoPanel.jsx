@@ -283,6 +283,28 @@ const AttachmentList = ({ messages, empty }) => (
   </div>
 );
 
+const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, readReceipts, setReadReceipts, disappearing, setDisappearing }) => {
+  if (type === "theme") {
+    return <div className="grid grid-cols-2 gap-2">{["coffee", "night", "valentine", "aqua"].map((theme) => <button key={theme} type="button" className="rounded-xl bg-base-200 p-4 text-left font-semibold hover:bg-base-300">{theme}</button>)}</div>;
+  }
+  if (type === "emoji") {
+    return <div className="grid grid-cols-6 gap-2">{["👍", "❤️", "😂", "😮", "😢", "🎉", "🙏", "🔥", "😍", "👏", "💯", "✅"].map((emoji) => <button key={emoji} type="button" className={`rounded-xl p-3 text-2xl hover:bg-base-200 ${quickEmoji === emoji ? "bg-primary/20" : ""}`} onClick={() => setQuickEmoji(emoji)}>{emoji}</button>)}</div>;
+  }
+  if (type === "nicknames") {
+    return <div className="space-y-3"><NicknameRow name={selectedUser.fullName} /><NicknameRow name="Bạn" /></div>;
+  }
+  if (type === "permissions") {
+    return <ToggleRow label="Cho phép nhận tin nhắn" checked description="Kiểm soát việc đoạn chat này có thể tiếp tục gửi tin nhắn cho bạn." />;
+  }
+  if (type === "disappearing") {
+    return <ToggleRow label="Tin nhắn tự hủy sau 24 giờ" checked={disappearing} onChange={setDisappearing} />;
+  }
+  if (type === "receipts") {
+    return <ToggleRow label="Hiển thị thông báo đã đọc" checked={readReceipts} onChange={setReadReceipts} />;
+  }
+  return <SupportAction type={type} selectedUser={selectedUser} />;
+};
+
 const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
