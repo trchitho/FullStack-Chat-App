@@ -7,6 +7,18 @@ import { io } from "../lib/socket.js";
 const ensureParticipant = (conversation, userId) =>
     conversation.participants.some((participant) => String(participant._id || participant) === String(userId));
 
+const messagePreview = (message, viewerId) => {
+    const isOwn = String(message.senderId) === String(viewerId);
+    const prefix = isOwn ? "Bạn: " : "";
+    if (message.call?.status === "missed") return `${prefix}Cuộc gọi nhỡ`;
+    if (message.call?.status === "unreachable") return `${prefix}Không liên lạc được`;
+    if (message.call) return `${prefix}${message.call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại"}`;
+    if (message.attachment?.type?.startsWith("audio/")) return `${prefix}Đã gửi tin nhắn thoại`;
+    if (message.image || message.attachment?.type?.startsWith("image/")) return `${prefix}Đã gửi một ảnh`;
+    if (message.attachment) return `${prefix}Đã gửi một tệp`;
+    return `${prefix}${message.text || "Chưa có tin nhắn"}`;
+};
+
 export const createGroupConversation = async (req, res) => {
     try {
         const participantIds = [...new Set([String(req.user._id), ...(req.body.participantIds || []).map(String)])];
@@ -39,9 +51,12 @@ export const getGroupConversations = async (req, res) => {
         const latestMessages = await Message.aggregate([
             { $match: { conversationId: { $in: groupIds } } },
             { $sort: { createdAt: -1 } },
-            { $group: { _id: "$conversationId", lastMessageText: { $first: "$text" }, lastMessageAt: { $first: "$createdAt" } } },
+            { $group: { _id: "$conversationId", lastMessage: { $first: "$$ROOT" }, lastMessageAt: { $first: "$createdAt" } } },
         ]);
-        const latestByGroup = new Map(latestMessages.map((item) => [String(item._id), item]));
+        const latestByGroup = new Map(latestMessages.map((item) => [String(item._id), {
+            lastMessageAt: item.lastMessageAt,
+            lastMessageText: messagePreview(item.lastMessage, req.user._id),
+        }]));
         res.status(200).json(groups.map((group) => ({
             ...group,
             ...latestByGroup.get(String(group._id)),
