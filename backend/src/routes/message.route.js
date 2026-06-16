@@ -3,12 +3,14 @@ import multer from 'multer';
 import { protectRoute } from '../middlewares/auth.middleware.js';
 import {
     getMessages,
+    getPinnedDirectMessages,
     getUsersForSidebar,
     downloadMessageAttachment,
     markConversationSeen,
     markMessageDelivered,
     searchUsers,
     sendMessage,
+    setMessagePinned,
     updateConversationSetting,
     uploadMessageAttachment,
 } from '../controllers/message.controller.js';
@@ -32,7 +34,9 @@ router.post('/send/:id', protectRoute, sendMessage);
 // upload message attachment to object storage
 router.post('/attachments', protectRoute, upload.single('file'), uploadMessageAttachment);
 router.get('/attachments/:messageId/download', protectRoute, downloadMessageAttachment);
+router.patch('/pinned/:messageId', protectRoute, setMessagePinned);
 router.patch('/receipts/:messageId/delivered', protectRoute, markMessageDelivered);
+router.get('/conversations/:userId/pinned', protectRoute, getPinnedDirectMessages);
 router.patch('/conversations/:userId/seen', protectRoute, markConversationSeen);
 router.patch('/conversations/:userId/settings', protectRoute, updateConversationSetting);
 
