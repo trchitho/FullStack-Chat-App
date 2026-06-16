@@ -53,7 +53,10 @@ const PostCard = ({ post }) => {
     reactToReply,
     addComment,
     addReply,
+    getCommentReactions,
     getPostReactions,
+    getPostShares,
+    getReplyReactions,
   } = useSocialStore();
   const [comment, setComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
@@ -61,7 +64,9 @@ const PostCard = ({ post }) => {
   const [showComments, setShowComments] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showShares, setShowShares] = useState(false);
   const [reactionUsers, setReactionUsers] = useState([]);
+  const [shareUsers, setShareUsers] = useState([]);
   const AudienceIcon = audienceIcons[post.audience] || Users;
 
   useEffect(() => {
