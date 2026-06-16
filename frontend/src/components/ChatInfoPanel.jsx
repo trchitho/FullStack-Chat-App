@@ -45,6 +45,15 @@ const ChatInfoPanel = ({ open, onClose }) => {
   );
   const linkMessages = messages.filter((message) => /https?:\/\/\S+/i.test(message.text || ""));
   const pinnedMessages = messages.filter((message) => message.pinned);
+  const searchedMessages = messages.filter((message) => {
+    const keyword = searchQuery.trim().toLowerCase();
+    if (!keyword) return false;
+    return [
+      message.text,
+      message.replyTo?.preview,
+      message.attachment?.name,
+    ].filter(Boolean).some((value) => value.toLowerCase().includes(keyword));
+  });
   const isMuted = selectedUser?.mutedUntil && new Date(selectedUser.mutedUntil) > new Date();
 
   useEffect(() => {
@@ -126,6 +135,25 @@ const ChatInfoPanel = ({ open, onClose }) => {
           </div>
         </div>
       </aside>
+      <ChatInfoDialog
+        type={activeDialog}
+        isVi={isVi}
+        selectedUser={selectedUser}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchedMessages={searchedMessages}
+        pinnedMessages={pinnedMessages}
+        mediaMessages={mediaMessages}
+        fileMessages={fileMessages}
+        linkMessages={linkMessages}
+        quickEmoji={quickEmoji}
+        setQuickEmoji={setQuickEmoji}
+        readReceipts={readReceipts}
+        setReadReceipts={setReadReceipts}
+        disappearing={disappearing}
+        setDisappearing={setDisappearing}
+        onClose={() => setActiveDialog(null)}
+      />
     </div>
   );
 };
