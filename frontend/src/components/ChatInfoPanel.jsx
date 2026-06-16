@@ -106,22 +106,9 @@ const ChatInfoPanel = ({ open, onClose }) => {
               <InfoRow icon={Edit3} label={isVi ? "Chỉnh sửa biệt danh" : "Edit nicknames"} onClick={() => setActiveDialog("nicknames")} />
             </Accordion>
             <Accordion title={isVi ? "File phương tiện và file" : "Media and files"} id="media" expanded={expanded} setExpanded={setExpanded}>
-              {attachments.length === 0 ? (
-                <p className="py-3 text-sm text-base-content/60">
-                  {isVi ? "Chưa có file trong đoạn chat." : "No files in this chat."}
-                </p>
-              ) : attachments.slice(0, 12).map((message) => (
-                <a
-                  key={message._id}
-                  href={message.image || message.attachment.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 rounded-xl p-2 hover:bg-base-200"
-                >
-                  {message.attachment?.type?.startsWith("image/") || message.image ? <Image className="size-5" /> : <FileText className="size-5" />}
-                  <span className="truncate text-sm">{message.attachment?.name || (isVi ? "Hình ảnh" : "Image")}</span>
-                </a>
-              ))}
+              <InfoRow icon={Image} label={`${isVi ? "Tệp phương tiện" : "Media"} (${mediaMessages.length})`} onClick={() => setActiveDialog("media")} />
+              <InfoRow icon={FileText} label={`${isVi ? "Tệp" : "Files"} (${fileMessages.length})`} onClick={() => setActiveDialog("files")} />
+              <InfoRow icon={LinkIcon} label={`${isVi ? "Liên kết" : "Links"} (${linkMessages.length})`} onClick={() => setActiveDialog("links")} />
             </Accordion>
             <Accordion title={isVi ? "Quyền riêng tư và hỗ trợ" : "Privacy and support"} id="privacy" expanded={expanded} setExpanded={setExpanded}>
               <InfoRow label={isVi ? "Quyền nhắn tin" : "Messaging permissions"} />
