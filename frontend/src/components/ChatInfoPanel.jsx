@@ -183,6 +183,52 @@ const Accordion = ({ title, id, expanded, setExpanded, children }) => {
   );
 };
 
+const dialogTitles = {
+  search: "Tìm kiếm trong đoạn chat",
+  pinned: "Tin nhắn đã ghim",
+  media: "Tệp phương tiện",
+  files: "Tệp",
+  links: "Liên kết",
+  theme: "Đổi chủ đề",
+  emoji: "Biểu tượng cảm xúc",
+  nicknames: "Biệt danh",
+  permissions: "Quyền nhắn tin",
+  disappearing: "Tin nhắn tự hủy",
+  receipts: "Thông báo đã đọc",
+  encryption: "Xác minh mã hóa đầu cuối",
+  restrict: "Hạn chế",
+  block: "Chặn",
+  report: "Báo cáo",
+};
+
+const messageLabel = (message) =>
+  message.text || message.replyTo?.preview || message.attachment?.name || "Tin nhắn đa phương tiện";
+
+const ChatInfoDialog = ({ type, isVi, onClose, ...props }) => {
+  if (!type) return null;
+  return (
+    <div className="fixed inset-0 z-[170] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label={dialogTitles[type] || "Chi tiết đoạn chat"}
+        className="max-h-[calc(100dvh-24px)] w-full max-w-lg overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-2xl"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="flex items-center justify-between border-b border-base-300 p-4">
+          <h3 className="text-lg font-bold">{dialogTitles[type] || "Chi tiết đoạn chat"}</h3>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={onClose} aria-label={isVi ? "Đóng" : "Close"}>
+            <X className="size-5" />
+          </button>
+        </header>
+        <div className="max-h-[70dvh] overflow-y-auto p-4">
+          <ChatInfoDialogBody type={type} isVi={isVi} {...props} />
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
