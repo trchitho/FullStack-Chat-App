@@ -119,6 +119,16 @@ export const useSocialStore = create((set, get) => ({
     return data;
   },
 
+  getPostShares: async (postId) => {
+    const { data } = await axiosInstance.get(`/posts/${postId}/shares`);
+    return data;
+  },
+
+  getCommentReactions: async (postId, commentId) => {
+    const { data } = await axiosInstance.get(`/posts/${postId}/comments/${commentId}/reactions`);
+    return data;
+  },
+
   sharePost: async (postId, payload) => {
     const { data } = await axiosInstance.post(`/posts/${postId}/share`, payload);
     set({ posts: [data, ...get().posts.filter((post) => post._id !== data._id)] });
