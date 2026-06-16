@@ -20,6 +20,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
 import { useLanguageStore } from "../store/useLanguageStore";
+import { THEMES } from "../constants";
 
 const ChatInfoPanel = ({ open, onClose }) => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const ChatInfoPanel = ({ open, onClose }) => {
     updateConversationSetting,
     getPinnedMessages,
     setMessagePinned,
+    updateConversationTheme,
   } = useChatStore();
   const [expanded, setExpanded] = useState("media");
   const [activeDialog, setActiveDialog] = useState(null);
@@ -169,6 +171,7 @@ const ChatInfoPanel = ({ open, onClose }) => {
         setReadReceipts={setReadReceipts}
         disappearing={disappearing}
         setDisappearing={setDisappearing}
+        updateConversationTheme={updateConversationTheme}
         onClose={() => setActiveDialog(null)}
       />
     </div>
@@ -307,12 +310,48 @@ const AttachmentList = ({ messages, empty }) => (
   </div>
 );
 
-const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, readReceipts, setReadReceipts, disappearing, setDisappearing }) => {
+const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, readReceipts, setReadReceipts, disappearing, setDisappearing, updateConversationTheme }) => {
   if (type === "theme") {
-    return <div className="grid grid-cols-2 gap-2">{["coffee", "night", "valentine", "aqua"].map((theme) => <button key={theme} type="button" className="rounded-xl bg-base-200 p-4 text-left font-semibold hover:bg-base-300">{theme}</button>)}</div>;
+    return (
+      <div className="space-y-3">
+        <button type="button" className="btn btn-outline w-full" onClick={() => updateConversationTheme(selectedUser, { theme: "" })}>
+          Dùng giao diện hệ thống
+        </button>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {THEMES.map((theme) => (
+            <button
+              key={theme}
+              type="button"
+              data-theme={theme}
+              className={`rounded-xl border p-3 text-left font-semibold hover:bg-base-200 ${selectedUser.theme === theme ? "border-primary bg-primary/10" : "border-base-300"}`}
+              onClick={() => updateConversationTheme(selectedUser, { theme })}
+            >
+              <span className="block h-8 rounded-lg bg-primary" />
+              <span className="mt-2 block truncate">{theme}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
   }
   if (type === "emoji") {
-    return <div className="grid grid-cols-6 gap-2">{["👍", "❤️", "😂", "😮", "😢", "🎉", "🙏", "🔥", "😍", "👏", "💯", "✅"].map((emoji) => <button key={emoji} type="button" className={`rounded-xl p-3 text-2xl hover:bg-base-200 ${quickEmoji === emoji ? "bg-primary/20" : ""}`} onClick={() => setQuickEmoji(emoji)}>{emoji}</button>)}</div>;
+    return (
+      <div className="grid grid-cols-6 gap-2">
+        {["👍", "❤️", "😂", "😮", "😢", "🎉", "🙏", "🔥", "😍", "👏", "💯", "✅"].map((emoji) => (
+          <button
+            key={emoji}
+            type="button"
+            className={`rounded-xl p-3 text-2xl hover:bg-base-200 ${quickEmoji === emoji ? "bg-primary/20" : ""}`}
+            onClick={() => {
+              setQuickEmoji(emoji);
+              updateConversationTheme(selectedUser, { quickEmoji: emoji });
+            }}
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+    );
   }
   if (type === "nicknames") {
     return <div className="space-y-3"><NicknameRow name={selectedUser.fullName} /><NicknameRow name="Bạn" /></div>;
