@@ -7,8 +7,17 @@ import { useNotificationStore } from "./useNotificationStore";
 const sortUsersByLatestMessage = (users) =>
   [...users].sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
 
-const messagePreview = (message) =>
-  message.call ? "Cuộc gọi" : message.text || (message.attachment ? "[Tệp đính kèm]" : "");
+const messagePreview = (message, currentUserId) => {
+  const isOwn = String(message.senderId?._id || message.senderId) === String(currentUserId);
+  const prefix = isOwn ? "Bạn: " : "";
+  if (message.call?.status === "missed") return `${prefix}Cuộc gọi nhỡ`;
+  if (message.call?.status === "unreachable") return `${prefix}Không liên lạc được`;
+  if (message.call) return `${prefix}${message.call.type === "video" ? "Cuộc gọi video" : "Cuộc gọi thoại"}`;
+  if (message.attachment?.type?.startsWith("audio/")) return `${prefix}Đã gửi tin nhắn thoại`;
+  if (message.image || message.attachment?.type?.startsWith("image/")) return `${prefix}Đã gửi một ảnh`;
+  if (message.attachment) return `${prefix}Đã gửi một tệp`;
+  return `${prefix}${message.text || "Chưa có tin nhắn"}`;
+};
 
 const replaceMessage = (messages, updatedMessage) =>
   messages.map((message) => message._id === updatedMessage._id ? updatedMessage : message);
