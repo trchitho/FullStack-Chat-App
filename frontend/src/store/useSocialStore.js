@@ -7,6 +7,7 @@ export const useSocialStore = create((set, get) => ({
   profile: null,
   relationship: { status: "none" },
   friends: [],
+  friendSuggestions: [],
   profileFriends: [],
   friendRequests: { incoming: [], outgoing: [] },
   posts: [],
@@ -54,6 +55,12 @@ export const useSocialStore = create((set, get) => ({
     return data;
   },
 
+  getFriendSuggestions: async () => {
+    const { data } = await axiosInstance.get("/friends/suggestions");
+    set({ friendSuggestions: data });
+    return data;
+  },
+
   getRelationship: async (userId) => {
     const { data } = await axiosInstance.get(`/friends/relationship/${userId}`);
     set({ relationship: data });
@@ -63,6 +70,11 @@ export const useSocialStore = create((set, get) => ({
   sendFriendRequest: async (userId) => {
     const { data } = await axiosInstance.post(`/friends/request/${userId}`);
     set({ relationship: { ...data, direction: "outgoing" } });
+    set({
+      friendSuggestions: get().friendSuggestions.map((user) =>
+        user._id === userId ? { ...user, requestPending: true } : user
+      ),
+    });
   },
 
   respondToFriendRequest: async (requestId, action) => {
