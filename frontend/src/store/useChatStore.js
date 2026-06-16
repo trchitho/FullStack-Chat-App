@@ -224,6 +224,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("messageDeliveredUpdate");
     socket.off("conversationSeenUpdate");
     socket.off("groupSeenUpdate");
+    socket.off("conversationThemeUpdated");
 
     socket.on("newMessage", (newMessage) => {
       socket.emit("messageDelivered", { messageId: newMessage._id });
@@ -290,6 +291,15 @@ export const useChatStore = create((set, get) => ({
         }),
       });
     });
+    socket.on("conversationThemeUpdated", (payload) => {
+      const targetId = payload.conversationId || payload.peerId;
+      set({
+        selectedUser: get().selectedUser?._id === targetId
+          ? { ...get().selectedUser, ...payload }
+          : get().selectedUser,
+        users: get().users.map((user) => user._id === targetId ? { ...user, ...payload } : user),
+      });
+    });
   },
 
   unsubscribeFromMessages: (activeSocket) => {
@@ -301,6 +311,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("messageDeliveredUpdate");
     socket.off("conversationSeenUpdate");
     socket.off("groupSeenUpdate");
+    socket.off("conversationThemeUpdated");
   },
 
   setSelectedUser: (selectedUser) => {
