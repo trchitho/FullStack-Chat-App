@@ -107,4 +107,28 @@ export const useCallStore = create((set, get) => ({
     useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: true });
     set({ incomingCall: null, localStream: media, activeCall: { ...call, direction: "incoming", peer: call.caller, status: "connecting", startedAt: Date.now() } });
   },
+
+  handleRemoteOffer: async ({ callerId, callId, offer }) => {
+    const { activeCall, peerConnection } = get();
+    if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    useAuthStore.getState().socket?.emit("call:answer", { recipientId: callerId, callId, answer });
+    set({ activeCall: { ...activeCall, status: "connected", connectedAt: Date.now() } });
+  },
+
+  handleRemoteAnswer: async ({ callId, answer }) => {
+    const { activeCall, peerConnection, timeoutId } = get();
+    if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
+    if (timeoutId) window.clearTimeout(timeoutId);
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    set({ activeCall: { ...activeCall, status: "connected", connectedAt: Date.now() }, timeoutId: null });
+  },
+
+  handleIceCandidate: async ({ callId, candidate }) => {
+    const { activeCall, peerConnection } = get();
+    if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
+    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+  },
 }));
