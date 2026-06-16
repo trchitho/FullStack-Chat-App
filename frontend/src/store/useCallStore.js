@@ -153,4 +153,27 @@ export const useCallStore = create((set, get) => ({
     }
     get().cleanupCall();
   },
+
+  subscribeToCalls: (socket) => {
+    if (!socket) return;
+    socket.off("incomingCall").on("incomingCall", get().receiveIncomingCall);
+    socket.off("callAnswer").on("callAnswer", ({ accepted, callId }) => {
+      if (!accepted) {
+        toast.error("Cuộc gọi đã bị từ chối");
+        get().finishCall("rejected");
+        return;
+      }
+      if (get().activeCall?.callId === callId) get().sendOffer();
+    });
+    socket.off("call:offline").on("call:offline", () => get().finishCall("unreachable"));
+    socket.off("call:offer").on("call:offer", get().handleRemoteOffer);
+    socket.off("call:answer").on("call:answer", get().handleRemoteAnswer);
+    socket.off("call:ice-candidate").on("call:ice-candidate", get().handleIceCandidate);
+    socket.off("call:end").on("call:end", get().handleRemoteEnd);
+  },
+
+  unsubscribeFromCalls: (socket) => {
+    ["incomingCall", "callAnswer", "call:offline", "call:offer", "call:answer", "call:ice-candidate", "call:end"]
+      .forEach((event) => socket?.off(event));
+  },
 }));
