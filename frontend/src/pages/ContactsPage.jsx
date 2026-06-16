@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
+import { useCallStore } from "../store/useCallStore";
 
 const ContactsPage = () => {
   const navigate = useNavigate();
-  const { sendCallEvent, setSelectedUser } = useChatStore();
+  const { setSelectedUser } = useChatStore();
+  const startRealtimeCall = useCallStore((state) => state.startCall);
   const {
     friends,
     friendRequests,
@@ -44,9 +46,9 @@ const ContactsPage = () => {
     navigate("/");
   };
 
-  const startCall = async (friend, type) => {
+  const startContactCall = async (friend, type) => {
     setSelectedUser(friend);
-    await sendCallEvent(friend._id, type, "completed", 0);
+    await startRealtimeCall(friend, type);
     navigate("/");
   };
 
@@ -122,10 +124,10 @@ const ContactsPage = () => {
                   <Link to={`/profile/${friend._id}`} className="block truncate font-bold hover:underline">{friend.fullName}</Link>
                   <p className="truncate text-sm text-base-content/55">{friend.bio || `@${friend.username || "pingme"}`}</p>
                 </div>
-                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startCall(friend, "voice")} aria-label={`Gọi thoại cho ${friend.fullName}`}>
+                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startContactCall(friend, "voice")} aria-label={`Gọi thoại cho ${friend.fullName}`}>
                   <Phone className="size-5" />
                 </button>
-                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startCall(friend, "video")} aria-label={`Gọi video cho ${friend.fullName}`}>
+                <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11 max-sm:hidden" onClick={() => startContactCall(friend, "video")} aria-label={`Gọi video cho ${friend.fullName}`}>
                   <Video className="size-5" />
                 </button>
                 <button type="button" className="btn btn-circle btn-ghost min-h-11 min-w-11" onClick={() => openChat(friend)} aria-label={`Nhắn tin cho ${friend.fullName}`}>
