@@ -21,6 +21,9 @@ const normalizeCall = (call) => {
     return { type, status, duration };
 };
 
+const notificationTypeForMessage = (message) =>
+    ["missed", "no_answer", "unreachable"].includes(message.call?.status) ? "call_missed" : "message";
+
 const messagePreview = (message, viewerId) => {
     const isOwn = String(message.senderId) === String(viewerId);
     const prefix = isOwn ? "Bạn: " : "";
@@ -211,6 +214,7 @@ export const sendMessage = async (req, res) => {
                 senderId,
                 messageId: newMessage._id,
                 conversationId: conversation._id,
+                type: notificationTypeForMessage(newMessage),
             });
 
         // real-time messaging using socket.io
