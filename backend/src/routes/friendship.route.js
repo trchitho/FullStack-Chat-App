@@ -2,6 +2,7 @@ import express from "express";
 import {
     getRelationship,
     listFriendRequests,
+    listFriendSuggestions,
     listFriends,
     listUserFriends,
     removeFriendship,
@@ -17,6 +18,7 @@ router.use(protectRoute);
 
 router.get("/", handle(listFriends));
 router.get("/requests", handle(listFriendRequests));
+router.get("/suggestions", handle(listFriendSuggestions));
 router.get("/user/:userId", handle(listUserFriends));
 router.get("/relationship/:userId", handle(getRelationship));
 router.post("/request/:userId", handle(sendFriendRequest));

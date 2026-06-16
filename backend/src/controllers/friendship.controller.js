@@ -75,6 +75,39 @@ export const listFriends = async (req, res) => {
     res.status(200).json(friends);
 };
 
+const acceptedFriendIds = async (userId) => {
+    const relationships = await Friendship.find({
+        status: "accepted",
+        $or: [{ requester: userId }, { recipient: userId }],
+    }).lean();
+    return relationships.map((item) =>
+        String(item.requester) === String(userId) ? String(item.recipient) : String(item.requester)
+    );
+};
+
+export const listFriendSuggestions = async (req, res) => {
+    const currentUserId = String(req.user._id);
+    const relationships = await Friendship.find({
+        $or: [{ requester: req.user._id }, { recipient: req.user._id }],
+    }).lean();
+    const relatedIds = new Set([currentUserId]);
+    relationships.forEach((item) => {
+        relatedIds.add(String(item.requester) === currentUserId ? String(item.recipient) : String(item.requester));
+    });
+    const ownFriendIds = await acceptedFriendIds(req.user._id);
+    const users = await User.find({ _id: { $nin: [...relatedIds] } })
+        .select("fullName username profilePic bio currentCity updatedAt")
+        .lean();
+    const suggestions = await Promise.all(users.map(async (user) => {
+        const friendIds = await acceptedFriendIds(user._id);
+        return { ...user, mutualFriendsCount: friendIds.filter((id) => ownFriendIds.includes(id)).length };
+    }));
+    suggestions.sort((a, b) =>
+        b.mutualFriendsCount - a.mutualFriendsCount || a.fullName.localeCompare(b.fullName)
+    );
+    res.status(200).json(suggestions);
+};
+
 export const listUserFriends = async (req, res) => {
     const userId = req.params.userId === "me" ? req.user._id : req.params.userId;
     if (!await User.exists({ _id: userId })) {
