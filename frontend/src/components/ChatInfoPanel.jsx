@@ -1,6 +1,8 @@
 import {
   Bell,
   BellOff,
+  Ban,
+  Eye,
   Edit3,
   FileText,
   Image,
@@ -10,6 +12,7 @@ import {
   Search,
   Shield,
   Smile,
+  TimerReset,
   User,
   X,
 } from "lucide-react";
@@ -111,13 +114,14 @@ const ChatInfoPanel = ({ open, onClose }) => {
               <InfoRow icon={LinkIcon} label={`${isVi ? "Liên kết" : "Links"} (${linkMessages.length})`} onClick={() => setActiveDialog("links")} />
             </Accordion>
             <Accordion title={isVi ? "Quyền riêng tư và hỗ trợ" : "Privacy and support"} id="privacy" expanded={expanded} setExpanded={setExpanded}>
-              <InfoRow label={isVi ? "Quyền nhắn tin" : "Messaging permissions"} />
-              <InfoRow label={isVi ? "Tin nhắn tự hủy" : "Disappearing messages"} />
-              <InfoRow label={isVi ? "Thông báo đã đọc: Bật" : "Read receipts: On"} />
-              <InfoRow label={isVi ? "Xác minh mã hóa đầu cuối" : "Verify encryption"} />
-              <InfoRow label={isVi ? "Hạn chế" : "Restrict"} />
-              <InfoRow label={isVi ? "Chặn" : "Block"} danger />
-              <InfoRow label={isVi ? "Báo cáo" : "Report"} danger />
+              <InfoRow icon={BellOff} label={isMuted ? (isVi ? "Bật thông báo" : "Unmute") : (isVi ? "Tắt thông báo" : "Mute")} onClick={() => updateConversationSetting(selectedUser._id, { mutedUntil: isMuted ? null : "9999-12-31T23:59:59.999Z" })} />
+              <InfoRow icon={Shield} label={isVi ? "Quyền nhắn tin" : "Messaging permissions"} onClick={() => setActiveDialog("permissions")} />
+              <InfoRow icon={TimerReset} label={isVi ? "Tin nhắn tự hủy" : "Disappearing messages"} onClick={() => setActiveDialog("disappearing")} />
+              <InfoRow icon={Eye} label={`${isVi ? "Thông báo đã đọc" : "Read receipts"}: ${readReceipts ? (isVi ? "Bật" : "On") : (isVi ? "Tắt" : "Off")}`} onClick={() => setActiveDialog("receipts")} />
+              <InfoRow icon={Shield} label={isVi ? "Xác minh mã hóa đầu cuối" : "Verify encryption"} onClick={() => setActiveDialog("encryption")} />
+              <InfoRow icon={Ban} label={isVi ? "Hạn chế" : "Restrict"} onClick={() => setActiveDialog("restrict")} />
+              <InfoRow icon={Ban} label={isVi ? "Chặn" : "Block"} danger onClick={() => setActiveDialog("block")} />
+              <InfoRow icon={Shield} label={isVi ? "Báo cáo" : "Report"} danger onClick={() => setActiveDialog("report")} />
             </Accordion>
           </div>
         </div>
