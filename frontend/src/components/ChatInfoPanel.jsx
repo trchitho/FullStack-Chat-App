@@ -229,6 +229,33 @@ const ChatInfoDialog = ({ type, isVi, onClose, ...props }) => {
   );
 };
 
+const ChatInfoDialogBody = ({ type, searchQuery, setSearchQuery, searchedMessages, pinnedMessages, mediaMessages, fileMessages, linkMessages, ...props }) => {
+  if (type === "search") {
+    return (
+      <div className="space-y-3">
+        <input className="input input-bordered w-full" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Tìm kiếm tin nhắn..." autoFocus />
+        <MessageResultList messages={searchedMessages} empty="Nhập từ khóa để tìm trong đoạn chat." />
+      </div>
+    );
+  }
+  if (type === "pinned") return <MessageResultList messages={pinnedMessages} empty="Chưa có tin nhắn đã ghim." />;
+  if (type === "media") return <AttachmentGrid messages={mediaMessages} empty="Chưa có ảnh hoặc video." />;
+  if (type === "files") return <AttachmentList messages={fileMessages} empty="Chưa có tệp tài liệu." />;
+  if (type === "links") return <MessageResultList messages={linkMessages} empty="Chưa có liên kết." />;
+  return <ChatInfoSettingsBody type={type} {...props} />;
+};
+
+const MessageResultList = ({ messages, empty }) => (
+  <div className="space-y-2">
+    {messages.length === 0 ? <p className="text-sm text-base-content/60">{empty}</p> : messages.map((message) => (
+      <div key={message._id} className="rounded-xl bg-base-200 p-3 text-sm">
+        <p className="break-words">{messageLabel(message)}</p>
+        <time className="mt-1 block text-xs text-base-content/50">{new Date(message.createdAt).toLocaleString("vi-VN")}</time>
+      </div>
+    ))}
+  </div>
+);
+
 const InfoRow = ({ icon: Icon, label, danger = false, onClick }) => (
   <button
     type="button"
