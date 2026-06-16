@@ -78,6 +78,14 @@ const PostCard = ({ post }) => {
   const ownReaction = post.reactions?.find((item) =>
     String(item.user?._id || item.user) === authUser._id
   )?.type;
+  const openReactionList = async (loader) => {
+    setReactionUsers(await loader());
+    setShowReactions(true);
+  };
+  const openShareList = async () => {
+    setShareUsers(await getPostShares(post._id));
+    setShowShares(true);
+  };
 
   return (
     <article className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
