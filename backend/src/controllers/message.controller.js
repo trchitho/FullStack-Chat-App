@@ -77,6 +77,14 @@ export const getUsersForSidebar = async (req, res) => {
             lastMessageAt: item.lastMessageAt,
             lastMessageText: messagePreview(item.lastMessage, loggedInUserId),
         }]));
+        const conversations = await Conversation.find({
+            type: "direct",
+            participants: loggedInUserId,
+        }).select("participants theme quickEmoji").lean();
+        const conversationByPeer = new Map(conversations.map((conversation) => {
+            const peerId = conversation.participants.find((id) => String(id) !== String(loggedInUserId));
+            return [String(peerId), { conversationId: conversation._id, theme: conversation.theme, quickEmoji: conversation.quickEmoji }];
+        }));
         const incomingRequests = await Conversation.find({
             type: "direct",
             participants: loggedInUserId,
@@ -91,6 +99,7 @@ export const getUsersForSidebar = async (req, res) => {
             .map((user) => ({
                 ...user,
                 ...latestByUser.get(String(user._id)),
+                ...conversationByPeer.get(String(user._id)),
                 ...settingsByPeer.get(String(user._id)),
                 unreadCount: unreadByUser.get(String(user._id)) || 0,
             }))
