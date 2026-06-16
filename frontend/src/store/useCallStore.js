@@ -57,4 +57,31 @@ export const useCallStore = create((set, get) => ({
     set({ peerConnection: pc, remoteStream });
     return pc;
   },
+
+  startCall: async (recipient, type) => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket?.connected) return toast.error("Không thể kết nối cuộc gọi");
+    const callId = createCallId();
+    const media = await navigator.mediaDevices.getUserMedia({ audio: true, video: type === "video" });
+    const pc = get().createPeerConnection(recipient._id, callId);
+    media.getTracks().forEach((track) => pc.addTrack(track, media));
+    const localVideo = get().localVideoRef?.current;
+    if (localVideo) localVideo.srcObject = media;
+    const timeoutId = window.setTimeout(() => get().finishCall("no_answer"), CALL_TIMEOUT_MS);
+    set({
+      localStream: media,
+      timeoutId,
+      activeCall: { callId, type, direction: "outgoing", recipientId: recipient._id, peer: recipient, status: "calling", startedAt: Date.now() },
+    });
+    socket.emit("callInvite", { recipientId: recipient._id, type, callId });
+  },
+
+  sendOffer: async () => {
+    const { activeCall, peerConnection } = get();
+    const socket = useAuthStore.getState().socket;
+    if (!activeCall || !peerConnection) return;
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket?.emit("call:offer", { recipientId: activeCall.recipientId, callId: activeCall.callId, offer });
+  },
 }));
