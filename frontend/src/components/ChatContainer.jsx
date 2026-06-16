@@ -11,6 +11,7 @@ import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents
 import { useLanguageStore } from '../store/useLanguageStore';
 import MessageStatusIndicator from './MessageStatusIndicator';
 import FileMessage from './FileMessage';
+import AudioMessageBubble from './AudioMessageBubble';
 import { useNavigate } from 'react-router-dom';
 import ChatInfoPanel from './ChatInfoPanel';
 
@@ -219,10 +220,7 @@ const ChatContainer = () => {
                     />
                   </button>
                 ) : message.attachment.type?.startsWith("audio/") ? (
-                  <audio controls className="w-full max-w-[78vw] md:max-w-xs">
-                    <source src={message.attachment.url} type={message.attachment.type} />
-                    {isVi ? "Trình duyệt không hỗ trợ phát âm thanh." : "Your browser does not support audio playback."}
-                  </audio>
+                  <AudioMessageBubble message={message} language={language} />
                 ) : (
                   <FileMessage
                     message={message}
