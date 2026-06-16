@@ -73,10 +73,12 @@ const IncomingCallDialog = ({ call, onAccept, onDecline }) => {
     <div className="fixed inset-0 z-[180] flex items-center justify-center bg-black/60 p-4">
       <section role="dialog" aria-modal="true" aria-label="Cuộc gọi đến" className="w-full max-w-sm rounded-3xl border border-base-300 bg-base-100 p-6 text-center shadow-2xl">
         <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/20 text-primary">
-          {isVideo ? <Video className="size-8" /> : <Phone className="size-8" />}
+          {call.caller?.profilePic ? (
+            <img src={call.caller.profilePic} alt="" className="size-16 rounded-full object-cover" />
+          ) : isVideo ? <Video className="size-8" /> : <Phone className="size-8" />}
         </div>
         <h2 className="text-xl font-bold">{isVideo ? "Cuộc gọi video đến" : "Cuộc gọi thoại đến"}</h2>
-        <p className="mt-2 text-sm text-base-content/65">Bạn có một cuộc gọi mới trong PingMe.</p>
+        <p className="mt-2 text-sm text-base-content/65">{call.caller?.fullName || "Người dùng PingMe"} đang gọi cho bạn.</p>
         <div className="mt-6 flex justify-center gap-4">
           <button type="button" className="btn btn-circle btn-error" onClick={onDecline} aria-label="Từ chối cuộc gọi">
             <PhoneOff className="size-6" />
