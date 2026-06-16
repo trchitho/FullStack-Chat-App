@@ -227,9 +227,13 @@ const PostCard = ({ post }) => {
                       )}
                     />
                     {!!replyItem.reactions?.length && (
-                      <span className="ml-1 text-xs text-base-content/60">
+                      <button
+                        type="button"
+                        className="ml-1 text-xs text-base-content/60 hover:underline"
+                        onClick={() => openReactionList(() => getReplyReactions(post._id, item._id, replyItem._id))}
+                      >
                         {replyItem.reactions.length} cảm xúc
-                      </span>
+                      </button>
                     )}
                   </div>
                 </div>
