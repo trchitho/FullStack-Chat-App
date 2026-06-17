@@ -396,8 +396,12 @@ export const updateDirectConversationTheme = async (req, res) => {
     const directKey = directKeyFor(req.user._id, req.params.userId);
     const conversation = await Conversation.findOne({ directKey, participants: req.user._id });
     if (!conversation) return res.status(404).json({ message: "Conversation not found" });
-    conversation.theme = String(req.body.theme || "").trim();
-    conversation.quickEmoji = String(req.body.quickEmoji || conversation.quickEmoji || "👍").trim();
+    if (Object.prototype.hasOwnProperty.call(req.body, "theme")) {
+        conversation.theme = String(req.body.theme || "").trim();
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "quickEmoji")) {
+        conversation.quickEmoji = String(req.body.quickEmoji || "👍").trim();
+    }
     await conversation.save();
     conversation.participants.forEach((participantId) =>
         io.to(`user:${participantId}`).emit("conversationThemeUpdated", {

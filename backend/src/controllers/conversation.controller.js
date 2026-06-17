@@ -116,8 +116,12 @@ export const updateConversationTheme = async (req, res) => {
     if (!conversation || !ensureParticipant(conversation, req.user._id)) {
         return res.status(403).json({ message: "Conversation access denied" });
     }
-    conversation.theme = String(req.body.theme || "").trim();
-    conversation.quickEmoji = String(req.body.quickEmoji || conversation.quickEmoji || "👍").trim();
+    if (Object.prototype.hasOwnProperty.call(req.body, "theme")) {
+        conversation.theme = String(req.body.theme || "").trim();
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "quickEmoji")) {
+        conversation.quickEmoji = String(req.body.quickEmoji || "👍").trim();
+    }
     await conversation.save();
     conversation.participants.forEach((participantId) =>
         io.to(`user:${participantId}`).emit("conversationThemeUpdated", {
