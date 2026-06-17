@@ -73,6 +73,7 @@ const ChatInfoPanel = ({ open, onClose }) => {
 
   useEffect(() => {
     if (!open || !selectedUser) return;
+    setQuickEmoji(selectedUser.quickEmoji || "👍");
     getPinnedMessages(selectedUser)
       .then(setPinnedMessages)
       .catch(() => setPinnedMessages(messages.filter((message) => message.pinned)));
