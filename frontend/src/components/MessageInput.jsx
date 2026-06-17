@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Laugh, Mic, Paperclip, Send, ThumbsUp, X } from "lucide-react";
+import { Image, Laugh, Mic, Paperclip, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguageStore } from "../store/useLanguageStore";
+import AudioMessageBubble from "./AudioMessageBubble";
 
 const MessageInput = ({ replyTo, onCancelReply }) => {
   const [text, setText] = useState("");
@@ -21,9 +22,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const audioChunksRef = useRef([]);
   const cancelRecordingRef = useRef(false);
   const recordingSecondsRef = useRef(0);
-  const { sendMessage, uploadAttachment } = useChatStore();
+  const { selectedUser, sendMessage, uploadAttachment } = useChatStore();
   const { language } = useLanguageStore();
   const isVi = language === "vi";
+  const quickEmoji = selectedUser?.quickEmoji || "👍";
   const composerEmojis = ["😀", "😆", "😍", "😂", "😢", "😡", "👍", "❤️", "🎉", "🙏"];
   const formattedRecordingTime = `${Math.floor(recordingSeconds / 60)}:${String(recordingSeconds % 60).padStart(2, "0")}`;
   const getSupportedAudioType = () => {
@@ -200,7 +202,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
 
   const handleQuickLike = async () => {
     try {
-      await sendMessage({ text: "👍" });
+      await sendMessage({ text: quickEmoji });
     } catch (error) {
       console.error("Failed to send quick like:", error);
     }
@@ -252,9 +254,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             </button>
           </div>
           {audioPreviewUrl && (
-            <audio controls src={audioPreviewUrl} className="h-10 min-w-0 flex-1">
-              {isVi ? "Trình duyệt không hỗ trợ âm thanh." : "Audio playback is not supported."}
-            </audio>
+            <AudioMessageBubble
+              message={{ attachment: { url: audioPreviewUrl, type: attachmentFile.type, duration: recordedDuration } }}
+              language={language}
+            />
           )}
         </div>
       )}
@@ -347,10 +350,10 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           className="btn btn-sm btn-circle btn-ghost text-primary"
           disabled={isSending}
           onClick={text.trim() || imagePreview || attachmentFile ? undefined : handleQuickLike}
-          title={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
-          aria-label={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : (isVi ? "Gửi thích" : "Send like")}
+          title={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : `${isVi ? "Gửi nhanh" : "Quick send"} ${quickEmoji}`}
+          aria-label={text.trim() || imagePreview || attachmentFile ? (isVi ? "Gửi tin nhắn" : "Send message") : `${isVi ? "Gửi nhanh" : "Quick send"} ${quickEmoji}`}
         >
-          {isSending ? <span className="loading loading-spinner loading-xs" /> : text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <ThumbsUp size={22} />}
+          {isSending ? <span className="loading loading-spinner loading-xs" /> : text.trim() || imagePreview || attachmentFile ? <Send size={22} /> : <span className="text-xl leading-none">{quickEmoji}</span>}
         </button>
           </>
         )}
