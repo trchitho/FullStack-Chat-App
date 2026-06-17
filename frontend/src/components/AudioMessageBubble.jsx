@@ -25,8 +25,12 @@ const AudioMessageBubble = ({ message, language }) => {
       setIsPlaying(false);
       return;
     }
-    await audioRef.current.play();
-    setIsPlaying(true);
+    try {
+      await audioRef.current.play();
+      setIsPlaying(true);
+    } catch {
+      setIsPlaying(false);
+    }
   };
 
   return (
