@@ -109,6 +109,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
 
   const toggleRecording = async () => {
     if (isRecording) {
+      if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.requestData();
       mediaRecorderRef.current?.stop();
       return;
     }
@@ -146,7 +147,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
       };
       mediaRecorderRef.current = recorder;
       cancelRecordingRef.current = false;
-      recorder.start();
+      recorder.start(250);
       setIsRecording(true);
     } catch {
       toast.error(isVi ? "Không thể bật micro" : "Could not start microphone");
