@@ -123,7 +123,8 @@ const ChatContainer = () => {
 
   
   return (
-    <div data-theme={selectedUser?.theme || undefined} className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-base-100">
+    <div className="flex h-full min-h-0 flex-1 overflow-hidden bg-base-200 p-2 sm:p-3">
+      <div data-theme={selectedUser?.theme || undefined} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm">
       <ChatHeader onOpenInfo={() => setShowChatInfo(true)} />
       {activePinnedMessage && (
         <div className="shrink-0 border-b border-base-300 bg-base-200 px-6 py-3">
@@ -429,6 +430,7 @@ const ChatContainer = () => {
           <img src={lightboxImage} alt={isVi ? "Ảnh toàn màn hình" : "Attachment full screen"} className="max-h-[88vh] max-w-[92vw] object-contain" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
+      </div>
       <ChatInfoPanel open={showChatInfo} onClose={() => setShowChatInfo(false)} />
     </div>
   )
