@@ -52,10 +52,13 @@ const ChatContainer = () => {
     if (message.attachment) return isVi ? "[Tệp đính kèm]" : "[Attachment]";
     return isVi ? "[Tin nhắn]" : "[Message]";
   };
-  const getCallTitle = (call) => {
+  const getCallTitle = (call, isOwnMessage) => {
     if (call?.status === "missed") return isVi ? "Cuộc gọi nhỡ" : "Missed call";
     if (call?.status === "unreachable") return isVi ? "Không liên lạc được" : "Unreachable";
-    if (call?.status === "no_answer") return isVi ? "Không bắt máy" : "No answer";
+    if (call?.status === "no_answer") {
+      if (isOwnMessage) return isVi ? "Không bắt máy" : "No answer";
+      return isVi ? "Cuộc gọi nhỡ" : "Missed call";
+    }
     if (call?.status === "rejected") return isVi ? "Cuộc gọi bị từ chối" : "Rejected call";
     return call?.type === "video" ? (isVi ? "Cuộc gọi video" : "Video call") : (isVi ? "Cuộc gọi thoại" : "Voice call");
   };
@@ -260,7 +263,7 @@ const ChatContainer = () => {
                     <PhoneCall className="size-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-bold">{getCallTitle(message.call)}</div>
+                    <div className="font-bold">{getCallTitle(message.call, isOwnMessage)}</div>
                     <div className="text-sm opacity-80">{getCallDuration(message.call.duration)}</div>
                     <button
                       type="button"
