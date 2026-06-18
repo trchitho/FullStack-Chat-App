@@ -93,6 +93,10 @@ io.on('connection', (socket) => {
             { senderId: peerId, receiverId: userId, "seenBy.user": { $ne: userId } },
             { $push: { seenBy: { user: userId, at: seenAt } } }
         );
+        await User.updateOne(
+            { _id: userId, "conversationSettings.peerId": peerId },
+            { $set: { "conversationSettings.$.manuallyUnread": false } }
+        );
         io.to(`user:${peerId}`).emit("conversationSeenUpdate", { userId, seenAt });
     });
 
