@@ -194,7 +194,9 @@ export const useCallStore = create((set, get) => ({
     const call = get().activeCall;
     if (!call) return;
     const peerId = getCallPeerId(call);
-    const duration = Math.max(1, Math.round((Date.now() - (call.connectedAt || call.startedAt || Date.now())) / 1000));
+    const duration = call.connectedAt
+      ? Math.max(1, Math.round((Date.now() - call.connectedAt) / 1000))
+      : undefined;
     useAuthStore.getState().socket?.emit("call:end", { recipientId: peerId, callId: call.callId, status, duration });
     if (peerId) {
       await useChatStore.getState().sendCallEvent(peerId, { type: call.type, status, duration });
