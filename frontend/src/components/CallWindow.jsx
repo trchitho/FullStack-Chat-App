@@ -58,7 +58,14 @@ const CallWindow = () => {
           </div>
         </div>
         <div className="relative flex flex-1 items-center justify-center bg-black">
-          {isVideo ? <video ref={remoteVideoRef} autoPlay playsInline className="h-full w-full object-contain" /> : <Phone className="size-24 text-white/35" />}
+          {isVideo ? (
+            <video ref={remoteVideoRef} autoPlay playsInline className="h-full w-full object-contain" />
+          ) : (
+            <>
+              <audio ref={remoteVideoRef} autoPlay />
+              <Phone className="size-24 text-white/35" />
+            </>
+          )}
           {isVideo && <video ref={localVideoRef} autoPlay muted playsInline className="absolute bottom-5 right-5 aspect-video w-44 rounded-2xl border border-white/20 bg-black object-cover" />}
         </div>
         <div className="flex items-center justify-center gap-4 p-5">
