@@ -57,6 +57,15 @@ const ChatContainer = () => {
     if (call?.status === "rejected") return isVi ? "Cuộc gọi bị từ chối" : "Rejected call";
     return call?.type === "video" ? (isVi ? "Cuộc gọi video" : "Video call") : (isVi ? "Cuộc gọi thoại" : "Voice call");
   };
+  const getCallDuration = (seconds = 0) => {
+    const safeSeconds = Math.max(0, Math.round(seconds));
+    if (safeSeconds < 60) return `${safeSeconds} ${isVi ? "giây" : "sec"}`;
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainder = safeSeconds % 60;
+    return remainder
+      ? `${minutes}:${String(remainder).padStart(2, "0")}`
+      : `${minutes} ${isVi ? "phút" : "min"}`;
+  };
   const visibleMessages = messages.filter((message) => !hiddenMessageIds.includes(message._id));
   const activePinnedMessage = pinnedMessage || visibleMessages.find((message) => message.pinned);
   const lastOwnMessageId = [...visibleMessages]
@@ -250,7 +259,7 @@ const ChatContainer = () => {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="font-bold">{getCallTitle(message.call)}</div>
-                    <div className="text-sm opacity-80">{Math.max(1, Math.round((message.call.duration || 1) / 60))} {isVi ? "phút" : "min"}</div>
+                    <div className="text-sm opacity-80">{getCallDuration(message.call.duration)}</div>
                     <button type="button" className="mt-2 w-full rounded-lg bg-base-100/25 px-3 py-1.5 font-semibold hover:bg-base-100/35">
                       {isVi ? "Gọi lại" : "Call back"}
                     </button>
