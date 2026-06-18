@@ -403,21 +403,35 @@ export const updateDirectConversationTheme = async (req, res) => {
     const conversation = await Conversation.findOne({ directKey, participants: req.user._id });
     if (!conversation) return res.status(404).json({ message: "Conversation not found" });
     if (Object.prototype.hasOwnProperty.call(req.body, "theme")) {
-        conversation.theme = String(req.body.theme || "").trim();
+        const theme = String(req.body.theme || "").trim();
+        await User.updateOne(
+            { _id: req.user._id, "conversationSettings.peerId": req.params.userId },
+            { $set: { "conversationSettings.$.theme": theme } }
+        );
+        await User.updateOne(
+            { _id: req.user._id, "conversationSettings.peerId": { $ne: req.params.userId } },
+            { $push: { conversationSettings: { peerId: req.params.userId, theme } } }
+        );
     }
     if (Object.prototype.hasOwnProperty.call(req.body, "quickEmoji")) {
         conversation.quickEmoji = String(req.body.quickEmoji || "👍").trim();
     }
     await conversation.save();
-    conversation.participants.forEach((participantId) =>
-        io.to(`user:${participantId}`).emit("conversationThemeUpdated", {
+    if (Object.prototype.hasOwnProperty.call(req.body, "quickEmoji")) {
+      conversation.participants.forEach((participantId) =>
+          io.to(`user:${participantId}`).emit("conversationThemeUpdated", {
             peerId: String(req.user._id) === String(participantId) ? req.params.userId : req.user._id,
             conversationId: conversation._id,
-            theme: conversation.theme,
             quickEmoji: conversation.quickEmoji,
-        })
-    );
-    res.status(200).json({ theme: conversation.theme, quickEmoji: conversation.quickEmoji });
+          })
+      );
+    }
+    res.status(200).json({
+        theme: Object.prototype.hasOwnProperty.call(req.body, "theme")
+            ? String(req.body.theme || "").trim()
+            : undefined,
+        quickEmoji: conversation.quickEmoji,
+    });
 };
 
 export const downloadMessageAttachment = async (req, res) => {
