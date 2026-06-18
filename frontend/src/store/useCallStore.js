@@ -219,6 +219,12 @@ export const useCallStore = create((set, get) => ({
   subscribeToCalls: (socket) => {
     if (!socket) return;
     socket.off("incomingCall").on("incomingCall", get().receiveIncomingCall);
+    socket.off("call:ringing").on("call:ringing", ({ callId }) => {
+      const activeCall = get().activeCall;
+      if (activeCall?.callId === callId) {
+        set({ activeCall: { ...activeCall, status: "ringing" } });
+      }
+    });
     socket.off("callAnswer").on("callAnswer", ({ accepted, callId }) => {
       if (!accepted) {
         toast.error("Cuộc gọi đã bị từ chối");
@@ -235,7 +241,7 @@ export const useCallStore = create((set, get) => ({
   },
 
   unsubscribeFromCalls: (socket) => {
-    ["incomingCall", "callAnswer", "call:offline", "call:offer", "call:answer", "call:ice-candidate", "call:end"]
+    ["incomingCall", "call:ringing", "callAnswer", "call:offline", "call:offer", "call:answer", "call:ice-candidate", "call:end"]
       .forEach((event) => socket?.off(event));
   },
 }));

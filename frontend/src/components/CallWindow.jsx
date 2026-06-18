@@ -35,6 +35,11 @@ const CallWindow = () => {
   const isVideo = activeCall.type === "video";
   const endStatus = activeCall.status === "connected" ? "completed" : "cancelled";
   const durationLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
+  const statusLabel = activeCall.status === "connected"
+    ? `Đang trong cuộc gọi · ${durationLabel}`
+    : activeCall.status === "ringing"
+      ? "Đang đổ chuông..."
+      : "Đang kết nối...";
   const toggleTrack = (kind, enabled) => {
     localStream?.getTracks()
       .filter((track) => track.kind === kind)
@@ -49,7 +54,7 @@ const CallWindow = () => {
         <div className="flex items-center justify-between border-b border-white/10 p-4">
           <div>
             <h2 className="text-lg font-bold">{activeCall.peer?.fullName || "Cuộc gọi PingMe"}</h2>
-            <p className="text-sm text-white/65">{activeCall.status === "connected" ? `Đang trong cuộc gọi · ${durationLabel}` : "Đang kết nối..."}</p>
+            <p className="text-sm text-white/65">{statusLabel}</p>
           </div>
         </div>
         <div className="relative flex flex-1 items-center justify-center bg-black">
