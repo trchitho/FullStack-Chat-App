@@ -379,7 +379,7 @@ export const getPinnedDirectMessages = async (req, res) => {
 export const updateConversationSetting = async (req, res) => {
     try {
         const peerId = req.params.userId;
-        const allowed = ["mutedUntil", "manuallyUnread", "archived"];
+        const allowed = ["mutedUntil", "manuallyUnread", "archived", "theme"];
         const changes = Object.fromEntries(
             Object.entries(req.body).filter(([key]) => allowed.includes(key))
         );
