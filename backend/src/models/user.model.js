@@ -6,6 +6,7 @@ const conversationSettingSchema = new mongoose.Schema(
         mutedUntil: { type: Date, default: null },
         manuallyUnread: { type: Boolean, default: false },
         archived: { type: Boolean, default: false },
+        theme: { type: String, default: "", trim: true },
     },
     { _id: false }
 );
