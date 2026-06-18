@@ -123,10 +123,12 @@ export const useCallStore = create((set, get) => ({
 
   rejectIncomingCall: () => {
     const call = get().incomingCall;
+    const incomingTimeoutId = get().incomingTimeoutId;
+    if (incomingTimeoutId) window.clearTimeout(incomingTimeoutId);
     if (call?.callerId) {
       useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: false });
     }
-    set({ incomingCall: null });
+    set({ incomingCall: null, incomingTimeoutId: null });
   },
 
   acceptIncomingCall: async () => {
@@ -142,7 +144,8 @@ export const useCallStore = create((set, get) => ({
     const pc = get().createPeerConnection(call.callerId, call.callId);
     media.getTracks().forEach((track) => pc.addTrack(track, media));
     useAuthStore.getState().socket?.emit("callAnswer", { callerId: call.callerId, callId: call.callId, accepted: true });
-    set({ incomingCall: null, localStream: media, activeCall: { ...call, direction: "incoming", peer: call.caller, status: "connecting", startedAt: Date.now() } });
+    if (get().incomingTimeoutId) window.clearTimeout(get().incomingTimeoutId);
+    set({ incomingCall: null, incomingTimeoutId: null, localStream: media, activeCall: { ...call, direction: "incoming", peer: call.caller, status: "connecting", startedAt: Date.now() } });
   },
 
   handleRemoteOffer: async ({ callerId, callId, offer }) => {
@@ -190,7 +193,8 @@ export const useCallStore = create((set, get) => ({
   handleRemoteEnd: async ({ callId, status, duration }) => {
     const { activeCall: call, incomingCall } = get();
     if (incomingCall?.callId === callId) {
-      set({ incomingCall: null });
+      if (get().incomingTimeoutId) window.clearTimeout(get().incomingTimeoutId);
+      set({ incomingCall: null, incomingTimeoutId: null });
     }
     if (!call || call.callId !== callId) return;
     const peerId = getCallPeerId(call);
