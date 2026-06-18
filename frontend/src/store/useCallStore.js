@@ -24,6 +24,7 @@ export const useCallStore = create((set, get) => ({
   peerConnection: null,
   pendingCandidates: [],
   timeoutId: null,
+  incomingTimeoutId: null,
   localVideoRef: null,
   remoteVideoRef: null,
 
@@ -35,8 +36,9 @@ export const useCallStore = create((set, get) => ({
   },
 
   cleanupCall: () => {
-    const { peerConnection, localStream, timeoutId } = get();
+    const { peerConnection, localStream, timeoutId, incomingTimeoutId } = get();
     if (timeoutId) window.clearTimeout(timeoutId);
+    if (incomingTimeoutId) window.clearTimeout(incomingTimeoutId);
     peerConnection?.close();
     stopStream(localStream);
     set({
@@ -46,6 +48,7 @@ export const useCallStore = create((set, get) => ({
       peerConnection: null,
       pendingCandidates: [],
       timeoutId: null,
+      incomingTimeoutId: null,
     });
   },
 
@@ -110,7 +113,12 @@ export const useCallStore = create((set, get) => ({
 
   receiveIncomingCall: (call) => {
     if (String(call.callerId) === String(useAuthStore.getState().authUser?._id)) return;
-    set({ incomingCall: call });
+    const previousTimeout = get().incomingTimeoutId;
+    if (previousTimeout) window.clearTimeout(previousTimeout);
+    const incomingTimeoutId = window.setTimeout(() => {
+      set({ incomingCall: null, incomingTimeoutId: null });
+    }, CALL_TIMEOUT_MS + 1000);
+    set({ incomingCall: call, incomingTimeoutId });
   },
 
   rejectIncomingCall: () => {
