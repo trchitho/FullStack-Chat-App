@@ -5,7 +5,7 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { useAuthStore } from '../store/useAuthStore';
 import { formatMessageTime } from '../lib/utils';
-import { Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Trash2, X } from 'lucide-react';
+import { Forward, MoreHorizontal, PhoneCall, Pin, Reply, SmilePlus, Trash2, Video, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { closeFloatingMenus, FLOATING_MENU_CLOSE_EVENT } from '../lib/menuEvents';
 import { useLanguageStore } from '../store/useLanguageStore';
@@ -260,11 +260,17 @@ const ChatContainer = () => {
               {!isRevoked && message.call && (
                 <div className="flex min-w-48 items-start gap-3 rounded-2xl bg-black/10 p-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-base-100/25">
-                    <PhoneCall className="size-5" />
+                    {message.call.type === "video"
+                      ? <Video className="size-5" />
+                      : <PhoneCall className="size-5" />}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="font-bold">{getCallTitle(message.call, isOwnMessage)}</div>
-                    <div className="text-sm opacity-80">{getCallDuration(message.call.duration)}</div>
+                    <div className="text-sm opacity-80">
+                      {message.call.status === "completed"
+                        ? getCallDuration(message.call.duration)
+                        : formatMessageTime(message.createdAt)}
+                    </div>
                     <button
                       type="button"
                       className="mt-2 w-full rounded-lg bg-base-100/25 px-3 py-1.5 font-semibold hover:bg-base-100/35"
