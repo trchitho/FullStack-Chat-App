@@ -2,7 +2,7 @@ import { Pause, Play, Volume2 } from "lucide-react";
 import { useRef, useState } from "react";
 
 const formatDuration = (seconds = 0) => {
-  const safeSeconds = Math.max(1, Math.round(seconds || 1));
+  const safeSeconds = Number.isFinite(seconds) ? Math.max(0, Math.round(seconds)) : 0;
   const minutes = Math.floor(safeSeconds / 60);
   const remaining = String(safeSeconds % 60).padStart(2, "0");
   return `${minutes}:${remaining}`;
@@ -14,9 +14,16 @@ const AudioMessageBubble = ({ message, language }) => {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(attachment.duration || 1);
+  const [duration, setDuration] = useState(
+    Number.isFinite(attachment.duration) ? attachment.duration : 0
+  );
   const waveform = [30, 52, 76, 44, 88, 58, 36, 70, 92, 48, 64, 84, 42, 74, 54, 90, 38, 68];
   const progress = duration ? currentTime / duration : 0;
+  const syncDuration = () => {
+    const metadataDuration = audioRef.current?.duration;
+    if (Number.isFinite(metadataDuration)) setDuration(metadataDuration);
+    else if (Number.isFinite(attachment.duration)) setDuration(attachment.duration);
+  };
 
   const togglePlayback = async () => {
     if (!audioRef.current || !attachment.url) return;
@@ -56,7 +63,8 @@ const AudioMessageBubble = ({ message, language }) => {
           ref={audioRef}
           src={attachment.url}
           preload="metadata"
-          onLoadedMetadata={() => setDuration(audioRef.current?.duration || attachment.duration || 1)}
+          onLoadedMetadata={syncDuration}
+          onDurationChange={syncDuration}
           onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
           onEnded={() => setIsPlaying(false)}
         />
