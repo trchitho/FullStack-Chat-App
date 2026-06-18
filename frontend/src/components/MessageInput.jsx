@@ -81,6 +81,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     if (!file.type.startsWith("image/")) {
       toast.error(isVi ? "Vui lòng chọn file ảnh" : "Please select an image file");
       return;
@@ -90,6 +91,22 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     reader.onloadend = () => {
       setImagePreview(reader.result);
     };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePaste = (event) => {
+    const imageItem = [...(event.clipboardData?.items || [])]
+      .find((item) => item.type.startsWith("image/"));
+    if (!imageItem) return;
+    const file = imageItem.getAsFile();
+    if (!file) return;
+    event.preventDefault();
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+      toast.success(isVi ? "Đã dán ảnh từ clipboard" : "Image pasted from clipboard");
+    };
+    reader.onerror = () => toast.error(isVi ? "Không thể đọc ảnh clipboard" : "Could not read clipboard image");
     reader.readAsDataURL(file);
   };
 
@@ -320,6 +337,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             placeholder="Aa"
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onPaste={handlePaste}
           />
           <input
             type="file"
