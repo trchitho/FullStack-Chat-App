@@ -65,6 +65,18 @@ export const useCallStore = create((set, get) => ({
     pc.onicecandidate = (event) => {
       if (event.candidate) socket?.emit("call:ice-candidate", { recipientId: peerId, callId, candidate: event.candidate });
     };
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === "connected") {
+        const activeCall = get().activeCall;
+        if (activeCall?.callId === callId && activeCall.status !== "connected") {
+          set({ activeCall: { ...activeCall, status: "connected", connectedAt: Date.now() } });
+        }
+      }
+      if (["failed", "closed"].includes(pc.connectionState)) {
+        toast.error("Kết nối cuộc gọi đã kết thúc");
+        get().cleanupCall();
+      }
+    };
     set({ peerConnection: pc, remoteStream });
     return pc;
   },
