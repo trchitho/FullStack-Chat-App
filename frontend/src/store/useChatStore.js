@@ -228,6 +228,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("conversationSeenUpdate");
     socket.off("groupSeenUpdate");
     socket.off("conversationThemeUpdated");
+    socket.off("messagePinnedUpdate");
 
     socket.on("newMessage", (newMessage) => {
       socket.emit("messageDelivered", { messageId: newMessage._id });
@@ -303,6 +304,11 @@ export const useChatStore = create((set, get) => ({
         users: get().users.map((user) => user._id === targetId ? { ...user, ...payload } : user),
       });
     });
+    socket.on("messagePinnedUpdate", (updatedMessage) => {
+      if (get().messages.some((message) => message._id === updatedMessage._id)) {
+        set({ messages: replaceMessage(get().messages, updatedMessage) });
+      }
+    });
   },
 
   unsubscribeFromMessages: (activeSocket) => {
@@ -315,6 +321,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("conversationSeenUpdate");
     socket.off("groupSeenUpdate");
     socket.off("conversationThemeUpdated");
+    socket.off("messagePinnedUpdate");
   },
 
   setSelectedUser: (selectedUser) => {
