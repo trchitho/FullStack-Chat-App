@@ -89,7 +89,7 @@ export const getUsersForSidebar = async (req, res) => {
         }).select("participants theme quickEmoji").lean();
         const conversationByPeer = new Map(conversations.map((conversation) => {
             const peerId = conversation.participants.find((id) => String(id) !== String(loggedInUserId));
-            return [String(peerId), { conversationId: conversation._id, theme: conversation.theme, quickEmoji: conversation.quickEmoji }];
+            return [String(peerId), { conversationId: conversation._id, quickEmoji: conversation.quickEmoji }];
         }));
         const incomingRequests = await Conversation.find({
             type: "direct",
