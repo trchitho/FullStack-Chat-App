@@ -200,6 +200,10 @@ export const markGroupConversationSeen = async (req, res) => {
             },
             { $push: { seenBy: { user: req.user._id, at: seenAt } } }
         );
+        await User.updateOne(
+            { _id: req.user._id, "conversationSettings.peerId": conversation._id },
+            { $set: { "conversationSettings.$.manuallyUnread": false } }
+        );
         for (const participantId of conversation.participants) {
             io.to(`user:${participantId}`).emit("groupSeenUpdate", {
                 conversationId: conversation._id,
