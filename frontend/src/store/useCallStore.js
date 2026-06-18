@@ -22,6 +22,7 @@ export const useCallStore = create((set, get) => ({
   localStream: null,
   remoteStream: null,
   peerConnection: null,
+  pendingCandidates: [],
   timeoutId: null,
   localVideoRef: null,
   remoteVideoRef: null,
@@ -38,7 +39,14 @@ export const useCallStore = create((set, get) => ({
     if (timeoutId) window.clearTimeout(timeoutId);
     peerConnection?.close();
     stopStream(localStream);
-    set({ activeCall: null, localStream: null, remoteStream: null, peerConnection: null, timeoutId: null });
+    set({
+      activeCall: null,
+      localStream: null,
+      remoteStream: null,
+      peerConnection: null,
+      pendingCandidates: [],
+      timeoutId: null,
+    });
   },
 
   createPeerConnection: (peerId, callId) => {
@@ -56,6 +64,15 @@ export const useCallStore = create((set, get) => ({
     };
     set({ peerConnection: pc, remoteStream });
     return pc;
+  },
+
+  flushPendingCandidates: async () => {
+    const { peerConnection, pendingCandidates } = get();
+    if (!peerConnection?.remoteDescription || !pendingCandidates.length) return;
+    for (const candidate of pendingCandidates) {
+      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+    set({ pendingCandidates: [] });
   },
 
   startCall: async (recipient, type) => {
