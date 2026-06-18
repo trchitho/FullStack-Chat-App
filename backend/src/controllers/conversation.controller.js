@@ -159,14 +159,19 @@ export const sendGroupMessage = async (req, res) => {
         await message.populate("senderId", "fullName profilePic");
         const recipients = conversation.participants.filter((id) => String(id) !== String(req.user._id));
         for (const recipientId of recipients) {
-            const notification = await Notification.create({
+            const recipient = await User.findById(recipientId).select("conversationSettings").lean();
+            const setting = recipient?.conversationSettings?.find(
+                (item) => String(item.peerId) === String(conversation._id)
+            );
+            const isMuted = setting?.mutedUntil && new Date(setting.mutedUntil) > new Date();
+            const notification = isMuted ? null : await Notification.create({
                 ownerId: recipientId,
                 senderId: req.user._id,
                 messageId: message._id,
                 conversationId: conversation._id,
             });
             io.to(`user:${recipientId}`).emit("newGroupMessage", { conversationId: conversation._id, message });
-            io.to(`user:${recipientId}`).emit("newNotification", {
+            if (notification) io.to(`user:${recipientId}`).emit("newNotification", {
                     ...notification.toObject(),
                     senderId: { _id: req.user._id, fullName: req.user.fullName, profilePic: req.user.profilePic },
             });
