@@ -46,6 +46,12 @@ export const createGroupConversation = async (req, res) => {
 
 export const getGroupConversations = async (req, res) => {
     try {
+        const currentUser = await User.findById(req.user._id)
+            .select("conversationSettings")
+            .lean();
+        const settingsByConversation = new Map(
+            (currentUser?.conversationSettings || []).map((item) => [String(item.peerId), item])
+        );
         const groups = await Conversation.find({ participants: req.user._id, type: "group" })
             .sort({ lastMessageAt: -1 })
             .populate("participants", "fullName profilePic email")
@@ -74,6 +80,7 @@ export const getGroupConversations = async (req, res) => {
         res.status(200).json(groups.map((group) => ({
             ...group,
             ...latestByGroup.get(String(group._id)),
+            ...settingsByConversation.get(String(group._id)),
             unreadCount: unreadByGroup.get(String(group._id)) || 0,
             fullName: group.name,
             isGroup: true,
