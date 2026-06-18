@@ -296,7 +296,7 @@ export const useChatStore = create((set, get) => ({
       });
     });
     socket.on("conversationThemeUpdated", (payload) => {
-      const targetId = payload.conversationId || payload.peerId;
+      const targetId = payload.peerId || payload.conversationId;
       set({
         selectedUser: get().selectedUser?._id === targetId
           ? { ...get().selectedUser, ...payload }
