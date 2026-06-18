@@ -14,6 +14,7 @@ import FileMessage from './FileMessage';
 import AudioMessageBubble from './AudioMessageBubble';
 import { useNavigate } from 'react-router-dom';
 import ChatInfoPanel from './ChatInfoPanel';
+import { useCallStore } from '../store/useCallStore';
 
 const ChatContainer = () => {
   const {
@@ -27,6 +28,7 @@ const ChatContainer = () => {
 
   const {authUser} = useAuthStore();
   const { language } = useLanguageStore();
+  const startCall = useCallStore((state) => state.startCall);
   const navigate = useNavigate();
   const isVi = language === "vi";
   const messagesContainerRef = useRef(null);
@@ -260,7 +262,11 @@ const ChatContainer = () => {
                   <div className="min-w-0 flex-1">
                     <div className="font-bold">{getCallTitle(message.call)}</div>
                     <div className="text-sm opacity-80">{getCallDuration(message.call.duration)}</div>
-                    <button type="button" className="mt-2 w-full rounded-lg bg-base-100/25 px-3 py-1.5 font-semibold hover:bg-base-100/35">
+                    <button
+                      type="button"
+                      className="mt-2 w-full rounded-lg bg-base-100/25 px-3 py-1.5 font-semibold hover:bg-base-100/35"
+                      onClick={() => startCall(selectedUser, message.call.type || "voice")}
+                    >
                       {isVi ? "Gọi lại" : "Call back"}
                     </button>
                   </div>
