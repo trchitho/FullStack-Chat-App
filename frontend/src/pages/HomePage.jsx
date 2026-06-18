@@ -69,6 +69,25 @@ const HomePage = () => {
 
 const IncomingCallDialog = ({ call, onAccept, onDecline }) => {
   const isVideo = call.type === "video";
+
+  useEffect(() => {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return undefined;
+    const context = new AudioContextClass();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.frequency.value = 720;
+    gain.gain.value = 0.035;
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    context.resume().catch(() => {});
+    return () => {
+      oscillator.stop();
+      context.close().catch(() => {});
+    };
+  }, [call.callId]);
+
   return (
     <div className="fixed inset-0 z-[180] flex items-center justify-center bg-black/60 p-4">
       <section role="dialog" aria-modal="true" aria-label="Cuộc gọi đến" className="w-full max-w-sm rounded-3xl border border-base-300 bg-base-100 p-6 text-center shadow-2xl">
