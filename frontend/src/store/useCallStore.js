@@ -141,6 +141,7 @@ export const useCallStore = create((set, get) => ({
     const { activeCall, peerConnection } = get();
     if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    await get().flushPendingCandidates();
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
     useAuthStore.getState().socket?.emit("call:answer", { recipientId: callerId, callId, answer });
@@ -152,12 +153,17 @@ export const useCallStore = create((set, get) => ({
     if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
     if (timeoutId) window.clearTimeout(timeoutId);
     await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    await get().flushPendingCandidates();
     set({ activeCall: { ...activeCall, status: "connected", connectedAt: Date.now() }, timeoutId: null });
   },
 
   handleIceCandidate: async ({ callId, candidate }) => {
     const { activeCall, peerConnection } = get();
     if (!activeCall || activeCall.callId !== callId || !peerConnection) return;
+    if (!peerConnection.remoteDescription) {
+      set({ pendingCandidates: [...get().pendingCandidates, candidate] });
+      return;
+    }
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   },
 
