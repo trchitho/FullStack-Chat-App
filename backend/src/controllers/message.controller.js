@@ -355,6 +355,12 @@ export const setMessagePinned = async (req, res) => {
     message.pinnedAt = message.pinned ? new Date() : null;
     message.pinnedBy = message.pinned ? req.user._id : null;
     await message.save();
+    const participantIds = message.conversationId
+        ? (await Conversation.findById(message.conversationId).select("participants").lean())?.participants || []
+        : [message.senderId, message.receiverId];
+    participantIds.forEach((participantId) => {
+        io.to(`user:${participantId}`).emit("messagePinnedUpdate", message);
+    });
     res.status(200).json(message);
 };
 
