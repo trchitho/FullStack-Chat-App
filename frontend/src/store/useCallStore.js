@@ -193,6 +193,15 @@ export const useCallStore = create((set, get) => ({
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   },
 
+  notifyMediaState: (kind, enabled) => {
+    const call = get().activeCall;
+    const recipientId = getCallPeerId(call);
+    if (!call || !recipientId) return;
+    useAuthStore.getState().socket?.emit("call:media-state", {
+      recipientId, callId: call.callId, kind, enabled,
+    });
+  },
+
   finishCall: async (status = "completed") => {
     const call = get().activeCall;
     if (!call) return;
@@ -242,11 +251,16 @@ export const useCallStore = create((set, get) => ({
     socket.off("call:offer").on("call:offer", get().handleRemoteOffer);
     socket.off("call:answer").on("call:answer", get().handleRemoteAnswer);
     socket.off("call:ice-candidate").on("call:ice-candidate", get().handleIceCandidate);
+    socket.off("call:media-state").on("call:media-state", ({ callId, kind, enabled }) => {
+      if (get().activeCall?.callId === callId && kind === "video") {
+        set({ remoteCameraOff: !enabled });
+      }
+    });
     socket.off("call:end").on("call:end", get().handleRemoteEnd);
   },
 
   unsubscribeFromCalls: (socket) => {
-    ["incomingCall", "call:ringing", "callAnswer", "call:offline", "call:offer", "call:answer", "call:ice-candidate", "call:end"]
+    ["incomingCall", "call:ringing", "callAnswer", "call:offline", "call:offer", "call:answer", "call:ice-candidate", "call:media-state", "call:end"]
       .forEach((event) => socket?.off(event));
   },
 }));
