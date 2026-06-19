@@ -141,6 +141,26 @@ const fetchGoogleProfile = async (code, config) => {
     return profileResponse.json();
 };
 
+const findOrCreateGoogleUser = async (profile) => {
+    let user = await User.findOne({ $or: [{ googleId: profile.sub }, { email: profile.email }] });
+    if (user) {
+        if (!user.googleId) user.googleId = profile.sub;
+        if (!user.profilePic && profile.picture) user.profilePic = profile.picture;
+        await user.save();
+        return user;
+    }
+    user = await User.create({
+        googleId: profile.sub,
+        email: profile.email,
+        fullName: profile.name || profile.email.split("@")[0],
+        username: await createUniqueUsername(profile.email),
+        profilePic: profile.picture || "",
+        isSeedUser: false,
+    });
+    await addSeedFriends(user._id);
+    return user;
+};
+
 export const logout = async (req, res) => {
     try {
         res.clearCookie('jwt');
