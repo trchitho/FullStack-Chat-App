@@ -100,7 +100,12 @@ const CallWindow = () => {
         </div>
         <div className="z-30 flex shrink-0 items-center justify-center gap-4 bg-zinc-950 p-5">
           <button type="button" className={`btn btn-circle text-white ${micMuted ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => { toggleTrack("audio", micMuted); setMicMuted(!micMuted); }} aria-label={micMuted ? "Bật mic" : "Tắt mic"}><Mic className="size-5" /></button>
-          <button type="button" className={`btn btn-circle text-white ${cameraOff ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => { toggleTrack("video", cameraOff); setCameraOff(!cameraOff); }} aria-label={cameraOff ? "Bật camera" : "Tắt camera"} disabled={!isVideo}>{isVideo && !cameraOff ? <Video className="size-5" /> : <VideoOff className="size-5" />}</button>
+          <button type="button" className={`btn btn-circle text-white ${cameraOff ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => {
+            const enabled = cameraOff;
+            toggleTrack("video", enabled);
+            setCameraOff(!enabled);
+            notifyMediaState("video", enabled);
+          }} aria-label={cameraOff ? "Bật camera" : "Tắt camera"} disabled={!isVideo}>{isVideo && !cameraOff ? <Video className="size-5" /> : <VideoOff className="size-5" />}</button>
           <button type="button" className="btn btn-circle btn-error" onClick={() => finishCall(endStatus)} aria-label="Kết thúc cuộc gọi"><PhoneOff className="size-6" /></button>
         </div>
       </section>
