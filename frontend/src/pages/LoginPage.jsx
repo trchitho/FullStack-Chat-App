@@ -110,6 +110,20 @@ const LoginPage = () => {
             </button>
           </form>
 
+          <div className="flex items-center gap-3 text-sm text-base-content/50">
+            <span className="h-px flex-1 bg-base-300" />
+            {isVi ? "hoặc" : "or"}
+            <span className="h-px flex-1 bg-base-300" />
+          </div>
+          <a
+            href="/api/auth/google"
+            className="btn min-h-11 w-full border-base-300 bg-base-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            aria-label={isVi ? "Đăng nhập với Google" : "Sign in with Google"}
+          >
+            <span className="text-lg font-bold text-blue-600" aria-hidden="true">G</span>
+            {isVi ? "Đăng nhập với Google" : "Sign in with Google"}
+          </a>
+
           <div className="text-center">
             <p className="text-base-content/60">
               {isVi ? "Chưa có tài khoản?" : "Don't have an account?"}{" "}
