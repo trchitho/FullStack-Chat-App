@@ -469,6 +469,11 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           ))}
         </div>
       )}
+      <ChatContextMenu
+        position={contextMenu}
+        items={contextMenuItems}
+        onClose={() => setContextMenu(null)}
+      />
     </div>
   );
 };
