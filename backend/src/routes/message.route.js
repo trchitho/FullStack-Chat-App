@@ -12,6 +12,7 @@ import {
     sendMessage,
     setMessagePinned,
     updateConversationSetting,
+    updateDirectConversationNickname,
     updateDirectConversationTheme,
     uploadMessageAttachment,
 } from '../controllers/message.controller.js';
@@ -41,5 +42,6 @@ router.get('/conversations/:userId/pinned', protectRoute, getPinnedDirectMessage
 router.patch('/conversations/:userId/seen', protectRoute, markConversationSeen);
 router.patch('/conversations/:userId/settings', protectRoute, updateConversationSetting);
 router.patch('/conversations/:userId/theme', protectRoute, updateDirectConversationTheme);
+router.patch('/conversations/:userId/nickname', protectRoute, updateDirectConversationNickname);
 
 export default router;
