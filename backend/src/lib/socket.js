@@ -35,6 +35,29 @@ const publishOnlineUsers = () => {
     io.emit("getOnlineUsers", [...userSocketMap.keys()]);
 };
 
+const deliverPendingMessages = async (userId) => {
+    const groupIds = await Conversation.find({
+        type: "group", participants: userId,
+    }).distinct("_id");
+    const pending = await Message.find({
+        "deliveredTo.user": { $ne: userId },
+        $or: [
+            { receiverId: userId },
+            { conversationId: { $in: groupIds }, senderId: { $ne: userId } },
+        ],
+    }).select("_id senderId").lean();
+    if (!pending.length) return;
+    const deliveredAt = new Date();
+    await Message.updateMany(
+        { _id: { $in: pending.map((message) => message._id) }, "deliveredTo.user": { $ne: userId } },
+        { $push: { deliveredTo: { user: userId, at: deliveredAt } } }
+    );
+    const updated = await Message.find({ _id: { $in: pending.map((message) => message._id) } });
+    updated.forEach((message) =>
+        io.to(`user:${message.senderId}`).emit("messageDeliveredUpdate", message)
+    );
+};
+
 io.use((socket, next) => {
     try {
         const cookies = Object.fromEntries(
