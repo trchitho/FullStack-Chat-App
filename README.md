@@ -79,12 +79,21 @@ Create a `.env` file in the backend directory:
 PORT=5000
 MONGODB_URI=mongodb://127.0.0.1:27017/chatapp
 JWT_SECRET=supersecret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+FRONTEND_URL=http://localhost:5173
 
 # Cloudinary Configuration
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
+
+For production Google OAuth, authorize origin `https://fullstack-chat-app-ub68.onrender.com`
+and redirect URI `https://fullstack-chat-app-ub68.onrender.com/api/auth/google/callback`.
+If the consent screen is in Testing mode, add each allowed Gmail account under Test users.
+Store the client secret only in local `.env` or Render environment variables.
 
 ### **Frontend Setup**
 ```bash
