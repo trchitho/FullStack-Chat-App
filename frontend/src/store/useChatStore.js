@@ -320,6 +320,20 @@ export const useChatStore = create((set, get) => ({
         users: get().users.map((user) => user._id === targetId ? { ...user, ...payload } : user),
       });
     });
+    socket.on("conversation:nickname:update", (payload) => {
+      const authUserId = useAuthStore.getState().authUser?._id;
+      const changes = String(payload.targetUserId) === String(authUserId)
+        ? { myConversationNickname: payload.nickname }
+        : { conversationNickname: payload.nickname };
+      set({
+        selectedUser: get().selectedUser?._id === payload.peerId
+          ? { ...get().selectedUser, ...changes }
+          : get().selectedUser,
+        users: get().users.map((user) =>
+          user._id === payload.peerId ? { ...user, ...changes } : user
+        ),
+      });
+    });
     socket.on("messagePinnedUpdate", (updatedMessage) => {
       if (get().messages.some((message) => message._id === updatedMessage._id)) {
         set({ messages: replaceMessage(get().messages, updatedMessage) });
@@ -337,6 +351,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("conversationSeenUpdate");
     socket.off("groupSeenUpdate");
     socket.off("conversationThemeUpdated");
+    socket.off("conversation:nickname:update");
     socket.off("messagePinnedUpdate");
   },
 
