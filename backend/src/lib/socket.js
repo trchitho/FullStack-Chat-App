@@ -142,6 +142,13 @@ io.on('connection', (socket) => {
         io.to(`user:${recipientId}`).emit("call:ice-candidate", { fromUserId: userId, callId, candidate });
     });
 
+    socket.on("call:media-state", ({ recipientId, callId, kind, enabled }) => {
+        if (!recipientId || !["audio", "video"].includes(kind)) return;
+        io.to(`user:${recipientId}`).emit("call:media-state", {
+            callId, kind, enabled: Boolean(enabled),
+        });
+    });
+
     socket.on("call:end", ({ recipientId, callId, status, duration }) => {
         if (!recipientId) return;
         io.to(`user:${recipientId}`).emit("call:end", { fromUserId: userId, callId, status, duration });
