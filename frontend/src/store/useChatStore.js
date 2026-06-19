@@ -155,6 +155,22 @@ export const useChatStore = create((set, get) => ({
     return data;
   },
 
+  updateConversationNickname: async (conversation, userId, nickname) => {
+    const { data } = await axiosInstance.patch(
+      `/messages/conversations/${conversation._id}/nickname`,
+      { userId, nickname }
+    );
+    const authUserId = useAuthStore.getState().authUser?._id;
+    const changes = String(userId) === String(authUserId)
+      ? { myConversationNickname: data.nickname }
+      : { conversationNickname: data.nickname };
+    set({
+      selectedUser: { ...get().selectedUser, ...changes },
+      users: get().users.map((user) => user._id === conversation._id ? { ...user, ...changes } : user),
+    });
+    return data;
+  },
+
   sendMessageTo: async (userId, messageData) => {
     const { data } = await axiosInstance.post(`/messages/send/${userId}`, messageData);
     const authUserId = useAuthStore.getState().authUser?._id;
