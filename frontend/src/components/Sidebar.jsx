@@ -239,6 +239,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
           const isSelected = selectedUser?._id === user._id;
           const isMarkedUnread = user.manuallyUnread || user.unreadCount > 0;
           const isMuted = user.mutedUntil && new Date(user.mutedUntil) > new Date();
+          const displayName = user.conversationNickname || user.fullName;
 
           return (
             <div key={user._id} className="group relative min-w-0">
@@ -251,12 +252,12 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               >
                 <div className="avatar relative shrink-0">
                   <div className="size-14 rounded-full">
-                    <img src={user.profilePic || "/avatar.png"} alt={user.fullName} />
+                    <img src={user.profilePic || "/avatar.png"} alt={displayName} />
                   </div>
                   {isOnline && <span className="absolute bottom-1 right-0 size-3.5 rounded-full border-2 border-base-200 bg-success" />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className={`truncate font-semibold ${isMarkedUnread ? "text-primary" : ""}`}>{user.fullName}</div>
+                  <div className={`truncate font-semibold ${isMarkedUnread ? "text-primary" : ""}`}>{displayName}</div>
                   <div className={`truncate text-sm ${isMarkedUnread ? "font-bold text-base-content" : "text-base-content/60"}`}>
                     {user.lastMessageText || (isOnline ? t(language, "activeNow") : t(language, "noMessages"))}
                   </div>
