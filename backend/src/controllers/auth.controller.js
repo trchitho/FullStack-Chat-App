@@ -87,6 +87,9 @@ export const login = async (req, res) => {
         const user = await User.findOne({email});
         if(!user) return res.status(400).json({message: 'Invalid credentials'});
 
+        if (!user.password) {
+            return res.status(400).json({ message: "Please sign in with Google" });
+        }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 
         if(!isPasswordMatch) return res.status(400).json({message: 'Invalid credentials'});
@@ -105,6 +108,19 @@ export const login = async (req, res) => {
         console.log("Error in login controller" , error.message);
         return res.status(500).json({message: 'Internal server error'});
     }
+};
+
+export const googleLogin = (req, res) => {
+    const config = googleConfig();
+    if (!config.clientId || !config.clientSecret || !config.callbackUrl) {
+        return res.status(503).json({ message: "Google OAuth is not configured" });
+    }
+    const state = jwt.sign({ purpose: "google-oauth" }, process.env.JWT_SECRET, { expiresIn: "10m" });
+    const params = new URLSearchParams({
+        client_id: config.clientId, redirect_uri: config.callbackUrl,
+        response_type: "code", scope: "openid email profile", state,
+    });
+    res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
 };
 
 export const logout = async (req, res) => {
