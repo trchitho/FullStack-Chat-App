@@ -88,6 +88,9 @@ io.on('connection', (socket) => {
         socket.join(`user:${userId}`);
     }
     publishOnlineUsers();
+    deliverPendingMessages(userId).catch((error) => {
+        console.error("Pending delivery scan failed:", error.message);
+    });
 
     socket.on("messageDelivered", async ({ messageId }) => {
         const existingMessage = await Message.findById(messageId).lean();
