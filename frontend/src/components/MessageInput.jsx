@@ -279,6 +279,25 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     }
   };
 
+  const contextMenuItems = [
+    { label: isVi ? "Biểu tượng cảm xúc" : "Emoji", action: () => setShowEmojiPicker(true) },
+    { label: isVi ? "Hoàn tác" : "Undo", shortcut: "Ctrl+Z", action: () => document.execCommand("undo") },
+    { label: isVi ? "Làm lại" : "Redo", shortcut: "Ctrl+Shift+Z", action: () => document.execCommand("redo") },
+    { label: isVi ? "Cắt" : "Cut", shortcut: "Ctrl+X", action: () => copySelection(true) },
+    { label: isVi ? "Sao chép" : "Copy", shortcut: "Ctrl+C", action: () => copySelection(false) },
+    { label: isVi ? "Dán" : "Paste", shortcut: "Ctrl+V", action: readClipboard },
+    {
+      label: isVi ? "Dán dưới dạng văn bản thuần túy" : "Paste as plain text",
+      shortcut: "Ctrl+Shift+V",
+      action: async () => insertTextAtCursor(await navigator.clipboard.readText().catch(() => "")),
+    },
+    {
+      label: isVi ? "Chọn tất cả" : "Select all",
+      shortcut: "Ctrl+A",
+      action: () => textInputRef.current?.select(),
+    },
+  ];
+
   return (
     <div className="relative shrink-0 border-t border-base-300 bg-base-100 px-2 py-2 sm:px-4 lg:px-6 lg:py-4">
       {imagePreview && (
