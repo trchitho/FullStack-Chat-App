@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCallRingtone } from "../hooks/useCallRingtone";
 
 const CallAvatar = ({ user, compact = false }) => (
   <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-900">
@@ -48,6 +49,10 @@ const CallWindow = () => {
     const intervalId = window.setInterval(updateElapsed, 1000);
     return () => window.clearInterval(intervalId);
   }, [activeCall?.connectedAt]);
+  useCallRingtone(
+    "outgoing",
+    activeCall?.direction === "outgoing" && ["calling", "ringing"].includes(activeCall?.status)
+  );
 
   if (!activeCall) return null;
   const isVideo = activeCall.type === "video";
