@@ -4,6 +4,7 @@ import { Image, Laugh, Mic, Paperclip, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguageStore } from "../store/useLanguageStore";
 import AudioMessageBubble from "./AudioMessageBubble";
+import ChatContextMenu from "./ChatContextMenu";
 
 const MessageInput = ({ replyTo, onCancelReply }) => {
   const [text, setText] = useState("");
@@ -15,6 +16,8 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
   const [recordedDuration, setRecordedDuration] = useState(0);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
+  const textInputRef = useRef(null);
   const fileInputRef = useRef(null);
   const attachmentInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
