@@ -458,6 +458,19 @@ export const updateDirectConversationNickname = async (req, res) => {
     if (existing) Object.assign(existing, { nickname, updatedBy: req.user._id, updatedAt: new Date() });
     else conversation.participantNicknames.push({ user: targetUserId, nickname, updatedBy: req.user._id });
     await conversation.save();
+    conversation.participants.forEach((participantId) => {
+        const peerId = String(participantId) === String(req.user._id)
+            ? req.params.userId
+            : req.user._id;
+        io.to(`user:${participantId}`).emit("conversation:nickname:update", {
+            conversationId: conversation._id,
+            peerId,
+            targetUserId,
+            nickname,
+        });
+    });
+    res.status(200).json({ targetUserId, nickname });
+};
 
 export const downloadMessageAttachment = async (req, res) => {
     try {
