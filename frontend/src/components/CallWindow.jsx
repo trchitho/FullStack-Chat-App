@@ -3,6 +3,19 @@ import { Mic, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
 import { useAuthStore } from "../store/useAuthStore";
 
+const CallAvatar = ({ user, compact = false }) => (
+  <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-900">
+    <img
+      src={user?.profilePic || "/avatar.png"}
+      alt=""
+      className={`${compact ? "size-16" : "size-28"} rounded-full object-cover`}
+    />
+    <span className={`${compact ? "text-sm" : "text-lg"} font-semibold`}>
+      {user?.fullName || "PingMe"}
+    </span>
+  </div>
+);
+
 const CallWindow = () => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
