@@ -385,6 +385,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           <>
         <div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-base-300 px-3 sm:gap-2 sm:px-4">
           <input
+            ref={textInputRef}
             type="text"
           className="input input-sm h-10 min-h-10 flex-1 border-none bg-transparent sm:h-11 sm:min-h-11"
             disabled={isSending}
@@ -392,6 +393,7 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onPaste={handlePaste}
+            onContextMenu={openContextMenu}
           />
           <input
             type="file"
