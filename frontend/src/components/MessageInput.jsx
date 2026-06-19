@@ -140,6 +140,30 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     }
   };
 
+  const copySelection = async (cut = false) => {
+    const input = textInputRef.current;
+    const start = input?.selectionStart ?? 0;
+    const end = input?.selectionEnd ?? 0;
+    if (start === end) return;
+    try {
+      await navigator.clipboard.writeText(text.slice(start, end));
+      if (cut) setText(`${text.slice(0, start)}${text.slice(end)}`);
+    } catch {
+      toast.error(isVi ? "Không thể truy cập clipboard" : "Clipboard access failed");
+    }
+  };
+
+  const openContextMenu = (event) => {
+    event.preventDefault();
+    textInputRef.current?.focus();
+    const width = 272;
+    const height = 330;
+    setContextMenu({
+      x: Math.min(event.clientX, window.innerWidth - width - 8),
+      y: Math.min(event.clientY, window.innerHeight - height - 8),
+    });
+  };
+
   const removeImage = () => {
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
