@@ -18,6 +18,18 @@ const createUniqueUsername = async (email) => {
     return `${base}${Date.now().toString().slice(-6)}`;
 };
 
+const addSeedFriends = async (userId) => {
+    const seedUsers = await User.find({ isSeedUser: true }).select("_id").lean();
+    if (!seedUsers.length) return;
+    await Friendship.bulkWrite(seedUsers.map((seedUser) => ({
+        updateOne: {
+            filter: { requester: seedUser._id, recipient: userId },
+            update: { $setOnInsert: { status: "accepted" } },
+            upsert: true,
+        },
+    })));
+};
+
 export const signup = async (req, res) => {
     const {email, fullName, password} = req.body;
 
