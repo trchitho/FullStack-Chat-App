@@ -11,6 +11,7 @@ import NewMessageComposer from "../components/NewMessageComposer";
 import CallWindow from "../components/CallWindow";
 import { Phone, PhoneOff, Video } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
+import { useCallRingtone } from "../hooks/useCallRingtone";
 
 const HomePage = () => {
   const { selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
@@ -69,24 +70,7 @@ const HomePage = () => {
 
 const IncomingCallDialog = ({ call, onAccept, onDecline }) => {
   const isVideo = call.type === "video";
-
-  useEffect(() => {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return undefined;
-    const context = new AudioContextClass();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.frequency.value = 720;
-    gain.gain.value = 0.035;
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start();
-    context.resume().catch(() => {});
-    return () => {
-      oscillator.stop();
-      context.close().catch(() => {});
-    };
-  }, [call.callId]);
+  useCallRingtone("incoming", Boolean(call.callId));
 
   return (
     <div className="fixed inset-0 z-[180] flex items-center justify-center bg-black/60 p-4">
