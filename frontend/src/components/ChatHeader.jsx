@@ -12,6 +12,7 @@ const ChatHeader = ({ onOpenInfo }) => {
   const startCall = useCallStore((state) => state.startCall);
   const { language } = useLanguageStore();
   const navigate = useNavigate();
+  const displayName = selectedUser.conversationNickname || selectedUser.fullName;
 
   return (
     <div className="shrink-0 border-b border-base-300 bg-base-100 px-2 py-2 sm:px-5 sm:py-3">
@@ -24,15 +25,15 @@ const ChatHeader = ({ onOpenInfo }) => {
             type="button"
             className="avatar rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
             onClick={() => navigate(`/profile/${selectedUser._id}`)}
-            aria-label={language === "vi" ? `Xem trang cá nhân ${selectedUser.fullName}` : `View ${selectedUser.fullName}'s profile`}
+            aria-label={language === "vi" ? `Xem trang cá nhân ${displayName}` : `View ${displayName}'s profile`}
           >
             <div className="relative size-10 rounded-full sm:size-11">
-              <img src={selectedUser.profilePic || "/avatar.png"} alt={selectedUser.fullName} />
+              <img src={selectedUser.profilePic || "/avatar.png"} alt={displayName} />
             </div>
           </button>
 
           <div className="min-w-0">
-            <h3 className="truncate text-base font-bold sm:text-lg">{selectedUser.fullName}</h3>
+            <h3 className="truncate text-base font-bold sm:text-lg">{displayName}</h3>
             <p className="text-sm text-base-content/70">
               {onlineUsers.includes(selectedUser._id) ? t(language, "activeNow") : t(language, "inactive")}
             </p>
