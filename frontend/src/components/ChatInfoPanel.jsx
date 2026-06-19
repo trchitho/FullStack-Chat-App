@@ -19,6 +19,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { THEMES } from "../constants";
 
@@ -31,8 +32,10 @@ const ChatInfoPanel = ({ open, onClose }) => {
     updateConversationSetting,
     getPinnedMessages,
     setMessagePinned,
+    updateConversationNickname,
     updateConversationTheme,
   } = useChatStore();
+  const authUser = useAuthStore((state) => state.authUser);
   const [expanded, setExpanded] = useState("media");
   const [activeDialog, setActiveDialog] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -173,6 +176,8 @@ const ChatInfoPanel = ({ open, onClose }) => {
         disappearing={disappearing}
         setDisappearing={setDisappearing}
         updateConversationTheme={updateConversationTheme}
+        updateConversationNickname={updateConversationNickname}
+        authUser={authUser}
         onClose={() => setActiveDialog(null)}
       />
     </div>
