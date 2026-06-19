@@ -400,14 +400,39 @@ const ToggleRow = ({ label, checked, onChange = () => {}, description }) => (
   </label>
 );
 
-const NicknameRow = ({ name }) => (
-  <div className="flex items-center justify-between rounded-xl bg-base-200 p-3">
-    <span className="font-semibold">{name}</span>
-    <button type="button" className="btn btn-circle btn-ghost btn-sm" aria-label={`Sửa biệt danh ${name}`}>
-      <Edit3 className="size-4" />
-    </button>
-  </div>
-);
+const NicknameRow = ({ user, nickname, onSave }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(nickname || "");
+  const [saving, setSaving] = useState(false);
+  useEffect(() => setValue(nickname || ""), [nickname]);
+  const save = async () => {
+    setSaving(true);
+    try {
+      await onSave(value.trim());
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <div className="rounded-xl bg-base-200 p-3">
+      {editing ? (
+        <div className="flex gap-2">
+          <input className="input input-bordered min-w-0 flex-1" maxLength={50} value={value} onChange={(event) => setValue(event.target.value)} autoFocus />
+          <button type="button" className="btn btn-primary" disabled={saving} onClick={save}>Lưu</button>
+          <button type="button" className="btn btn-ghost" onClick={() => setEditing(false)}>Hủy</button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <span className="font-semibold">{nickname || user?.fullName}</span>
+          <button type="button" className="btn btn-circle btn-ghost btn-sm" onClick={() => setEditing(true)} aria-label={`Sửa biệt danh ${user?.fullName}`}>
+            <Edit3 className="size-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const SupportAction = ({ type, selectedUser }) => {
   const copy = {
