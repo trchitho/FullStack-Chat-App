@@ -21,6 +21,7 @@ export const useCallStore = create((set, get) => ({
   incomingCall: null,
   localStream: null,
   remoteStream: null,
+  remoteCameraOff: false,
   peerConnection: null,
   pendingCandidates: [],
   timeoutId: null,
@@ -45,6 +46,7 @@ export const useCallStore = create((set, get) => ({
       activeCall: null,
       localStream: null,
       remoteStream: null,
+      remoteCameraOff: false,
       peerConnection: null,
       pendingCandidates: [],
       timeoutId: null,
@@ -61,6 +63,7 @@ export const useCallStore = create((set, get) => ({
       const remoteVideo = get().remoteVideoRef?.current;
       if (remoteVideo) remoteVideo.srcObject = remoteStream;
       set({ remoteStream });
+      if (event.track.kind === "video") set({ remoteCameraOff: false });
     };
     pc.onicecandidate = (event) => {
       if (event.candidate) socket?.emit("call:ice-candidate", { recipientId: peerId, callId, candidate: event.candidate });
