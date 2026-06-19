@@ -123,6 +123,24 @@ export const googleLogin = (req, res) => {
     res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
 };
 
+const fetchGoogleProfile = async (code, config) => {
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+            code, client_id: config.clientId, client_secret: config.clientSecret,
+            redirect_uri: config.callbackUrl, grant_type: "authorization_code",
+        }),
+    });
+    if (!tokenResponse.ok) throw new Error("Google token exchange failed");
+    const tokens = await tokenResponse.json();
+    const profileResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    if (!profileResponse.ok) throw new Error("Google profile request failed");
+    return profileResponse.json();
+};
+
 export const logout = async (req, res) => {
     try {
         res.clearCookie('jwt');
