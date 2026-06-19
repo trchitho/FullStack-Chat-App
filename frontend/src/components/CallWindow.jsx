@@ -79,14 +79,24 @@ const CallWindow = () => {
         </div>
         <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black">
           {isVideo ? (
-            <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 h-full w-full object-contain" />
+            <>
+              <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 h-full w-full object-contain" />
+              {(!hasRemoteVideo || remoteCameraOff) && (
+                <div className="absolute inset-0"><CallAvatar user={activeCall.peer} /></div>
+              )}
+            </>
           ) : (
             <>
               <audio ref={remoteVideoRef} autoPlay />
-              <Phone className="size-24 text-white/35" />
+              <CallAvatar user={activeCall.peer} />
             </>
           )}
-          {isVideo && <video ref={localVideoRef} autoPlay muted playsInline className={`absolute bottom-4 right-4 z-20 aspect-video w-36 rounded-2xl border border-white/20 bg-zinc-900 object-cover sm:w-44 ${cameraOff ? "invisible" : ""}`} />}
+          {isVideo && (
+            <div className="absolute bottom-4 right-4 z-20 aspect-video w-36 overflow-hidden rounded-2xl border border-white/20 bg-zinc-900 sm:w-44">
+              <video ref={localVideoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+              {(cameraOff || !hasLocalVideo) && <div className="absolute inset-0"><CallAvatar user={authUser} compact /></div>}
+            </div>
+          )}
         </div>
         <div className="z-30 flex shrink-0 items-center justify-center gap-4 bg-zinc-950 p-5">
           <button type="button" className={`btn btn-circle text-white ${micMuted ? "bg-error/80" : "bg-white/10 hover:bg-white/20"}`} onClick={() => { toggleTrack("audio", micMuted); setMicMuted(!micMuted); }} aria-label={micMuted ? "Bật mic" : "Tắt mic"}><Mic className="size-5" /></button>
