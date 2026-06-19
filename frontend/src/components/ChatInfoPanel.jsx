@@ -316,7 +316,10 @@ const AttachmentList = ({ messages, empty }) => (
   </div>
 );
 
-const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, readReceipts, setReadReceipts, disappearing, setDisappearing, updateConversationTheme }) => {
+const ChatInfoSettingsBody = ({
+  type, selectedUser, quickEmoji, setQuickEmoji, readReceipts, setReadReceipts,
+  disappearing, setDisappearing, updateConversationTheme, updateConversationNickname, authUser,
+}) => {
   if (type === "theme") {
     return (
       <div className="space-y-3">
@@ -360,7 +363,20 @@ const ChatInfoSettingsBody = ({ type, selectedUser, quickEmoji, setQuickEmoji, r
     );
   }
   if (type === "nicknames") {
-    return <div className="space-y-3"><NicknameRow name={selectedUser.fullName} /><NicknameRow name="Bạn" /></div>;
+    return (
+      <div className="space-y-3">
+        <NicknameRow
+          user={selectedUser}
+          nickname={selectedUser.conversationNickname}
+          onSave={(nickname) => updateConversationNickname(selectedUser, selectedUser._id, nickname)}
+        />
+        <NicknameRow
+          user={authUser}
+          nickname={selectedUser.myConversationNickname}
+          onSave={(nickname) => updateConversationNickname(selectedUser, authUser._id, nickname)}
+        />
+      </div>
+    );
   }
   if (type === "permissions") {
     return <ToggleRow label="Cho phép nhận tin nhắn" checked description="Kiểm soát việc đoạn chat này có thể tiếp tục gửi tin nhắn cho bạn." />;
