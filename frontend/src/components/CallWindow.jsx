@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 const CallWindow = () => {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const { activeCall, localStream, attachVideoRefs, finishCall } = useCallStore();
+  const {
+    activeCall, localStream, remoteStream, remoteCameraOff,
+    attachVideoRefs, finishCall, notifyMediaState,
+  } = useCallStore();
+  const authUser = useAuthStore((state) => state.authUser);
   const [elapsed, setElapsed] = useState(0);
   const [micMuted, setMicMuted] = useState(false);
   const [cameraOff, setCameraOff] = useState(false);
@@ -33,6 +38,8 @@ const CallWindow = () => {
 
   if (!activeCall) return null;
   const isVideo = activeCall.type === "video";
+  const hasRemoteVideo = remoteStream?.getVideoTracks().some((track) => track.readyState === "live");
+  const hasLocalVideo = localStream?.getVideoTracks().some((track) => track.readyState === "live");
   const endStatus = activeCall.status === "connected" ? "completed" : "cancelled";
   const durationLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
   const statusLabel = activeCall.status === "connected"
