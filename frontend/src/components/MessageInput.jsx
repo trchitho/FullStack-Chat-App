@@ -113,6 +113,33 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
     reader.readAsDataURL(file);
   };
 
+  const insertTextAtCursor = (value) => {
+    const input = textInputRef.current;
+    const start = input?.selectionStart ?? text.length;
+    const end = input?.selectionEnd ?? start;
+    setText((current) => `${current.slice(0, start)}${value}${current.slice(end)}`);
+    requestAnimationFrame(() => {
+      input?.focus();
+      input?.setSelectionRange(start + value.length, start + value.length);
+    });
+  };
+
+  const readClipboard = async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      const imageType = items.flatMap((item) => item.types).find((type) => type.startsWith("image/"));
+      if (imageType) {
+        const item = items.find((entry) => entry.types.includes(imageType));
+        const blob = await item.getType(imageType);
+        handlePaste({ clipboardData: { items: [{ type: imageType, getAsFile: () => blob }] }, preventDefault() {} });
+        return;
+      }
+      insertTextAtCursor(await navigator.clipboard.readText());
+    } catch {
+      toast.error(isVi ? "Trình duyệt không cho phép đọc clipboard" : "Clipboard permission was denied");
+    }
+  };
+
   const removeImage = () => {
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
