@@ -5,8 +5,18 @@ const ChatContextMenu = ({ position, items, onClose }) => {
   const menuRef = useRef(null);
   useEffect(() => {
     if (!position) return undefined;
+    menuRef.current?.querySelector("button:not(:disabled)")?.focus();
     const close = (event) => {
-      if (event.key === "Escape" || !menuRef.current?.contains(event.target)) onClose();
+      if (event.key === "Escape" || (event.type === "mousedown" && !menuRef.current?.contains(event.target))) {
+        onClose();
+        return;
+      }
+      if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+      event.preventDefault();
+      const buttons = [...menuRef.current.querySelectorAll("button:not(:disabled)")];
+      const current = buttons.indexOf(document.activeElement);
+      const offset = event.key === "ArrowDown" ? 1 : -1;
+      buttons[(current + offset + buttons.length) % buttons.length]?.focus();
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
