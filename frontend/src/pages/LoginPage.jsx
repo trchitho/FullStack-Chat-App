@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 import { useLanguageStore } from "../store/useLanguageStore";
 
@@ -13,6 +14,13 @@ const LoginPage = () => {
   });
   const { login, isLoggingIn } = useAuthStore();
   const isVi = useLanguageStore((state) => state.language === "vi");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("oauth") === "error") {
+      toast.error(isVi ? "Đăng nhập Google thất bại" : "Google sign-in failed");
+    }
+  }, [isVi, searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
