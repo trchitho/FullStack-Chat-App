@@ -443,6 +443,22 @@ export const updateDirectConversationTheme = async (req, res) => {
     });
 };
 
+export const updateDirectConversationNickname = async (req, res) => {
+    const conversation = await Conversation.findOne({
+        directKey: directKeyFor(req.user._id, req.params.userId),
+        participants: req.user._id,
+    });
+    const targetUserId = String(req.body.userId || "");
+    if (!conversation || !conversation.participants.some((id) => String(id) === targetUserId)) {
+        return res.status(403).json({ message: "Conversation access denied" });
+    }
+    const nickname = String(req.body.nickname || "").trim();
+    if (nickname.length > 50) return res.status(400).json({ message: "Nickname is too long" });
+    const existing = conversation.participantNicknames.find((item) => String(item.user) === targetUserId);
+    if (existing) Object.assign(existing, { nickname, updatedBy: req.user._id, updatedAt: new Date() });
+    else conversation.participantNicknames.push({ user: targetUserId, nickname, updatedBy: req.user._id });
+    await conversation.save();
+
 export const downloadMessageAttachment = async (req, res) => {
     try {
         const message = await Message.findById(req.params.messageId).lean();
