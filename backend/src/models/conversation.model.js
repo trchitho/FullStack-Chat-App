@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const participantNicknameSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    nickname: { type: String, default: "", trim: true, maxlength: 50 },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    updatedAt: { type: Date, default: Date.now },
+}, { _id: false });
+
 const conversationSchema = new mongoose.Schema(
     {
         type: { type: String, enum: ["direct", "group"], default: "group" },
@@ -22,6 +29,7 @@ const conversationSchema = new mongoose.Schema(
         lastMessageAt: { type: Date, default: Date.now },
         theme: { type: String, default: "", trim: true },
         quickEmoji: { type: String, default: "👍", trim: true },
+        participantNicknames: { type: [participantNicknameSchema], default: [] },
     },
     { timestamps: true }
 );
