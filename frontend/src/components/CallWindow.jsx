@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
+import { Mic, PhoneOff, Video, VideoOff } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCallRingtone } from "../hooks/useCallRingtone";
