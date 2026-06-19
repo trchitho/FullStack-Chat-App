@@ -161,6 +161,22 @@ const findOrCreateGoogleUser = async (profile) => {
     return user;
 };
 
+export const googleCallback = async (req, res) => {
+    const config = googleConfig();
+    const failureUrl = `${config.frontendUrl}/login?oauth=error`;
+    try {
+        const state = jwt.verify(String(req.query.state || ""), process.env.JWT_SECRET);
+        if (state.purpose !== "google-oauth" || !req.query.code) return res.redirect(failureUrl);
+        const profile = await fetchGoogleProfile(req.query.code, config);
+        if (!profile.email || !profile.email_verified) return res.redirect(failureUrl);
+        const user = await findOrCreateGoogleUser(profile);
+        generateToken(user._id, res);
+        return res.redirect(`${config.frontendUrl}/login?oauth=success`);
+    } catch {
+        return res.redirect(failureUrl);
+    }
+};
+
 export const logout = async (req, res) => {
     try {
         res.clearCookie('jwt');
