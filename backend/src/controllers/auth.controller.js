@@ -3,6 +3,20 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import Friendship from "../models/friendship.model.js";
 import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
+
+const googleConfig = () => ({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+    frontendUrl: process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:5173",
+});
+
+const createUniqueUsername = async (email) => {
+    const base = email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "") || `user${Date.now()}`;
+    if (!(await User.exists({ username: base }))) return base;
+    return `${base}${Date.now().toString().slice(-6)}`;
+};
 
 export const signup = async (req, res) => {
     const {email, fullName, password} = req.body;
