@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { X } from "lucide-react";
+import { useDialogFocus } from "../hooks/useDialogFocus";
 
 const filters = [
   ["all", "Tất cả"],
@@ -17,19 +18,14 @@ const ReactionListModal = ({ open, reactions, onClose }) => {
     () => reactions.filter((reaction) => filter === "all" || reaction.type === filter),
     [filter, reactions]
   );
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [onClose, open]);
+  const dialogRef = useDialogFocus(open, onClose);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[175] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="reaction-list-title"
