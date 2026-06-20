@@ -105,7 +105,7 @@ export const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Error in login controller" , error.message);
+        console.error("Login failed:", error.message);
         return res.status(500).json({message: 'Internal server error'});
     }
 };
@@ -191,8 +191,6 @@ export const updateProfile = async (req, res) => {
         const {profilePic} = req.body;
         const userId= req.user._id
 
-        console.log("Updating profile for userId:", userId);
-
         if(!profilePic) return res.status(400).json({message: 'Profile picture is required'});
 
         const uploadResponse = await cloudinary.uploader.upload(profilePic);
@@ -209,7 +207,7 @@ export const updateProfile = async (req, res) => {
 
         res.status(200).json(updatedUser);
     } catch (error) {
-        console.log("Error in updateProfile controller" , error.message);
+        console.error("Profile image update failed:", error.message);
         return res.status(500).json({message: 'Internal server error'});   
     }
 
@@ -219,7 +217,7 @@ export const checkAuth =  (req, res) => {
     try {
         return res.status(200).json(req.user);
     } catch (error) {
-        console.log("Error in checkAuth controller" , error.message);
+        console.error("Auth check failed:", error.message);
         return res.status(500).json({message: 'Internal server error'});
     }
 }
