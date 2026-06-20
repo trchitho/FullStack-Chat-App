@@ -6,6 +6,7 @@ import { io } from "../lib/socket.js";
 
 const ensureParticipant = (conversation, userId) =>
     conversation.participants.some((participant) => String(participant._id || participant) === String(userId));
+const MAX_MESSAGE_LENGTH = 5000;
 
 const messagePreview = (message, viewerId) => {
     const isOwn = String(message.senderId) === String(viewerId);
@@ -146,10 +147,17 @@ export const sendGroupMessage = async (req, res) => {
         if (!conversation || !ensureParticipant(conversation, req.user._id)) {
             return res.status(403).json({ message: "Conversation access denied" });
         }
+        const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
+        if (text.length > MAX_MESSAGE_LENGTH) {
+            return res.status(400).json({ message: "Message is too long" });
+        }
+        if (!text && !req.body.attachment && !req.body.call) {
+            return res.status(400).json({ message: "Message content is required" });
+        }
         const message = await Message.create({
             conversationId: conversation._id,
             senderId: req.user._id,
-            text: req.body.text,
+            text: text || undefined,
             attachment: req.body.attachment,
             replyTo: req.body.replyTo,
             call: req.body.call,
