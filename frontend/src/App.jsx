@@ -1,22 +1,17 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import {Routes ,Route, Navigate, useLocation} from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import SignUpPage from './pages/SignUpPage'
-import LoginPage from './pages/LoginPage'
-import SettingsPage from './pages/SettingsPage'
-import ProfilePage from './pages/ProfilePage'
-import HelpCenterPage from './pages/HelpCenterPage'
-import PoliciesCenterPage from './pages/PoliciesCenterPage'
-import AdminPage from './pages/AdminPage'
-import ContactsPage from './pages/ContactsPage'
-import SocialProfilePage from './pages/SocialProfilePage'
-import TimelinePage from './pages/TimelinePage'
-import MessageRequestsPage from './pages/MessageRequestsPage'
 import { useAuthStore } from './store/useAuthStore' 
 import {Loader} from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useThemeStore } from './store/useThemeStore'
+
+const HomePage = lazy(() => import("./pages/HomePage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const SocialProfilePage = lazy(() => import("./pages/SocialProfilePage"));
 
 const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
