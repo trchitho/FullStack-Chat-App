@@ -181,7 +181,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
             <button
               type="button"
               data-pingme-menu-trigger
-              className="btn btn-circle btn-sm border-none bg-base-300"
+              className="btn btn-circle min-h-11 min-w-11 border-none bg-base-300"
               onClick={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
                 const shouldOpen = !showMainMenu;
@@ -195,7 +195,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
             >
               <MoreHorizontal className="size-5" />
             </button>
-            <button type="button" className="btn btn-circle btn-sm border-none bg-base-300" onClick={openNewMessage} aria-label="Soạn tin nhắn">
+            <button type="button" className="btn btn-circle min-h-11 min-w-11 border-none bg-base-300" onClick={openNewMessage} aria-label="Soạn tin nhắn">
               <Pencil className="size-4" />
             </button>
           </div>
@@ -217,7 +217,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
             <button
               key={filter.id}
               type="button"
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
                 activeFilter === filter.id ? "bg-primary/20 text-primary" : "hover:bg-base-300"
               }`}
               onClick={() => setActiveFilter(filter.id)}
