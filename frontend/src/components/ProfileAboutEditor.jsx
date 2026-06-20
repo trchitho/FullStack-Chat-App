@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useDialogFocus } from "../hooks/useDialogFocus";
 
 const categories = [
   ["intro", "Giới thiệu"],
@@ -25,14 +26,9 @@ const Field = ({ label, value, onChange, multiline = false }) => (
 const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
   const [active, setActive] = useState("intro");
   const [draft, setDraft] = useState(profile);
+  const dialogRef = useDialogFocus(open, onClose);
 
   useEffect(() => setDraft(profile), [profile]);
-  useEffect(() => {
-    if (!open) return undefined;
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [onClose, open]);
 
   if (!open) return null;
   const update = (field, value) => setDraft((current) => ({ ...current, [field]: value }));
@@ -44,6 +40,7 @@ const ProfileAboutEditor = ({ profile, open, onClose, onSave }) => {
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="profile-editor-title"
