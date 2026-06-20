@@ -12,6 +12,19 @@ const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SocialProfilePage = lazy(() => import("./pages/SocialProfilePage"));
+const ContactsPage = lazy(() => import("./pages/ContactsPage"));
+const TimelinePage = lazy(() => import("./pages/TimelinePage"));
+const MessageRequestsPage = lazy(() => import("./pages/MessageRequestsPage"));
+const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
+const PoliciesCenterPage = lazy(() => import("./pages/PoliciesCenterPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+
+const RouteFallback = () => (
+  <div role="status" aria-live="polite" className="flex min-h-dvh items-center justify-center">
+    <Loader className="size-8 animate-spin" aria-hidden="true" />
+    <span className="sr-only">Đang tải trang</span>
+  </div>
+);
 
 const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore();
