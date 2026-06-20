@@ -24,7 +24,9 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in checkAuth", error);
+      if (import.meta.env.DEV && error.response?.status !== 401) {
+        console.error("Authentication check failed:", error.message);
+      }
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
