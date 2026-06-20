@@ -54,6 +54,16 @@ const SocialProfilePage = () => {
   const tabMedia = visibleMedia.filter((media) =>
     activeTab === "Video" ? media.type === "video" : media.type === "image"
   );
+  const moveTab = (event, currentTab) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const currentIndex = tabs.indexOf(currentTab);
+    const nextIndex = event.key === "Home" ? 0
+      : event.key === "End" ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    setActiveTab(tabs[nextIndex]);
+    document.getElementById(`profile-tab-${tabs[nextIndex]}`)?.focus();
+  };
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-base-200 pt-16">
@@ -71,6 +81,7 @@ const SocialProfilePage = () => {
               tabIndex={activeTab === tab ? 0 : -1}
               className={`btn btn-ghost min-h-12 shrink-0 rounded-none ${activeTab === tab ? "border-b-2 border-primary text-primary" : ""}`}
               onClick={() => setActiveTab(tab)}
+              onKeyDown={(event) => moveTab(event, tab)}
             >
               {tab}
             </button>
