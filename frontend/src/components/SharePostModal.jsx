@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
 import { useSocialStore } from "../store/useSocialStore";
+import { useDialogFocus } from "../hooks/useDialogFocus";
 
 const SharePostModal = ({ post, open, onClose }) => {
   const sharePost = useSocialStore((state) => state.sharePost);
@@ -12,14 +13,12 @@ const SharePostModal = ({ post, open, onClose }) => {
   const [content, setContent] = useState("");
   const [audience, setAudience] = useState("friends");
   const [submitting, setSubmitting] = useState(false);
+  const dialogRef = useDialogFocus(open, onClose);
 
   useEffect(() => {
     if (!open) return undefined;
     getFriends();
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [getFriends, onClose, open]);
+  }, [getFriends, open]);
 
   if (!open) return null;
 
@@ -48,6 +47,7 @@ const SharePostModal = ({ post, open, onClose }) => {
       onMouseDown={onClose}
     >
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-post-title"
