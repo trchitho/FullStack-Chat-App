@@ -32,6 +32,11 @@ export const useChatStore = create((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   isNewMessageOpen: false,
+  handleSocketReconnect: () => {
+    get().getUsers();
+    const selectedUser = get().selectedUser;
+    if (selectedUser) get().getMessages(selectedUser._id);
+  },
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -238,6 +243,8 @@ export const useChatStore = create((set, get) => ({
     const socket = activeSocket || useAuthStore.getState().socket;
     if (!socket) return;
 
+    socket.off("connect", get().handleSocketReconnect);
+    socket.on("connect", get().handleSocketReconnect);
     socket.off("newMessage");
     socket.off("newGroupMessage");
     socket.off("messageDeliveredUpdate");
@@ -353,6 +360,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("conversationThemeUpdated");
     socket.off("conversation:nickname:update");
     socket.off("messagePinnedUpdate");
+    socket.off("connect", get().handleSocketReconnect);
   },
 
   setSelectedUser: (selectedUser) => {
