@@ -47,7 +47,7 @@ const LoginPage = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" aria-busy={isLoggingIn}>
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Email</span>
@@ -61,6 +61,8 @@ const LoginPage = () => {
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
                   aria-label="Email"
+                  autoComplete="email"
+                  required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -80,6 +82,8 @@ const LoginPage = () => {
                   className={`input input-bordered w-full pl-10`}
                   placeholder="••••••••"
                   aria-label={isVi ? "Mật khẩu" : "Password"}
+                  autoComplete="current-password"
+                  required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
