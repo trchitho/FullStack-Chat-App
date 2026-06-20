@@ -17,6 +17,8 @@ import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import { app, httpServer } from "./lib/socket.js";
+import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js";
+import { requestContext, securityHeaders } from "./middlewares/security.middleware.js";
 
 dotenv.config();
 
@@ -29,6 +31,8 @@ const allowedOrigins = isProduction
 // Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+app.use(requestContext);
+app.use(securityHeaders);
 app.use(
   cors({
     origin: allowedOrigins,
@@ -63,6 +67,8 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/friends", friendshipRoutes);
 app.use("/api/profiles", profileRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api", notFoundHandler);
+app.use(errorHandler);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
