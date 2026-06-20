@@ -42,7 +42,7 @@ const AudioMessageBubble = ({ message, language }) => {
 
   return (
     <div className="flex w-[min(78vw,320px)] items-center gap-3 rounded-2xl bg-base-100/20 p-3">
-      <button type="button" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-base-100/30" onClick={togglePlayback} aria-label={isPlaying ? (isVi ? "Tạm dừng tin nhắn thoại" : "Pause voice message") : (isVi ? "Phát tin nhắn thoại" : "Play voice message")}>
+      <button type="button" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-base-100/30" onClick={togglePlayback} aria-label={isPlaying ? (isVi ? "Tạm dừng tin nhắn thoại" : "Pause voice message") : (isVi ? "Phát tin nhắn thoại" : "Play voice message")}>
         {isPlaying ? <Pause className="size-5" /> : <Play className="size-5 translate-x-0.5" />}
       </button>
       <div className="min-w-0 flex-1">
