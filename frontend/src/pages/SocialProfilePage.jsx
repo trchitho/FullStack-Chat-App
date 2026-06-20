@@ -58,14 +58,18 @@ const SocialProfilePage = () => {
   return (
     <main className="min-h-dvh overflow-x-hidden bg-base-200 pt-16">
       <ProfileHeader profile={profile} onEdit={() => setEditorOpen(true)} onEditMedia={handleMedia} />
-      <nav className="sticky top-16 z-20 overflow-x-auto border-b border-base-300 bg-base-100">
-        <div className="mx-auto flex max-w-6xl gap-1 px-4">
+      <nav className="sticky top-16 z-20 overflow-x-auto border-b border-base-300 bg-base-100" aria-label="Nội dung trang cá nhân">
+        <div role="tablist" className="mx-auto flex max-w-6xl gap-1 px-4">
           {tabs.map((tab) => (
             <button
               key={tab}
               type="button"
+              role="tab"
+              id={`profile-tab-${tab}`}
+              aria-controls="profile-tabpanel"
+              aria-selected={activeTab === tab}
+              tabIndex={activeTab === tab ? 0 : -1}
               className={`btn btn-ghost min-h-12 shrink-0 rounded-none ${activeTab === tab ? "border-b-2 border-primary text-primary" : ""}`}
-              aria-pressed={activeTab === tab}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -73,7 +77,7 @@ const SocialProfilePage = () => {
           ))}
         </div>
       </nav>
-      <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 py-5 lg:px-4 ${
+      <div id="profile-tabpanel" role="tabpanel" aria-labelledby={`profile-tab-${activeTab}`} className={`mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 py-5 lg:px-4 ${
         ["Tất cả", "Giới thiệu"].includes(activeTab) ? "lg:grid-cols-[22rem_minmax(0,1fr)]" : ""
       }`}>
         {["Tất cả", "Giới thiệu"].includes(activeTab) && <aside className="space-y-4">
