@@ -252,7 +252,7 @@ const Sidebar = ({ onOpenPanel = () => {} }) => {
               >
                 <div className="avatar relative shrink-0">
                   <div className="size-14 rounded-full">
-                    <img src={user.profilePic || "/avatar.png"} alt={displayName} />
+                    <img src={user.profilePic || "/avatar.png"} alt={displayName} loading="lazy" decoding="async" />
                   </div>
                   {isOnline && <span className="absolute bottom-1 right-0 size-3.5 rounded-full border-2 border-base-200 bg-success" />}
                 </div>
