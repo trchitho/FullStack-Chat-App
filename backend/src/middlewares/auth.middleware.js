@@ -17,8 +17,11 @@ export const protectRoute = async (req, res, next) => {
         next();
 
     } catch (error) {
-        console.log("Error in protectRoute middleware", error.message);
-        
-        return res.status(500).json({message: 'Internal server error'});
+        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+            res.clearCookie("jwt");
+            return res.status(401).json({ message: "Authentication required" });
+        }
+        console.error("Authentication middleware failed:", error.message);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
