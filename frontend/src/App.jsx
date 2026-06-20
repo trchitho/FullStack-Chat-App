@@ -31,14 +31,18 @@ const App = () => {
 
   if (isCheckingAuth && !authUser)
     return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <Loader className="size-10 animate-spin" />
+      <div role="status" aria-live="polite" className="flex min-h-dvh items-center justify-center">
+        <Loader className="size-10 animate-spin" aria-hidden="true" />
+        <span className="sr-only">Đang kiểm tra phiên đăng nhập</span>
       </div>
     );
 
 
   return (
     <div data-theme = {theme}>
+      <a href="#main-content" className="sr-only z-[300] rounded-lg bg-primary px-4 py-2 text-primary-content focus:not-sr-only focus:fixed focus:left-3 focus:top-3">
+        Bỏ qua tới nội dung chính
+      </a>
 
       {!standalonePage && <Navbar />}
 
