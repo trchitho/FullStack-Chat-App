@@ -86,10 +86,16 @@ const PoliciesCenterPage = () => {
 
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-8 lg:grid-cols-[340px_1fr]">
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <div className="space-y-3">
+          <div role="tablist" aria-label="Danh mục chính sách" className="space-y-3">
             {filteredTabs.map(({ id, label, description, icon: Icon }) => (
               <button
                 key={id}
+                type="button"
+                role="tab"
+                id={`policy-tab-${id}`}
+                aria-controls="policy-tabpanel"
+                aria-selected={activeTab === id}
+                tabIndex={activeTab === id ? 0 : -1}
                 onClick={() => setActiveTab(id)}
                 className={`w-full rounded-2xl border p-4 text-left transition ${activeTab === id ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "border-slate-200 bg-white hover:border-slate-300"}`}
               >
@@ -116,7 +122,7 @@ const PoliciesCenterPage = () => {
           )}
         </aside>
 
-        <article className="rounded-3xl border border-slate-200 bg-white px-5 py-7 shadow-sm md:px-10">
+        <article id="policy-tabpanel" role="tabpanel" aria-labelledby={`policy-tab-${activeTab}`} className="rounded-3xl border border-slate-200 bg-white px-5 py-7 shadow-sm md:px-10">
           <div className="mb-8 border-b border-slate-200 pb-5">
             <div className="text-sm font-semibold text-blue-700">{activePolicy.label}</div>
             <p className="mt-2 text-slate-600">{activePolicy.description}</p>
