@@ -176,7 +176,7 @@ const HelpCenterPage = () => {
       </div>
 
       <footer className="mx-auto flex max-w-7xl justify-between px-5 pb-10 text-sm text-slate-600">
-        <Link to="/policies_center" target="_blank" className="font-semibold text-blue-700 hover:underline">Điều khoản và chính sách</Link>
+        <Link to="/policies_center" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:underline">Điều khoản và chính sách</Link>
         <span>PingMe Help Center</span>
       </footer>
     </main>

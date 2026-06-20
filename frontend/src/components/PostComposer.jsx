@@ -105,7 +105,7 @@ const PostComposer = ({ authUser }) => {
               </div>
               <textarea
                 autoFocus
-                className="textarea mt-4 min-h-44 w-full resize-none border-none bg-transparent text-xl focus:outline-none"
+                className="textarea mt-4 min-h-44 w-full resize-none border-none bg-transparent text-xl focus-visible:ring-2 focus-visible:ring-primary"
                 placeholder="Bạn đang nghĩ gì?"
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
