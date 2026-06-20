@@ -116,6 +116,29 @@ npm run dev
 3) Click a user to start chatting in real-time.
 4) Access settings to personalize the theme and profile to manage your details.
 
+## Quality and Production Checks
+
+```bash
+npm run build
+npm run lint --prefix frontend
+npm run format:check --prefix frontend
+npm audit --prefix frontend --omit=dev
+npm audit --prefix backend --omit=dev
+```
+
+- Never commit `.env`, OAuth secrets, JWT secrets, database credentials, or generated builds.
+- Test keyboard-only navigation with Tab, Shift+Tab, Enter, Space, Escape, and arrow keys.
+- Verify visible focus in both light and dark themes and confirm dialogs retain and restore focus.
+- Test responsive layouts at 320, 375, 425, 768, 1024, and 1366 pixels.
+- Test realtime behavior using two browsers or an incognito window: send, delivered, seen, reconnect.
+- Test denied camera/microphone permissions and confirm calls clean up streams and timers.
+- Test upload failures, offline socket recovery, OAuth errors, empty states, and retry paths.
+
+The frontend targets WCAG 2.2 AA semantics, keyboard operation, responsive touch targets,
+route-level code splitting, safe external links, and accessible loading/live regions.
+The backend applies authenticated routes, participant checks, request IDs, security headers,
+validated message sizes, consistent JSON errors, and secret-safe logging.
+
 ## Demo
 
 ### Login
