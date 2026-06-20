@@ -126,9 +126,10 @@ const ChatContainer = () => {
 
   if(isMessagesLoading) { 
     return (
-      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div aria-busy="true" className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         <ChatHeader />
         <MessageSkeleton /> 
+        <span role="status" className="sr-only">Đang tải tin nhắn</span>
         <MessageInput />
       </div>
     )
@@ -163,7 +164,7 @@ const ChatContainer = () => {
         </div>
       )}
 
-      <div ref={messagesContainerRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 py-3 sm:px-4 md:px-6 lg:px-8 lg:py-5">
+      <div ref={messagesContainerRef} role="log" aria-live="polite" aria-relevant="additions text" aria-label={isVi ? "Tin nhắn trong cuộc trò chuyện" : "Conversation messages"} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 py-3 sm:px-4 md:px-6 lg:px-8 lg:py-5">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center text-base-content/70">
             <img src={selectedUser.profilePic || "/avatar.png"} alt="" className="mb-4 size-20 rounded-full object-cover" />
