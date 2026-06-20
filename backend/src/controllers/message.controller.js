@@ -47,6 +47,7 @@ const cloudinaryResourceType = (mimeType = "") => {
 
 const directKeyFor = (firstId, secondId) =>
     [String(firstId), String(secondId)].sort().join(":");
+const MAX_MESSAGE_LENGTH = 5000;
 
 const areFriends = (firstId, secondId) => Friendship.exists({
     status: "accepted",
@@ -164,6 +165,13 @@ export const sendMessage = async (req, res) => {
         const { id:receiverId } = req.params;
         const senderId = req.user._id;
         const { text, image, replyTo, attachment, call } = req.body;
+        const normalizedText = typeof text === "string" ? text.trim() : "";
+        if (normalizedText.length > MAX_MESSAGE_LENGTH) {
+            return res.status(400).json({ message: "Message is too long" });
+        }
+        if (!normalizedText && !image && !attachment && !call) {
+            return res.status(400).json({ message: "Message content is required" });
+        }
         if (String(senderId) === receiverId) {
             return res.status(400).json({ message: "Cannot message yourself" });
         }
@@ -204,7 +212,7 @@ export const sendMessage = async (req, res) => {
             senderId,
             receiverId,
             conversationId: conversation._id,
-            text,
+            text: normalizedText || undefined,
             image: imageUrl,
             attachment: normalizedAttachment,
             replyTo,
