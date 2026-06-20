@@ -1,5 +1,5 @@
 import { Globe2, Lock, Users, X } from "lucide-react";
-import { useEffect } from "react";
+import { useDialogFocus } from "../hooks/useDialogFocus";
 
 const options = [
   {
@@ -23,17 +23,13 @@ const options = [
 ];
 
 const PostAudienceSelector = ({ open, value, onChange, onClose }) => {
-  useEffect(() => {
-    if (!open) return undefined;
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [onClose, open]);
+  const dialogRef = useDialogFocus(open, onClose);
 
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[170] flex items-center justify-center bg-black/60 p-3" onMouseDown={onClose}>
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="audience-title"
