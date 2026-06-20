@@ -409,11 +409,14 @@ const MessageInput = ({ replyTo, onCancelReply }) => {
           className="input input-sm h-10 min-h-10 flex-1 border-none bg-transparent sm:h-11 sm:min-h-11"
             disabled={isSending}
             placeholder="Aa"
+            maxLength={5000}
+            aria-describedby="message-length-hint"
             value={text}
             onChange={(e) => setText(e.target.value)}
             onPaste={handlePaste}
             onContextMenu={openContextMenu}
           />
+          <span id="message-length-hint" className="sr-only">Tối đa 5000 ký tự</span>
           <input
             type="file"
             accept="image/*"
