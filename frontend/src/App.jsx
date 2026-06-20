@@ -46,6 +46,7 @@ const App = () => {
 
       {!standalonePage && <Navbar />}
 
+      <div id="main-content" tabIndex="-1">
       <Routes>
         <Route path="/" element={authUser ? <HomePage /> : <Navigate to='/login' />} />
         <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
@@ -62,6 +63,7 @@ const App = () => {
         <Route path="/policies_center" element={<PoliciesCenterPage />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
+      </div>
       
       <Toaster />
 
