@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import Friendship from "../models/friendship.model.js";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
+import { logAuditEvent } from "../lib/audit.js";
 
 const googleConfig = () => ({
     clientId: process.env.GOOGLE_CLIENT_ID,
@@ -75,6 +76,11 @@ export const signup = async (req, res) => {
             return res.status(400).json({message: 'Failed to create new user'});
         }
 
+        }
+        else{
+            return res.status(400).json({message: 'Failed to create new user'});
+        }
+
     } catch (error) {
         return res.status(500).json({message: 'Something went wrong, please try again'});
     }
@@ -85,17 +91,25 @@ export const login = async (req, res) => {
 
     try {
         const user = await User.findOne({email});
-        if(!user) return res.status(400).json({message: 'Invalid credentials'});
+        if(!user) {
+            logAuditEvent({ req, action: "login", status: "failure", metadata: { reason: "User not found", email } });
+            return res.status(400).json({message: 'Invalid credentials'});
+        }
 
         if (!user.password) {
+            logAuditEvent({ req, userId: user._id, action: "login", status: "failure", metadata: { reason: "Missing password / Google OAuth required" } });
             return res.status(400).json({ message: "Please sign in with Google" });
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 
-        if(!isPasswordMatch) return res.status(400).json({message: 'Invalid credentials'});
+        if(!isPasswordMatch) {
+            logAuditEvent({ req, userId: user._id, action: "login", status: "failure", metadata: { reason: "Password mismatch" } });
+            return res.status(400).json({message: 'Invalid credentials'});
+        }
 
         // generate jwt token
         generateToken(user._id, res);
+        logAuditEvent({ req, userId: user._id, action: "login", status: "success" });
 
         return res.status(200).json({
             _id: user._id,
@@ -105,6 +119,7 @@ export const login = async (req, res) => {
         });
 
     } catch (error) {
+        logAuditEvent({ req, action: "login", status: "failure", metadata: { error: error.message } });
         console.error("Login failed:", error.message);
         return res.status(500).json({message: 'Internal server error'});
     }
