@@ -183,22 +183,35 @@ export const googleCallback = async (req, res) => {
     const failureUrl = `${config.frontendUrl}/login?oauth=error`;
     try {
         const state = jwt.verify(String(req.query.state || ""), process.env.JWT_SECRET);
-        if (state.purpose !== "google-oauth" || !req.query.code) return res.redirect(failureUrl);
+        if (state.purpose !== "google-oauth" || !req.query.code) {
+            logAuditEvent({ req, action: "google_oauth", status: "failure", metadata: { reason: "Invalid state/code" } });
+            return res.redirect(failureUrl);
+        }
         const profile = await fetchGoogleProfile(req.query.code, config);
-        if (!profile.email || !profile.email_verified) return res.redirect(failureUrl);
+        if (!profile.email || !profile.email_verified) {
+            logAuditEvent({ req, action: "google_oauth", status: "failure", metadata: { reason: "Email not verified", email: profile.email } });
+            return res.redirect(failureUrl);
+        }
         const user = await findOrCreateGoogleUser(profile);
         generateToken(user._id, res);
+        logAuditEvent({ req, userId: user._id, action: "google_oauth", status: "success", metadata: { email: profile.email } });
         return res.redirect(`${config.frontendUrl}/login?oauth=success`);
-    } catch {
+    } catch (error) {
+        logAuditEvent({ req, action: "google_oauth", status: "failure", metadata: { error: error.message } });
         return res.redirect(failureUrl);
     }
 };
 
 export const logout = async (req, res) => {
     try {
+        const userId = req.user?._id;
         res.clearCookie('jwt');
+        if (userId) {
+            logAuditEvent({ req, userId, action: "logout", status: "success" });
+        }
         return res.status(200).json({message: 'Logged out successfully'});
     } catch (error) {
+        logAuditEvent({ req, userId: req.user?._id, action: "logout", status: "failure", metadata: { error: error.message } });
         return res.status(500).json({message: 'Internal server error'});
     }
 };
@@ -206,7 +219,7 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const {profilePic} = req.body;
-        const userId= req.user._id
+        const userId= req.user._id;
 
         if(!profilePic) return res.status(400).json({message: 'Profile picture is required'});
 
