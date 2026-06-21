@@ -147,11 +147,32 @@ validated message sizes, consistent JSON errors, and secret-safe logging.
 ### Home  
 ![Profile Page](demo/Screenshot%202026-03-11%20095531.png)
 
+
+## Demo
+
+### Login
+![Home Page](demo/Screenshot%202026-03-11%20095129.png)
+
+### Home  
+![Profile Page](demo/Screenshot%202026-03-11%20095531.png)
+
 ### Settings
 ![Settings Page](demo/Screenshot%202026-03-11%20095554.png)
 
 ### Profile
 ![Signup Page](demo/Screenshot%202026-03-11%20095602.png)
+
+## Production Hardening & NFRs
+
+The application implements robust Non-Functional Requirements (#11 - #40) for production deployments:
+- **NFR Compliance Matrix**: Full details on NFR implementation can be found in [NFR.md](docs/NFR.md).
+- **Backup & Recovery**: Detailed procedures for data resilience are described in [BACKUP_RECOVERY.md](docs/BACKUP_RECOVERY.md).
+- **Disaster Recovery**: Operation guidelines, rollbacks, and testing steps are outlined in [DISASTER_RECOVERY.md](docs/DISASTER_RECOVERY.md).
+
+### Health & Monitoring Endpoints
+- **Health Check**: `GET /api/health` returns environment, uptime, database connection status, and online Socket connections count.
+- **Readiness Check**: `GET /api/ready` lightweight check returning status of database readiness.
+- **Metrics**: `GET /api/metrics` displays active counts, memory logs, and server stats.
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request.
@@ -160,5 +181,3 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - Cloudinary for image storage
 - DaisyUI for themes
 - Socket.IO for real-time communication
-
-
