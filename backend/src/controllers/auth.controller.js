@@ -221,7 +221,10 @@ export const updateProfile = async (req, res) => {
         const {profilePic} = req.body;
         const userId= req.user._id;
 
-        if(!profilePic) return res.status(400).json({message: 'Profile picture is required'});
+        if(!profilePic) {
+            logAuditEvent({ req, userId, action: "update_profile", status: "failure", metadata: { reason: "Missing profile picture" } });
+            return res.status(400).json({message: 'Profile picture is required'});
+        }
 
         const uploadResponse = await cloudinary.uploader.upload(profilePic);
 
@@ -232,11 +235,14 @@ export const updateProfile = async (req, res) => {
         ).select('-password');
 
         if (!updatedUser) {
+            logAuditEvent({ req, userId, action: "update_profile", status: "failure", metadata: { reason: "User not found" } });
             return res.status(404).json({ message: "User not found" });
         }
 
+        logAuditEvent({ req, userId, action: "update_profile", status: "success" });
         res.status(200).json(updatedUser);
     } catch (error) {
+        logAuditEvent({ req, userId: req.user?._id, action: "update_profile", status: "failure", metadata: { error: error.message } });
         console.error("Profile image update failed:", error.message);
         return res.status(500).json({message: 'Internal server error'});   
     }
@@ -263,8 +269,10 @@ export const deleteAccount = async (req, res) => {
             ]
         });
         res.clearCookie("jwt");
+        logAuditEvent({ req, userId, action: "delete_account", status: "success" });
         return res.status(200).json({ message: "Account deleted successfully" });
     } catch (error) {
+        logAuditEvent({ req, userId: req.user?._id, action: "delete_account", status: "failure", metadata: { error: error.message } });
         console.error("Account deletion failed:", error.message);
         return res.status(500).json({ message: "Internal server error" });
     }
