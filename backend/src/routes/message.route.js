@@ -17,6 +17,8 @@ import {
     uploadMessageAttachment,
 } from '../controllers/message.controller.js';
 
+import { uploadLimiter } from '../middlewares/rateLimiter.middleware.js';
+
 const router = express.Router();
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -34,7 +36,7 @@ router.get('/:id', protectRoute, getMessages);
 router.post('/send/:id', protectRoute, sendMessage);
 
 // upload message attachment to object storage
-router.post('/attachments', protectRoute, upload.single('file'), uploadMessageAttachment);
+router.post('/attachments', protectRoute, uploadLimiter, upload.single('file'), uploadMessageAttachment);
 router.get('/attachments/:messageId/download', protectRoute, downloadMessageAttachment);
 router.patch('/pinned/:messageId', protectRoute, setMessagePinned);
 router.patch('/receipts/:messageId/delivered', protectRoute, markMessageDelivered);
