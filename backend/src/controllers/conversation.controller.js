@@ -97,11 +97,20 @@ export const getGroupMessages = async (req, res) => {
         if (!conversation || !ensureParticipant(conversation, req.user._id)) {
             return res.status(403).json({ message: "Conversation access denied" });
         }
-        const messages = await Message.find({ conversationId: conversation._id })
-            .sort({ createdAt: 1 })
+        const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+        const before = req.query.before;
+
+        const query = { conversationId: conversation._id };
+        if (before) {
+            query.createdAt = { $lt: new Date(before) };
+        }
+
+        const messages = await Message.find(query)
+            .sort({ createdAt: -1 })
+            .limit(limit)
             .populate("senderId", "fullName profilePic")
             .lean();
-        res.status(200).json(messages);
+        res.status(200).json(messages.reverse());
     } catch {
         res.status(500).json({ message: "Could not load group messages" });
     }

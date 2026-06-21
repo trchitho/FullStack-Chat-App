@@ -146,14 +146,27 @@ export const getMessages = async (req, res) => {
             });
         }
 
-        const messages = await Message.find({
+        const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+        const before = req.query.before;
+
+        const query = {
             $or: [
                 { senderId: myId, receiverId: userToChatId },
                 { senderId: userToChatId, receiverId: myId }
             ]
-        })
+        };
 
-        res.status(200).json(messages);
+        if (before) {
+            query.createdAt = { $lt: new Date(before) };
+        }
+
+        const messages = await Message.find(query)
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
+
+        // UI expects oldest first, so we reverse the retrieved page
+        res.status(200).json(messages.reverse());
     } catch (error) {
         console.log("Error in getMessages: ", error.message);
         res.status(500).json({error: "Internal Server Error"});
