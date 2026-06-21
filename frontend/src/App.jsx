@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import {Routes ,Route, Navigate, useLocation} from 'react-router-dom'
 import { useAuthStore } from './store/useAuthStore' 
@@ -32,6 +32,20 @@ const App = () => {
   const location = useLocation();
   const standalonePage = location.pathname.startsWith("/help") || location.pathname.startsWith("/policies_center") || location.pathname.startsWith("/admin");
   
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -48,6 +62,12 @@ const App = () => {
 
   return (
     <div data-theme = {theme}>
+      {!isOnline && (
+        <div role="alert" className="bg-error text-error-content px-4 py-2 text-center text-sm font-semibold sticky top-0 z-[400]">
+          ⚠️ Bạn đang ngoại tuyến. Một số tính năng như tin nhắn thời gian thực có thể bị tạm dừng.
+        </div>
+      )}
+
       <a href="#main-content" className="sr-only z-[300] rounded-lg bg-primary px-4 py-2 text-primary-content focus:not-sr-only focus:fixed focus:left-3 focus:top-3">
         Bỏ qua tới nội dung chính
       </a>
