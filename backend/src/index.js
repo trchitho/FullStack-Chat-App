@@ -16,9 +16,11 @@ import { dirname, join } from 'path';
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
-import { app, httpServer } from "./lib/socket.js";
+import { app, io, httpServer } from "./lib/socket.js";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js";
 import { requestContext, securityHeaders } from "./middlewares/security.middleware.js";
+import { logger } from "./lib/logger.js";
+import { apiLimiter } from "./middlewares/rateLimiter.middleware.js";
 
 dotenv.config();
 
@@ -40,14 +42,77 @@ app.use(
   })
 );
 
+let requestCount = 0;
+let errorCount = 0;
+
+// Request latency monitoring and logging
+app.use((req, res, next) => {
+  requestCount++;
+  const startTime = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - startTime;
+    if (res.statusCode >= 400) {
+      errorCount++;
+    }
+    logger.info("request_completed", {
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      latencyMs: duration,
+      ip: req.ip || req.headers["x-forwarded-for"] || "",
+    }, req.id, req.user?._id);
+  });
+  next();
+});
+
+// Uptime and Health endpoints (unlimited)
 app.get("/api/health", async (req, res) => {
   try {
     await connectDB();
-    res.status(200).json({ status: "ok", database: "connected" });
+    const uptime = process.uptime();
+    const clientCount = io ? io.engine.clientsCount : 0;
+    res.status(200).json({
+      status: "ok",
+      uptime,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || "development",
+      database: "connected",
+      activeSockets: clientCount,
+    });
   } catch (error) {
-    res.status(503).json({ status: "degraded", database: "disconnected" });
+    res.status(503).json({
+      status: "degraded",
+      database: "disconnected",
+      error: error.message,
+    });
   }
 });
+
+app.get("/api/ready", async (req, res) => {
+  try {
+    const conn = await connectDB();
+    if (conn && conn.readyState === 1) {
+      return res.status(200).json({ status: "ready" });
+    }
+    return res.status(503).json({ status: "not_ready" });
+  } catch {
+    return res.status(503).json({ status: "not_ready" });
+  }
+});
+
+app.get("/api/metrics", (req, res) => {
+  const clientCount = io ? io.engine.clientsCount : 0;
+  res.status(200).json({
+    uptime: process.uptime(),
+    requestCount,
+    errorCount,
+    activeSocketCount: clientCount,
+    memoryUsage: process.memoryUsage(),
+  });
+});
+
+// Apply API limit and Database connection check to rest of the API
+app.use("/api", apiLimiter);
 
 app.use("/api", async (req, res, next) => {
   try {
