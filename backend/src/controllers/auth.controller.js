@@ -36,15 +36,20 @@ export const signup = async (req, res) => {
 
     try {
         if(!email || !fullName || !password) {
+            logAuditEvent({ req, action: "signup", status: "failure", metadata: { reason: "Missing fields" } });
             return res.status(400).json({message: 'All fields are required'});
         }
 
         if(password.length < 6) {
+            logAuditEvent({ req, action: "signup", status: "failure", metadata: { reason: "Password too short" } });
             return res.status(400).json({message: 'Password must be at least 6 characters long'});
         }
 
         const user = await User.findOne({email});
-        if(user) return res.status(400).json({message: 'User already exists'});
+        if(user) {
+            logAuditEvent({ req, action: "signup", status: "failure", metadata: { reason: "User exists", email } });
+            return res.status(400).json({message: 'User already exists'});
+        }
 
         // hash password
         const salt = await bcrypt.genSalt(10);
@@ -65,23 +70,20 @@ export const signup = async (req, res) => {
             generateToken(newUser._id, res);
             await newUser.save();
             await addSeedFriends(newUser._id);
+            logAuditEvent({ req, userId: newUser._id, action: "signup", status: "success", metadata: { email } });
             return res.status(201).json({
                 _id: newUser._id,
                 email: newUser.email,
                 fullName: newUser.fullName,
                 username: newUser.username,
             });
-        }
-        else{
-            return res.status(400).json({message: 'Failed to create new user'});
-        }
-
-        }
-        else{
+        } else {
+            logAuditEvent({ req, action: "signup", status: "failure", metadata: { reason: "Failed user creation" } });
             return res.status(400).json({message: 'Failed to create new user'});
         }
 
     } catch (error) {
+        logAuditEvent({ req, action: "signup", status: "failure", metadata: { error: error.message } });
         return res.status(500).json({message: 'Something went wrong, please try again'});
     }
 };
