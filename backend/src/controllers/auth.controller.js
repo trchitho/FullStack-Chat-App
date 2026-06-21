@@ -221,3 +221,21 @@ export const checkAuth =  (req, res) => {
         return res.status(500).json({message: 'Internal server error'});
     }
 }
+
+export const deleteAccount = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        await User.findByIdAndDelete(userId);
+        await Friendship.deleteMany({
+            $or: [
+                { requester: userId },
+                { recipient: userId }
+            ]
+        });
+        res.clearCookie("jwt");
+        return res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+        console.error("Account deletion failed:", error.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
